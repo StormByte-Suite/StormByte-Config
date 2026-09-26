@@ -20,6 +20,10 @@ If you landed here from a release link and have not read the tree:
 
 ## [Unreleased]
 
+[Unreleased]: https://github.com/StormBytePP/StormByte-Config/compare/v2.0.0...HEAD
+
+## [2.0.0] - 2026-09-27
+
 ### Changed
 
 - **Breaking:** `Item::Value<T>` is gone. There is one concrete `Item::Value` leaf. Typed access is `Base::As<T>()`: node types (`Value`, `Group`, `List`, `Comment<...>`) or leaf tags (`Integer`, `Double`, `Bool`, `Text`, `Binary`). `item.As<Value>() = 3.65` and `int i = item.As<Integer>()` are the public getters. Integer promotes to Double; Double does not narrow to Integer.
@@ -32,7 +36,7 @@ If you landed here from a release link and have not read the tree:
 - **Breaking:** Read and failure hooks are no longer `std::function`. Stateless hooks are function pointers (`void (*)(Item::Group&)`, `bool (*)(const Item::Group&)`). Stateful hooks derive from `ReadHook` / `FailureHook` (`Clonable` + `Shared`, `MakePointer`). `AddHookBeforeRead` / `AddHookAfterRead` / `OnParseFailure` are out of line in this module. Capturing lambdas do not bind; wrap state in a hook class.
 - Requires [StormByte Base](https://github.com/StormBytePP/StormByte/releases/tag/2.0.0) ≥ 2.0.0 and [StormByte String](https://github.com/StormBytePP/StormByte-String/releases/tag/1.0.0) ≥ 1.0.0.
 
-[Unreleased]: https://github.com/StormBytePP/StormByte-Config/compare/v1.1.0...HEAD
+[2.0.0]: https://github.com/StormBytePP/StormByte-Config/releases/tag/2.0.0
 
 ## [1.1.0] - 2026-09-13
 
