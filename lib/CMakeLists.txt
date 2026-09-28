@@ -2,8 +2,25 @@ include(GNUInstallDirs)
 
 file(GLOB_RECURSE STORMBYTE_CONFIG_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_LIST_DIR}/*.cxx")
 
-add_library(StormByte-Config SHARED ${STORMBYTE_CONFIG_SOURCES})
-add_library(StormByte::Config ALIAS StormByte-Config)
+if(BUILD_SHARED_LIBS)
+	set(_mode shared)
+else()
+	set(_mode static)
+endif()
+
+buildmaster_component(
+	StormByte-Config
+	"StormByte Suite - Config"
+	"${STORMBYTE_CONFIG_SOURCES}"
+	""
+	${_mode}
+	"StormByte-Config"
+	"BACKEND=host;ALIAS=StormByte::Config"
+)
+
+if(BUILD_SHARED_LIBS)
+	target_compile_definitions(StormByte-Config PUBLIC STORMBYTE_CONFIG_SHARED)
+endif()
 
 set_target_properties(StormByte-Config PROPERTIES
 	LINKER_LANGUAGE CXX
@@ -23,8 +40,6 @@ if(MSVC)
 	target_compile_definitions(StormByte-Config PUBLIC UNICODE NOMINMAX)
 else()
 	target_compile_options(StormByte-Config PRIVATE
-		-fvisibility=hidden
-		$<$<COMPILE_LANGUAGE:CXX>:-fvisibility-inlines-hidden>
 		$<$<CONFIG:Debug>:-pipe -g -ggdb -Wall -Wextra -Wnon-virtual-dtor -pedantic -pedantic-errors -O0>
 	)
 endif()

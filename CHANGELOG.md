@@ -22,10 +22,10 @@ If you landed here from a release link and have not read the tree:
 
 [Unreleased]: https://github.com/StormBytePP/StormByte-Config/compare/v2.0.0...HEAD
 
-## [2.0.0] - 2026-09-27
+## [2.0.0] - 2026-09-29
 
 ### Changed
-
+- Shared vs static follows CMake `BUILD_SHARED_LIBS` (declared in the project root, default ON). There is no `STORMBYTE_CONFIG_SHARED` CMake option. When the library is shared, the compile definition `STORMBYTE_CONFIG_SHARED` is still set so `visibility.h` can distinguish `dllexport` / `dllimport` / static. CI passes `-DBUILD_SHARED_LIBS=ON`.
 - **Breaking:** `Item::Value<T>` is gone. There is one concrete `Item::Value` leaf. Typed access is `Base::As<T>()`: node types (`Value`, `Group`, `List`, `Comment<...>`) or leaf tags (`Integer`, `Double`, `Bool`, `Text`, `Binary`). `item.As<Value>() = 3.65` and `int i = item.As<Integer>()` are the public getters. Integer promotes to Double; Double does not narrow to Integer.
 - **Breaking:** Public binary payloads are `StormByte::BinaryData`, not `std::vector<std::byte>`. Text still uses Base64 `b"..."`; the binary writer emits `Serializable<BinaryData>`.
 - **Breaking:** Counts and container indices use `StormByte::Size`. `operator[]` on `List` / `Group` is `Size`, not `size_t`.

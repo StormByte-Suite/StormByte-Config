@@ -3,7 +3,7 @@
 ![Platform](https://img.shields.io/badge/platform-Linux%20%7C%20Windows%20%7C%20macOS-lightgrey)
 ![C++26](https://img.shields.io/badge/C%2B%2B-26-00599C?logo=c%2B%2B&logoColor=white)
 ![CMake](https://img.shields.io/badge/CMake-3.28+-064F8C?logo=cmake&logoColor=white)
-![License: LGPL v3](https://img.shields.io/badge/License-LGPL_v3-blue.svg)
+![License: LGPL v3 or commercial](https://img.shields.io/badge/License-LGPL_v3_or_commercial-blue.svg)
 [![CI](https://github.com/StormBytePP/StormByte-Config/actions/workflows/ci.yml/badge.svg)](https://github.com/StormBytePP/StormByte-Config/actions/workflows/ci.yml)
 [![Sponsor](https://img.shields.io/badge/Sponsor-StormBytePP-ea4aaa?logo=githubsponsors)](https://github.com/sponsors/StormBytePP)
 
@@ -52,6 +52,7 @@ The suite is split on purpose. Base, Buffer, Crypto, Database, Logger, Multimedi
   - [Text syntax](#text-syntax)
 - [Contributing](#contributing)
 - [License](#license)
+- [Support](#support)
 
 ## Installation
 
@@ -63,6 +64,12 @@ cd StormByte-Config
 cmake -S . -B build
 cmake --build build
 ```
+
+Shared vs static follows CMake `BUILD_SHARED_LIBS` (declared in `lib/`, default ON). A plain configure builds the shared library. `-DBUILD_SHARED_LIBS=OFF` builds a static archive; on Windows the headers then do not use `dllimport`. Vendored StormByte-String (and Base through String) follows the same mode.
+
+A shared build keeps this library as its own `.so` / `.dll`. Under the LGPL that is usually the simpler way to ship: the user can replace that file. A static archive is folded into your binary. The LGPL still applies to this code; you must give the recipient a way to relink your product with a different build of this library. If that does not fit how you distribute the final product, a commercial license is available from the copyright holder (see [License](#license)).
+
+Link `StormByte-Config` (and String / Base). Include path: the public install prefix, headers as `#include <StormByte/config/….hxx>`.
 
 ## Usage
 
@@ -292,4 +299,18 @@ Issues only on this repository. Fork and open a pull request against `master`.
 
 ## License
 
-GNU Lesser General Public License version 3 or later. See [LICENSE](LICENSE) and <https://www.gnu.org/licenses/lgpl-3.0.html>.
+From 2.0.0, original StormByte-Config source is dual-licensed:
+
+1. GNU Lesser General Public License version 3 or later. See [LICENSE](LICENSE) and <https://www.gnu.org/licenses/lgpl-3.0.html>.
+2. A commercial license from the copyright holder (David C. Manuelda, StormBytePP).
+
+Neither license covers other StormByte modules or third-party material shipped under `thirdparty/` (including bundled StormByte-String and the Base tree it vendors). Those keep their own licenses. Neither license grants patent rights.
+
+Static linking under the LGPL is described under [Installation](#installation).
+
+## Support
+
+StormByte is developed in spare time. Sponsorship is optional and does not buy features, priority or support.
+
+- [GitHub Sponsors](https://github.com/sponsors/StormBytePP)
+- [PayPal](https://paypal.me/StormBytePP)
