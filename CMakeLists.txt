@@ -10,7 +10,7 @@ string(STRIP "${_sb_ver}" _sb_ver)
 project("StormByte C++ Library: Config module"
 	VERSION ${_sb_ver}
 	DESCRIPTION "StormByte-Config is the configuration module of the StormByte C++ suite."
-	HOMEPAGE_URL "https://dev.stormbyte.org/StormByte-Config"
+	HOMEPAGE_URL "http://suite.stormbyte.org/StormByte-Config"
 )
 
 option(BUILD_SHARED_LIBS "Build shared libraries" ON)

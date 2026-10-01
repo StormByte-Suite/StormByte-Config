@@ -4,12 +4,12 @@
 ![C++26](https://img.shields.io/badge/C%2B%2B-26-00599C?logo=c%2B%2B&logoColor=white)
 ![CMake](https://img.shields.io/badge/CMake-3.28+-064F8C?logo=cmake&logoColor=white)
 ![License: LGPL v3 or commercial](https://img.shields.io/badge/License-LGPL_v3_or_commercial-blue.svg)
-[![CI](https://github.com/StormBytePP/StormByte-Config/actions/workflows/ci.yml/badge.svg)](https://github.com/StormBytePP/StormByte-Config/actions/workflows/ci.yml)
+[![CI](https://github.com/StormByte-Suite/StormByte-Config/actions/workflows/ci.yml/badge.svg)](https://github.com/StormByte-Suite/StormByte-Config/actions/workflows/ci.yml)
 [![Sponsor](https://img.shields.io/badge/Sponsor-StormBytePP-ea4aaa?logo=githubsponsors)](https://github.com/sponsors/StormBytePP)
 
 This repository is **StormByte Config**: human-readable text and versioned binary documents for the StormByte C++ suite.
 
-It depends on [StormByte Base](https://github.com/StormBytePP/StormByte) ≥ 2.0.0 and [StormByte String](https://github.com/StormBytePP/StormByte-String) ≥ 1.0.0. Public headers live under `StormByte/config/` and cover the document, items (values, comments, groups, lists), `Save` / `Load`, and collision / hook policy.
+It depends on [StormByte Base](https://github.com/StormByte-Suite/StormByte) ≥ 2.0.0. Public headers live under `StormByte/config/` and cover the document, items (values, comments, groups, lists), `Save` / `Load`, and collision / hook policy.
 
 The suite is split on purpose. Base, Buffer, Crypto, Database, Logger, Multimedia, Network and System are **other repositories**. This one does not implement them.
 
@@ -28,15 +28,15 @@ The suite is split on purpose. Base, Buffer, Crypto, Database, Logger, Multimedi
 
 | Module | Role | API |
 | --- | --- | --- |
-| [Base](https://github.com/StormBytePP/StormByte) | Exceptions, Expected, serialization, strings, UUID, concepts | [/StormByte](https://dev.stormbyte.org/StormByte) |
-| [Buffer](https://github.com/StormBytePP/StormByte-Buffer) | FIFO, SharedFIFO, Ring, Producer/Consumer and multi-stage pipelines | [/StormByte-Buffer](https://dev.stormbyte.org/StormByte-Buffer) |
-| **Config** | This repository | [/StormByte-Config](https://dev.stormbyte.org/StormByte-Config) |
-| [Crypto](https://github.com/StormBytePP/StormByte-Crypto) | Hash, compress, encrypt, sign and key agreement — Crypto++ never leaves the private tree | [/StormByte-Crypto](https://dev.stormbyte.org/StormByte-Crypto) |
-| [Database](https://github.com/StormBytePP/StormByte-Database) | One API over SQLite, PostgreSQL and MariaDB | [/StormByte-Database](https://dev.stormbyte.org/StormByte-Database) |
-| [Logger](https://github.com/StormBytePP/StormByte-Logger) | Stream logger with levels, headers, human-readable sizes and redaction (`ThreadedLog`) | [/StormByte-Logger](https://dev.stormbyte.org/StormByte-Logger) |
-| [Multimedia](https://github.com/StormBytePP/StormByte-Multimedia) | Decode, encode and containers without raw FFmpeg types; codecs enabled only if present | [/StormByte-Multimedia](https://dev.stormbyte.org/StormByte-Multimedia) |
-| [Network](https://github.com/StormBytePP/StormByte-Network) | Framed packets, Client/Server, IPv4/IPv6 TCP and Buffer pipelines (compress/encrypt) | [/StormByte-Network](https://dev.stormbyte.org/StormByte-Network) |
-| [System](https://github.com/StormBytePP/StormByte-System) | Processes, pipes and environment variables across Linux, Windows and macOS | [/StormByte-System](https://dev.stormbyte.org/StormByte-System) |
+| [Base](https://github.com/StormByte-Suite/StormByte) | Exceptions, Expected, serialization, strings, UUID, concepts | [/StormByte](http://suite.stormbyte.org/StormByte) |
+| [Buffer](https://github.com/StormByte-Suite/StormByte-Buffer) | FIFO, SharedFIFO, Ring, Producer/Consumer and multi-stage pipelines | [/StormByte-Buffer](http://suite.stormbyte.org/StormByte-Buffer) |
+| **Config** | This repository | [/StormByte-Config](http://suite.stormbyte.org/StormByte-Config) |
+| [Crypto](https://github.com/StormByte-Suite/StormByte-Crypto) | Hash, compress, encrypt, sign and key agreement — Crypto++ never leaves the private tree | [/StormByte-Crypto](http://suite.stormbyte.org/StormByte-Crypto) |
+| [Database](https://github.com/StormByte-Suite/StormByte-Database) | One API over SQLite, PostgreSQL and MariaDB | [/StormByte-Database](http://suite.stormbyte.org/StormByte-Database) |
+| [Logger](https://github.com/StormByte-Suite/StormByte-Logger) | Stream logger with levels, headers, human-readable sizes and redaction (`ThreadedLog`) | [/StormByte-Logger](http://suite.stormbyte.org/StormByte-Logger) |
+| [Multimedia](https://github.com/StormByte-Suite/StormByte-Multimedia) | Decode, encode and containers without raw FFmpeg types; codecs enabled only if present | [/StormByte-Multimedia](http://suite.stormbyte.org/StormByte-Multimedia) |
+| [Network](https://github.com/StormByte-Suite/StormByte-Network) | Framed packets, Client/Server, IPv4/IPv6 TCP and Buffer pipelines (compress/encrypt) | [/StormByte-Network](http://suite.stormbyte.org/StormByte-Network) |
+| [System](https://github.com/StormByte-Suite/StormByte-System) | Processes, pipes and environment variables across Linux, Windows and macOS | [/StormByte-System](http://suite.stormbyte.org/StormByte-System) |
 
 ## Table of Contents
 
@@ -56,16 +56,16 @@ The suite is split on purpose. Base, Buffer, Crypto, Database, Logger, Multimedi
 
 ## Installation
 
-Needs a C++26 compiler, CMake 3.28 or newer, [StormByte Base](https://github.com/StormBytePP/StormByte/releases/tag/2.0.0) ≥ 2.0.0 and [StormByte String](https://github.com/StormBytePP/StormByte-String/releases/tag/1.0.0) ≥ 1.0.0.
+Needs a C++26 compiler, CMake 3.28 or newer, and [StormByte Base](https://github.com/StormByte-Suite/StormByte/releases/tag/2.0.0) ≥ 2.0.0.
 
 ```sh
-git clone --recursive https://github.com/StormBytePP/StormByte-Config.git
+git clone --recursive https://github.com/StormByte-Suite/StormByte-Config.git
 cd StormByte-Config
 cmake -S . -B build
 cmake --build build
 ```
 
-Shared vs static follows CMake `BUILD_SHARED_LIBS` (declared in `lib/`, default ON). A plain configure builds the shared library. `-DBUILD_SHARED_LIBS=OFF` builds a static archive; on Windows the headers then do not use `dllimport`. Vendored StormByte-String (and Base through String) follows the same mode.
+Shared vs static follows CMake `BUILD_SHARED_LIBS` (declared in `lib/`, default ON). A plain configure builds the shared library. `-DBUILD_SHARED_LIBS=OFF` builds a static archive; on Windows the headers then do not use `dllimport`. Vendored StormByte Base follows the same mode.
 
 A shared build keeps this library as its own `.so` / `.dll`. Under the LGPL that is usually the simpler way to ship: the user can replace that file. A static archive is folded into your binary. The LGPL still applies to this code; you must give the recipient a way to relink your product with a different build of this library. If that does not fit how you distribute the final product, a commercial license is available from the copyright holder (see [License](#license)).
 
@@ -137,7 +137,7 @@ config.Add(Item::Comment<Item::CommentType::SingleLineBash>("bash comment"));
 | `Item::Integer` | `int` |
 | `Item::Double` | `double` (an Integer is accepted) |
 | `Item::Bool` | `bool` |
-| `Item::Text` | `StormByte::String::String` |
+| `Item::Text` | Text value |
 | `Item::Binary` | `StormByte::BinaryData` |
 | `Item::Group` / `Item::List` | Containers |
 | `Item::Comment<CommentType::…>` | Comment specializations |
@@ -291,7 +291,7 @@ settings = {
 /* multiline */
 ```
 
-String values are `StormByte::String::String`. Binary values are `StormByte::BinaryData`. Paths use `/`. List slots are numeric path segments (`list/0`).
+Text values are UTF-8. Binary values are `StormByte::BinaryData`. Paths use `/`. List slots are numeric path segments (`list/0`).
 
 ## Contributing
 
@@ -304,7 +304,7 @@ From 2.0.0, original StormByte-Config source is dual-licensed:
 1. GNU Lesser General Public License version 3 or later. See [LICENSE](LICENSE) and <https://www.gnu.org/licenses/lgpl-3.0.html>.
 2. A commercial license from the copyright holder (David C. Manuelda, StormBytePP).
 
-Neither license covers other StormByte modules or third-party material shipped under `thirdparty/` (including bundled StormByte-String and the Base tree it vendors). Those keep their own licenses. Neither license grants patent rights.
+Neither license covers other StormByte modules or third-party material shipped under `thirdparty/`. Those keep their own licenses. Neither license grants patent rights.
 
 Static linking under the LGPL is described under [Installation](#installation).
 

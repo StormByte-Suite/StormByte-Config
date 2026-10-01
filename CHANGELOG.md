@@ -9,18 +9,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 StormByte Config is the configuration-document module of the StormByte C++ suite.
 
-It depends on StormByte Base ≥ 2.0.0 and StormByte String ≥ 1.0.0. This repository is not Base, Buffer, Crypto, Database, Logger, Multimedia, Network or System.
+It depends on StormByte Base ≥ 2.0.0. This repository is not Base, Buffer, Crypto, Database, Logger, Multimedia, Network or System.
 
 Public headers under `StormByte/config/` cover text and versioned binary documents: values, groups, lists, comments, hooks and `Save` / `Load`.
 
 If you landed here from a release link and have not read the tree:
 
-- What this module is, how to build it, and short examples: [README.md](https://github.com/StormBytePP/StormByte-Config/blob/master/README.md)
-- License: GNU Lesser General Public License version 3 or later, [LICENSE](https://github.com/StormBytePP/StormByte-Config/blob/master/LICENSE)
+- What this module is, how to build it, and short examples: [README.md](https://github.com/StormByte-Suite/StormByte-Config/blob/master/README.md)
+- License: GNU Lesser General Public License version 3 or later, [LICENSE](https://github.com/StormByte-Suite/StormByte-Config/blob/master/LICENSE)
 
 ## [Unreleased]
 
-[Unreleased]: https://github.com/StormBytePP/StormByte-Config/compare/v2.0.0...HEAD
+[Unreleased]: https://github.com/StormByte-Suite/StormByte-Config/compare/v2.0.0...HEAD
 
 ## [2.0.0] - 2026-09-29
 
@@ -31,12 +31,12 @@ If you landed here from a release link and have not read the tree:
 - **Breaking:** Counts and container indices use `StormByte::Size`. `operator[]` on `List` / `Group` is `Size`, not `size_t`.
 - **Breaking:** Item and Config destructors are out of line in this module so `catch` and `typeid` stay on one CRT across a DLL.
 - **Breaking:** `StormByte::Config::Exception` takes `StormByte::Exception::Path`. `Component` is gone. `what()` is `StormByte.Config: message`. Destructors are defined in this module so `catch` matches across a DLL.
-- Names, paths, `Group`, `List` and `Value` accept `std::string_view` (a literal or a `std::string`). The `StormByte::String::String` is built inside Config. String values are `StormByte::String::String`, not `std::string`. A custom exception path is a view plus a plain message; `StormByte::Exception::Path` stays protected.
+- Names, paths, `Group`, `List` and `Value` accept `std::string_view` (a literal or a `std::string`). A custom exception path is a view plus a plain message; `StormByte::Exception::Path` stays protected.
 - **Breaking:** `Item::Base` is `Clonable<Base, StormByte::Shared<Base>>`. `PointerType` is no longer `std::shared_ptr`. Construction goes through `MakePointer`. `Serializable::Serialize` is `BinaryData`; the on-disk reader buffer stays a local `std::vector<std::byte>`.
 - **Breaking:** Read and failure hooks are no longer `std::function`. Stateless hooks are function pointers (`void (*)(Item::Group&)`, `bool (*)(const Item::Group&)`). Stateful hooks derive from `ReadHook` / `FailureHook` (`Clonable` + `Shared`, `MakePointer`). `AddHookBeforeRead` / `AddHookAfterRead` / `OnParseFailure` are out of line in this module. Capturing lambdas do not bind; wrap state in a hook class.
-- Requires [StormByte Base](https://github.com/StormBytePP/StormByte/releases/tag/2.0.0) ≥ 2.0.0 and [StormByte String](https://github.com/StormBytePP/StormByte-String/releases/tag/1.0.0) ≥ 1.0.0.
+- Requires [StormByte Base](https://github.com/StormByte-Suite/StormByte/releases/tag/2.0.0) ≥ 2.0.0.
 
-[2.0.0]: https://github.com/StormBytePP/StormByte-Config/releases/tag/2.0.0
+[2.0.0]: https://github.com/StormByte-Suite/StormByte-Config/releases/tag/2.0.0
 
 ## [1.1.0] - 2026-09-13
 
@@ -53,10 +53,10 @@ If you landed here from a release link and have not read the tree:
 ### Changed
 
 - **Exception handling**: Ported `StormByte::Config::Exception` constructors to pass `StormByte::Component("Config")` introduced in StormByte Base 1.1.0, automatically formatting exception messages with `StormByte::Config: `.
-- **Dependencies**: Requires [StormByte Base](https://github.com/StormBytePP/StormByte/releases/tag/1.1.0) ≥ 1.1.0.
+- **Dependencies**: Requires [StormByte Base](https://github.com/StormByte-Suite/StormByte/releases/tag/1.1.0) ≥ 1.1.0.
 - **Type traits**: Replaced stock C++ type traits (`std::is_same_v`, `std::is_base_of_v`) with StormByte flavor equivalents (`StormByte::Type::SameAs`, `StormByte::Type::DerivedFrom`).
 
-[1.1.0]: https://github.com/StormBytePP/StormByte-Config/releases/tag/1.1.0
+[1.1.0]: https://github.com/StormByte-Suite/StormByte-Config/releases/tag/1.1.0
 
 ## [1.0.0] - 2026-09-05
 
@@ -83,4 +83,4 @@ Initial public release of StormByte Config.
 - Save always writes the current format version.
 - Needs a C++26 compiler and StormByte Base ≥ 1.0.0.
 
-[1.0.0]: https://github.com/StormBytePP/StormByte-Config/releases/tag/1.0.0
+[1.0.0]: https://github.com/StormByte-Suite/StormByte-Config/releases/tag/1.0.0
