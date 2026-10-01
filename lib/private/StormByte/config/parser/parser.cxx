@@ -18,9 +18,8 @@
  *
  * Both licenses apply only to original StormByte-Config source in this
  * repository. They do not cover other StormByte modules or any third-party
- * material shipped with this repository (including everything under
- * thirdparty/, and in particular the bundled StormByte-String tree and
- * the StormByte Base tree it vendors), which remains under its own license.
+ * material shipped with this repository. The bundled StormByte Base tree
+ * under thirdparty/ remains under its own license.
  *
  * Neither license grants any patent rights. Any patent licenses required
  * to use this software or third-party components must be obtained separately
@@ -45,7 +44,7 @@
 #include <StormByte/config/item/list.hxx>
 #include <StormByte/config/item/value.hxx>
 #include <StormByte/config/parser/parser.hxx>
-#include <StormByte/string/string.hxx>
+#include <StormByte/safe/string.hxx>
 
 #include <sstream>
 #include <string_view>
@@ -137,7 +136,7 @@ Expected<void, ParseError> Parser::Parser::Parse(Item::Container& container, Mod
 		Expected<Item::Base::PointerType, ParseError> item_res;
 		switch (token.type) {
 			case TokenType::String:
-				item_res = Item::Base::MakePointer<Item::Value>(StormByte::String::String(std::string_view(token.value)));
+				item_res = Item::Base::MakePointer<Item::Value>(StormByte::Safe::String(std::string_view(token.value)));
 				break;
 			case TokenType::Binary: {
 				try {
@@ -198,7 +197,7 @@ Expected<void, ParseError> Parser::Parser::Parse(Item::Container& container, Mod
 			return Unexpected(std::move(item_res.error()));
 		auto item = std::move(item_res.value());
 		if (mode == Mode::Named)
-			item->Name(StormByte::String::String(std::string_view(name)));
+			item->Name(StormByte::Safe::String(std::string_view(name)));
 		container.Add(item, c_on_existing_action);
 	}
 }
@@ -211,7 +210,7 @@ Expected<Token, ParseError> Parser::Parser::Expect(TokenType expected) {
 }
 
 Item::Base::PointerType Parser::Parser::MakeComment(const Token& token) {
-	const StormByte::String::String text(std::string_view(token.value));
+	const StormByte::Safe::String text(std::string_view(token.value));
 	switch (token.comment_type) {
 		case CommentType::SingleLineBash:
 			return Item::Base::MakePointer<Item::Comment<Item::CommentType::SingleLineBash>>(text);

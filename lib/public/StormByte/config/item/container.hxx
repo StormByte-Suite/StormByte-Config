@@ -18,9 +18,8 @@
  *
  * Both licenses apply only to original StormByte-Config source in this
  * repository. They do not cover other StormByte modules or any third-party
- * material shipped with this repository (including everything under
- * thirdparty/, and in particular the bundled StormByte-String tree and
- * the StormByte Base tree it vendors), which remains under its own license.
+ * material shipped with this repository. The bundled StormByte Base tree
+ * under thirdparty/ remains under its own license.
  *
  * Neither license grants any patent rights. Any patent licenses required
  * to use this software or third-party components must be obtained separately
@@ -44,7 +43,7 @@
 #include <StormByte/config/item/base.hxx>
 #include <StormByte/config/typedefs.hxx>
 #include <StormByte/size.hxx>
-#include <StormByte/string/string.hxx>
+#include <StormByte/safe/string.hxx>
 
 #include <queue>
 #include <span>
@@ -74,13 +73,13 @@ namespace StormByte::Config::Item {
 			 * @brief Constructs a Container with the given name.
 			 * @param name	The name of the container.
 			 */
-			Container(const StormByte::String::String& name);
+			Container(const StormByte::Safe::String& name);
 
 			/**
 			 * @brief Constructs a Container with the given name (move).
 			 * @param name	The name of the container.
 			 */
-			Container(StormByte::String::String&& name);
+			Container(StormByte::Safe::String&& name);
 
 			/**
 			 * @brief Copy constructor.
@@ -148,7 +147,7 @@ namespace StormByte::Config::Item {
 			 * @throw ItemNotFound if item is not found.
 			 * @return		Reference to the item.
 			 */
-			Base& operator[](const StormByte::String::String& path);
+			Base& operator[](const StormByte::Safe::String& path);
 
 			/**
 			 * @brief Gets a const reference to an item by path.
@@ -157,7 +156,7 @@ namespace StormByte::Config::Item {
 			 * @throw ItemNotFound if item is not found.
 			 * @return		Const reference to the item.
 			 */
-			inline const Base& operator[](const StormByte::String::String& path) const {
+			inline const Base& operator[](const StormByte::Safe::String& path) const {
 				return LookUp(path);
 			}
 
@@ -167,7 +166,7 @@ namespace StormByte::Config::Item {
 			 * @return		Reference to the item.
 			 */
 			inline Base& operator[](std::string_view path) {
-				return operator[](StormByte::String::String(path));
+				return operator[](StormByte::Safe::String(path));
 			}
 
 			/**
@@ -176,7 +175,7 @@ namespace StormByte::Config::Item {
 			 * @return		Const reference to the item.
 			 */
 			inline const Base& operator[](std::string_view path) const {
-				return operator[](StormByte::String::String(path));
+				return operator[](StormByte::Safe::String(path));
 			}
 
 			/**
@@ -200,7 +199,7 @@ namespace StormByte::Config::Item {
 			 * @param indent_level	Indentation level.
 			 * @return				Serialized text.
 			 */
-			StormByte::String::String Serialize(const int& indent_level) const noexcept override;
+			StormByte::Safe::String Serialize(const int& indent_level) const noexcept override;
 
 			/**
 			 * @brief Returns the enclosure characters for a given container type.
@@ -320,7 +319,7 @@ namespace StormByte::Config::Item {
 			 * @param path	Path to the item.
 			 * @return		true if the item exists.
 			 */
-			bool Exists(const StormByte::String::String& path) const;
+			bool Exists(const StormByte::Safe::String& path) const;
 
 			/**
 			 * @brief Checks if an item exists by a path view.
@@ -328,7 +327,7 @@ namespace StormByte::Config::Item {
 			 * @return		true if the item exists.
 			 */
 			inline bool Exists(std::string_view path) const {
-				return Exists(StormByte::String::String(path));
+				return Exists(StormByte::Safe::String(path));
 			}
 
 			/**
@@ -344,14 +343,14 @@ namespace StormByte::Config::Item {
 			 * @throw InvalidPath if path is invalid.
 			 * @throw ItemNotFound if item is not found.
 			 */
-			void Remove(const StormByte::String::String& path);
+			void Remove(const StormByte::Safe::String& path);
 
 			/**
 			 * @brief Removes an item by a path view.
 			 * @param path	Path to the item to remove.
 			 */
 			inline void Remove(std::string_view path) {
-				Remove(StormByte::String::String(path));
+				Remove(StormByte::Safe::String(path));
 			}
 
 			/**
@@ -422,33 +421,33 @@ namespace StormByte::Config::Item {
 			 * @param level	Indentation level.
 			 * @return		Serialized contents.
 			 */
-			virtual StormByte::String::String ContentsToString(const int& level) const noexcept;
+			virtual StormByte::Safe::String ContentsToString(const int& level) const noexcept;
 
 			/**
 			 * @brief Checks whether a path is syntactically valid.
 			 * @param name	Path to validate.
 			 * @return		true if the path is valid.
 			 */
-			static bool IsPathValid(const StormByte::String::String& name) noexcept;
+			static bool IsPathValid(const StormByte::Safe::String& name) noexcept;
 
 			/**
 			 * @brief Looks up a child item by path.
 			 * @param path	Path to the child.
 			 * @return		Const reference to the found item.
 			 */
-			const Base& LookUp(const StormByte::String::String& path) const;
+			const Base& LookUp(const StormByte::Safe::String& path) const;
 
 			/**
 			 * @brief Looks up a child item by path (queue version).
 			 * @param path	Path components.
 			 * @return		Const reference to the found item.
 			 */
-			const Base& LookUp(std::queue<StormByte::String::String>& path) const;
+			const Base& LookUp(std::queue<StormByte::Safe::String>& path) const;
 
 			/**
 			 * @brief Removes an item by path (queue version).
 			 * @param path	Path components.
 			 */
-			void Remove(std::queue<StormByte::String::String>& path);
+			void Remove(std::queue<StormByte::Safe::String>& path);
 	};
 }

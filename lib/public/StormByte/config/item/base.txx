@@ -18,9 +18,8 @@
  *
  * Both licenses apply only to original StormByte-Config source in this
  * repository. They do not cover other StormByte modules or any third-party
- * material shipped with this repository (including everything under
- * thirdparty/, and in particular the bundled StormByte-String tree and
- * the StormByte Base tree it vendors), which remains under its own license.
+ * material shipped with this repository. The bundled StormByte Base tree
+ * under thirdparty/ remains under its own license.
  *
  * Neither license grants any patent rights. Any patent licenses required
  * to use this software or third-party components must be obtained separately
@@ -100,7 +99,7 @@ namespace StormByte::Config::Item {
 		} else if constexpr (StormByte::Type::SameAs<T, Bool>) {
 			return static_cast<bool&>(RequireValue(*this));
 		} else if constexpr (StormByte::Type::SameAs<T, Text>) {
-			return static_cast<StormByte::String::String&>(RequireValue(*this));
+			return static_cast<StormByte::Safe::String&>(RequireValue(*this));
 		} else if constexpr (StormByte::Type::SameAs<T, Binary>) {
 			return static_cast<StormByte::BinaryData&>(RequireValue(*this));
 		} else if constexpr (requires { T::CommentTag; }) {
@@ -141,7 +140,7 @@ namespace StormByte::Config::Item {
 		} else if constexpr (StormByte::Type::SameAs<T, Bool>) {
 			return static_cast<const bool&>(RequireValue(*this));
 		} else if constexpr (StormByte::Type::SameAs<T, Text>) {
-			return static_cast<const StormByte::String::String&>(RequireValue(*this));
+			return static_cast<const StormByte::Safe::String&>(RequireValue(*this));
 		} else if constexpr (StormByte::Type::SameAs<T, Binary>) {
 			return static_cast<const StormByte::BinaryData&>(RequireValue(*this));
 		} else if constexpr (requires { T::CommentTag; }) {

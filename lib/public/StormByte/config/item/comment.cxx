@@ -18,9 +18,8 @@
  *
  * Both licenses apply only to original StormByte-Config source in this
  * repository. They do not cover other StormByte modules or any third-party
- * material shipped with this repository (including everything under
- * thirdparty/, and in particular the bundled StormByte-String tree and
- * the StormByte Base tree it vendors), which remains under its own license.
+ * material shipped with this repository. The bundled StormByte Base tree
+ * under thirdparty/ remains under its own license.
  *
  * Neither license grants any patent rights. Any patent licenses required
  * to use this software or third-party components must be obtained separately
@@ -39,7 +38,7 @@
  */
 
 #include <StormByte/config/item/comment.hxx>
-#include <StormByte/string/string.hxx>
+#include <StormByte/safe/string.hxx>
 
 #include <sstream>
 #include <string>
@@ -49,9 +48,9 @@
 using namespace StormByte::Config::Item;
 
 namespace {
-	StormByte::String::String Indent(const int indent_level) {
+	StormByte::Safe::String Indent(const int indent_level) {
 		const int level = indent_level > 0 ? indent_level : 0;
-		return StormByte::String::String(std::string(static_cast<std::size_t>(level), '\t'));
+		return StormByte::Safe::String(std::string(static_cast<std::size_t>(level), '\t'));
 	}
 
 	template<CommentType T>
@@ -90,23 +89,23 @@ namespace StormByte::Config::Item {
 	}
 
 	template<>
-	StormByte::String::String Comment<CommentType::SingleLineBash>::Serialize(const int& indent_level) const noexcept {
+	StormByte::Safe::String Comment<CommentType::SingleLineBash>::Serialize(const int& indent_level) const noexcept {
 		std::string out = static_cast<std::string>(Indent(indent_level));
 		out += '#';
 		out += static_cast<std::string_view>(m_text);
-		return StormByte::String::String(std::string_view(out));
+		return StormByte::Safe::String(std::string_view(out));
 	}
 
 	template<>
-	StormByte::String::String Comment<CommentType::SingleLineC>::Serialize(const int& indent_level) const noexcept {
+	StormByte::Safe::String Comment<CommentType::SingleLineC>::Serialize(const int& indent_level) const noexcept {
 		std::string out = static_cast<std::string>(Indent(indent_level));
 		out += "//";
 		out += static_cast<std::string_view>(m_text);
-		return StormByte::String::String(std::string_view(out));
+		return StormByte::Safe::String(std::string_view(out));
 	}
 
 	template<>
-	StormByte::String::String Comment<CommentType::MultiLineC>::Serialize(const int& indent_level) const noexcept {
+	StormByte::Safe::String Comment<CommentType::MultiLineC>::Serialize(const int& indent_level) const noexcept {
 		std::stringstream ss{ std::string(static_cast<std::string_view>(m_text)) };
 		std::string item;
 		std::string serial = static_cast<std::string>(Indent(indent_level));
@@ -122,7 +121,7 @@ namespace StormByte::Config::Item {
 			}
 		}
 		serial += "*/";
-		return StormByte::String::String(std::string_view(serial));
+		return StormByte::Safe::String(std::string_view(serial));
 	}
 
 	template class STORMBYTE_CONFIG_INSTANTIATE Comment<CommentType::SingleLineBash>;

@@ -18,9 +18,8 @@
  *
  * Both licenses apply only to original StormByte-Config source in this
  * repository. They do not cover other StormByte modules or any third-party
- * material shipped with this repository (including everything under
- * thirdparty/, and in particular the bundled StormByte-String tree and
- * the StormByte Base tree it vendors), which remains under its own license.
+ * material shipped with this repository. The bundled StormByte Base tree
+ * under thirdparty/ remains under its own license.
  *
  * Neither license grants any patent rights. Any patent licenses required
  * to use this software or third-party components must be obtained separately
@@ -45,8 +44,8 @@
 #include <StormByte/config/item/list.hxx>
 #include <StormByte/config/item/value.hxx>
 #include <StormByte/serializable.hxx>
-#include <StormByte/string/serializable.hxx>
-#include <StormByte/string/string.hxx>
+#include <StormByte/serializable.hxx>
+#include <StormByte/safe/string.hxx>
 
 #include <cstdint>
 #include <optional>
@@ -56,7 +55,7 @@ using namespace StormByte;
 using namespace StormByte::Config;
 using namespace StormByte::Config::Binary;
 
-Expected<std::pair<Item::Type, std::optional<StormByte::String::String>>, DeserializeError>
+Expected<std::pair<Item::Type, std::optional<StormByte::Safe::String>>, DeserializeError>
 ReaderV1::ReadBase(Cursor& cursor) {
 	if (cursor.offset() >= cursor.data().size())
 		return Unexpected<DeserializeError>("Insufficient data for item type");
@@ -68,14 +67,14 @@ ReaderV1::ReadBase(Cursor& cursor) {
 	if (cursor.offset() >= cursor.data().size())
 		return Unexpected<DeserializeError>("Insufficient data for item name");
 
-	auto name = cursor.Take<std::optional<StormByte::String::String>>();
+	auto name = cursor.Take<std::optional<StormByte::Safe::String>>();
 	if (!name)
 		return Unexpected(name.error());
 
 	return std::make_pair(type.value(), std::move(name.value()));
 }
 
-void ReaderV1::ApplyName(Item::Base& item, std::optional<StormByte::String::String>& name) {
+void ReaderV1::ApplyName(Item::Base& item, std::optional<StormByte::Safe::String>& name) {
 	if (name)
 		item.Name(*name);
 }
@@ -118,7 +117,7 @@ Expected<void, DeserializeError> ReaderV1::ReadContainerInto(Cursor& cursor, Ite
 	return {};
 }
 
-Expected<Shared<Item::Base>, DeserializeError> ReaderV1::ReadItem(Cursor& cursor) {
+Expected<StormByte::Safe::Shared<Item::Base>, DeserializeError> ReaderV1::ReadItem(Cursor& cursor) {
 	const std::size_t start = cursor.offset();
 
 	auto basic = ReadBase(cursor);
@@ -129,7 +128,7 @@ Expected<Shared<Item::Base>, DeserializeError> ReaderV1::ReadItem(Cursor& cursor
 
 	switch (type) {
 		case Item::Type::String: {
-			auto value = cursor.Take<StormByte::String::String>();
+			auto value = cursor.Take<StormByte::Safe::String>();
 			if (!value)
 				return Unexpected(value.error());
 			auto item = Item::Base::MakePointer<Item::Value>(std::move(value.value()));
@@ -173,11 +172,11 @@ Expected<Shared<Item::Base>, DeserializeError> ReaderV1::ReadItem(Cursor& cursor
 			if (!ct)
 				return Unexpected(ct.error());
 
-			auto text = cursor.Take<StormByte::String::String>();
+			auto text = cursor.Take<StormByte::Safe::String>();
 			if (!text)
 				return Unexpected(text.error());
 
-			Shared<Item::Base> item;
+			StormByte::Safe::Shared<Item::Base> item;
 			switch (ct.value()) {
 				case Item::CommentType::SingleLineBash:
 					item = Item::Base::MakePointer<Item::Comment<Item::CommentType::SingleLineBash>>(std::move(text.value()));
@@ -208,7 +207,7 @@ Expected<Shared<Item::Base>, DeserializeError> ReaderV1::ReadItem(Cursor& cursor
 			if (!ctype)
 				return Unexpected(ctype.error());
 
-			Shared<Item::Base> container;
+			StormByte::Safe::Shared<Item::Base> container;
 			if (ctype.value() == Item::ContainerType::Group)
 				container = Item::Base::MakePointer<Item::Group>();
 			else if (ctype.value() == Item::ContainerType::List)

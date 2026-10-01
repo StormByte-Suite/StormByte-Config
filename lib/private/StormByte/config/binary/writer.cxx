@@ -18,9 +18,8 @@
  *
  * Both licenses apply only to original StormByte-Config source in this
  * repository. They do not cover other StormByte modules or any third-party
- * material shipped with this repository (including everything under
- * thirdparty/, and in particular the bundled StormByte-String tree and
- * the StormByte Base tree it vendors), which remains under its own license.
+ * material shipped with this repository. The bundled StormByte Base tree
+ * under thirdparty/ remains under its own license.
  *
  * Neither license grants any patent rights. Any patent licenses required
  * to use this software or third-party components must be obtained separately
@@ -46,8 +45,8 @@
 #include <StormByte/config/item/value.hxx>
 #include <StormByte/helpers.hxx>
 #include <StormByte/serializable.hxx>
-#include <StormByte/string/serializable.hxx>
-#include <StormByte/string/string.hxx>
+#include <StormByte/serializable.hxx>
+#include <StormByte/safe/string.hxx>
 
 #include <optional>
 #include <typeinfo>
@@ -64,10 +63,10 @@ namespace {
 
 	void WriteBase(Buffer& out, const Base& item) {
 		Append(out, StormByte::Serializable<Type>(item.Type()).Serialize());
-		std::optional<StormByte::String::String> name;
+		std::optional<StormByte::Safe::String> name;
 		if (!item.Name().empty())
 			name = item.Name();
-		Append(out, StormByte::Serializable<std::optional<StormByte::String::String>>(name).Serialize());
+		Append(out, StormByte::Serializable<std::optional<StormByte::Safe::String>>(name).Serialize());
 	}
 
 	void WriteItem(Buffer& out, const Base& item, std::uint8_t version);
@@ -96,7 +95,7 @@ namespace {
 		switch (item.Type()) {
 			case Type::String:
 				WriteBase(out, item);
-				Append(out, StormByte::Serializable<StormByte::String::String>(item.As<Text>()).Serialize());
+				Append(out, StormByte::Serializable<StormByte::Safe::String>(item.As<Text>()).Serialize());
 				break;
 			case Type::Integer:
 				WriteBase(out, item);
@@ -120,13 +119,13 @@ namespace {
 				Append(out, StormByte::Serializable<CommentType>(ct).Serialize());
 				switch (ct) {
 					case CommentType::SingleLineBash:
-						Append(out, StormByte::Serializable<StormByte::String::String>(static_cast<const Comment<CommentType::SingleLineBash>&>(item).Text()).Serialize());
+						Append(out, StormByte::Serializable<StormByte::Safe::String>(static_cast<const Comment<CommentType::SingleLineBash>&>(item).Text()).Serialize());
 						break;
 					case CommentType::SingleLineC:
-						Append(out, StormByte::Serializable<StormByte::String::String>(static_cast<const Comment<CommentType::SingleLineC>&>(item).Text()).Serialize());
+						Append(out, StormByte::Serializable<StormByte::Safe::String>(static_cast<const Comment<CommentType::SingleLineC>&>(item).Text()).Serialize());
 						break;
 					case CommentType::MultiLineC:
-						Append(out, StormByte::Serializable<StormByte::String::String>(static_cast<const Comment<CommentType::MultiLineC>&>(item).Text()).Serialize());
+						Append(out, StormByte::Serializable<StormByte::Safe::String>(static_cast<const Comment<CommentType::MultiLineC>&>(item).Text()).Serialize());
 						break;
 				}
 				break;

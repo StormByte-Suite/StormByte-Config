@@ -18,9 +18,8 @@
  *
  * Both licenses apply only to original StormByte-Config source in this
  * repository. They do not cover other StormByte modules or any third-party
- * material shipped with this repository (including everything under
- * thirdparty/, and in particular the bundled StormByte-String tree and
- * the StormByte Base tree it vendors), which remains under its own license.
+ * material shipped with this repository. The bundled StormByte Base tree
+ * under thirdparty/ remains under its own license.
  *
  * Neither license grants any patent rights. Any patent licenses required
  * to use this software or third-party components must be obtained separately
@@ -40,7 +39,7 @@
 
 #pragma once
 
-#include <StormByte/clonable.hxx>
+#include <StormByte/safe/clonable.hxx>
 #include <StormByte/config/visibility.h>
 
 /**
@@ -58,7 +57,7 @@ namespace StormByte::Config {
 	 * Derive and construct with `MakePointer` when the hook needs state.
 	 * Stateless callbacks use the function-pointer overloads on `Config`.
 	 */
-	class STORMBYTE_CONFIG_PUBLIC ReadHook: public Clonable<ReadHook, StormByte::Shared<ReadHook>> {
+	class STORMBYTE_CONFIG_PUBLIC ReadHook: public StormByte::Safe::Clonable<ReadHook, StormByte::Safe::Shared<ReadHook>> {
 		public:
 			/**
 			 * @brief Constructor
@@ -121,7 +120,7 @@ namespace StormByte::Config {
 	 *
 	 * Return `false` to swallow the error; `true` to keep throwing.
 	 */
-	class STORMBYTE_CONFIG_PUBLIC FailureHook: public Clonable<FailureHook, StormByte::Shared<FailureHook>> {
+	class STORMBYTE_CONFIG_PUBLIC FailureHook: public StormByte::Safe::Clonable<FailureHook, StormByte::Safe::Shared<FailureHook>> {
 		public:
 			/**
 			 * @brief Constructor
@@ -194,12 +193,12 @@ namespace StormByte::Config {
 	 * @param function	stateless callback
 	 * @return			owning pointer
 	 */
-	STORMBYTE_CONFIG_PUBLIC StormByte::Shared<ReadHook> MakeReadHook(ReadHookFunction function);
+	STORMBYTE_CONFIG_PUBLIC StormByte::Safe::Shared<ReadHook> MakeReadHook(ReadHookFunction function);
 
 	/**
 	 * @brief Wrap a function pointer in a `FailureHook` allocated on Base's heap.
 	 * @param function	stateless callback
 	 * @return			owning pointer
 	 */
-	STORMBYTE_CONFIG_PUBLIC StormByte::Shared<FailureHook> MakeFailureHook(FailureHookFunction function);
+	STORMBYTE_CONFIG_PUBLIC StormByte::Safe::Shared<FailureHook> MakeFailureHook(FailureHookFunction function);
 }

@@ -18,9 +18,8 @@
  *
  * Both licenses apply only to original StormByte-Config source in this
  * repository. They do not cover other StormByte modules or any third-party
- * material shipped with this repository (including everything under
- * thirdparty/, and in particular the bundled StormByte-String tree and
- * the StormByte Base tree it vendors), which remains under its own license.
+ * material shipped with this repository. The bundled StormByte Base tree
+ * under thirdparty/ remains under its own license.
  *
  * Neither license grants any patent rights. Any patent licenses required
  * to use this software or third-party components must be obtained separately
@@ -42,7 +41,7 @@
 
 #include <StormByte/config/item/base.hxx>
 #include <StormByte/config/visibility.h>
-#include <StormByte/string/string.hxx>
+#include <StormByte/safe/string.hxx>
 
 #include <string_view>
 #include <utility>
@@ -65,19 +64,19 @@ namespace StormByte::Config::Item {
 			 * @brief Constructs a Comment with the given string.
 			 * @param comment	The comment string.
 			 */
-			Comment(const StormByte::String::String& comment): Base(), m_text(comment) {}
+			Comment(const StormByte::Safe::String& comment): Base(), m_text(comment) {}
 
 			/**
 			 * @brief Move constructor from comment string.
 			 * @param comment	Comment string.
 			 */
-			Comment(StormByte::String::String&& comment): Base(), m_text(std::move(comment)) {}
+			Comment(StormByte::Safe::String&& comment): Base(), m_text(std::move(comment)) {}
 
 			/**
 			 * @brief Constructs a Comment from a C string.
 			 * @param comment	Comment text.
 			 */
-			Comment(const char* comment): Base(), m_text(StormByte::String::String(comment)) {}
+			Comment(const char* comment): Base(), m_text(StormByte::Safe::String(comment)) {}
 
 			/**
 			 * @brief Copy constructor.
@@ -122,7 +121,7 @@ namespace StormByte::Config::Item {
 			 * @param indent_level	Indentation level.
 			 * @return				Serialized text.
 			 */
-			StormByte::String::String Serialize(const int& indent_level) const noexcept override;
+			StormByte::Safe::String Serialize(const int& indent_level) const noexcept override;
 
 			/**
 			 * @brief Gets the item type.
@@ -152,7 +151,7 @@ namespace StormByte::Config::Item {
 			 * @brief Comment text.
 			 * @return	Text payload.
 			 */
-			StormByte::String::String& Text() noexcept {
+			StormByte::Safe::String& Text() noexcept {
 				return m_text;
 			}
 
@@ -160,7 +159,7 @@ namespace StormByte::Config::Item {
 			 * @brief Comment text.
 			 * @return	Text payload.
 			 */
-			const StormByte::String::String& Text() const noexcept {
+			const StormByte::Safe::String& Text() const noexcept {
 				return m_text;
 			}
 
@@ -181,7 +180,7 @@ namespace StormByte::Config::Item {
 			}
 
 		private:
-			StormByte::String::String m_text;	///< Comment text
+			StormByte::Safe::String m_text;	///< Comment text
 	};
 
 	/**
@@ -232,7 +231,7 @@ namespace StormByte::Config::Item {
 	 * @return				Serialized text.
 	 */
 	template<>
-	STORMBYTE_CONFIG_PUBLIC StormByte::String::String Comment<CommentType::SingleLineBash>::Serialize(const int& indent_level) const noexcept;
+	STORMBYTE_CONFIG_PUBLIC StormByte::Safe::String Comment<CommentType::SingleLineBash>::Serialize(const int& indent_level) const noexcept;
 
 	/**
 	 * @brief Serializes a C single-line comment.
@@ -240,7 +239,7 @@ namespace StormByte::Config::Item {
 	 * @return				Serialized text.
 	 */
 	template<>
-	STORMBYTE_CONFIG_PUBLIC StormByte::String::String Comment<CommentType::SingleLineC>::Serialize(const int& indent_level) const noexcept;
+	STORMBYTE_CONFIG_PUBLIC StormByte::Safe::String Comment<CommentType::SingleLineC>::Serialize(const int& indent_level) const noexcept;
 
 	/**
 	 * @brief Serializes a C multi-line comment.
@@ -248,7 +247,7 @@ namespace StormByte::Config::Item {
 	 * @return				Serialized text.
 	 */
 	template<>
-	STORMBYTE_CONFIG_PUBLIC StormByte::String::String Comment<CommentType::MultiLineC>::Serialize(const int& indent_level) const noexcept;
+	STORMBYTE_CONFIG_PUBLIC StormByte::Safe::String Comment<CommentType::MultiLineC>::Serialize(const int& indent_level) const noexcept;
 
 	extern template class STORMBYTE_CONFIG_PUBLIC Comment<CommentType::SingleLineBash>;
 	extern template class STORMBYTE_CONFIG_PUBLIC Comment<CommentType::SingleLineC>;

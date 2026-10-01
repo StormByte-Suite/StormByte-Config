@@ -18,9 +18,8 @@
  *
  * Both licenses apply only to original StormByte-Config source in this
  * repository. They do not cover other StormByte modules or any third-party
- * material shipped with this repository (including everything under
- * thirdparty/, and in particular the bundled StormByte-String tree and
- * the StormByte Base tree it vendors), which remains under its own license.
+ * material shipped with this repository. The bundled StormByte Base tree
+ * under thirdparty/ remains under its own license.
  *
  * Neither license grants any patent rights. Any patent licenses required
  * to use this software or third-party components must be obtained separately
@@ -40,11 +39,11 @@
 
 #pragma once
 
-#include <StormByte/clonable.hxx>
+#include <StormByte/safe/clonable.hxx>
 #include <StormByte/config/exception.hxx>
 #include <StormByte/config/item/type.hxx>
 #include <StormByte/config/visibility.h>
-#include <StormByte/string/string.hxx>
+#include <StormByte/safe/string.hxx>
 
 #include <string_view>
 
@@ -63,7 +62,7 @@ namespace StormByte::Config::Item {
 	 * @class Base
 	 * @brief Base class for all configuration items
 	 */
-	class STORMBYTE_CONFIG_PUBLIC Base: public Clonable<Base, StormByte::Shared<Base>> {
+	class STORMBYTE_CONFIG_PUBLIC Base: public StormByte::Safe::Clonable<Base, StormByte::Safe::Shared<Base>> {
 		public:
 			/**
 			 * @brief Constructor
@@ -74,7 +73,7 @@ namespace StormByte::Config::Item {
 			 * @brief Constructor
 			 * @param name	name of the item
 			 */
-			Base(const StormByte::String::String& name);
+			Base(const StormByte::Safe::String& name);
 
 			/**
 			 * @brief Copy constructor
@@ -125,7 +124,7 @@ namespace StormByte::Config::Item {
 			 * @brief Gets the name of the item
 			 * @return	name
 			 */
-			constexpr const StormByte::String::String& Name() const noexcept {
+			constexpr const StormByte::Safe::String& Name() const noexcept {
 				return m_name;
 			}
 
@@ -133,7 +132,7 @@ namespace StormByte::Config::Item {
 			 * @brief Sets the name of the item
 			 * @param name	name
 			 */
-			constexpr void Name(const StormByte::String::String& name) {
+			constexpr void Name(const StormByte::Safe::String& name) {
 				m_name = name;
 			}
 
@@ -162,7 +161,7 @@ namespace StormByte::Config::Item {
 			 * @param name	name
 			 * @return		bool
 			 */
-			static bool IsNameValid(const StormByte::String::String& name) noexcept;
+			static bool IsNameValid(const StormByte::Safe::String& name) noexcept;
 
 			/**
 			 * @brief Checks if name is valid
@@ -190,10 +189,10 @@ namespace StormByte::Config::Item {
 			 * @param indent_level	indent
 			 * @return				serialized item
 			 */
-			virtual StormByte::String::String Serialize(const int& indent_level = 0) const;
+			virtual StormByte::Safe::String Serialize(const int& indent_level = 0) const;
 
 		protected:
-			StormByte::String::String m_name; ///< Name of the item
+			StormByte::Safe::String m_name; ///< Name of the item
 
 			/**
 			 * @brief Equals

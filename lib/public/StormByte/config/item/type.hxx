@@ -18,9 +18,8 @@
  *
  * Both licenses apply only to original StormByte-Config source in this
  * repository. They do not cover other StormByte modules or any third-party
- * material shipped with this repository (including everything under
- * thirdparty/, and in particular the bundled StormByte-String tree and
- * the StormByte Base tree it vendors), which remains under its own license.
+ * material shipped with this repository. The bundled StormByte Base tree
+ * under thirdparty/ remains under its own license.
  *
  * Neither license grants any patent rights. Any patent licenses required
  * to use this software or third-party components must be obtained separately
@@ -42,7 +41,7 @@
 
 #include <StormByte/config/exception.hxx>
 #include <StormByte/config/visibility.h>
-#include <StormByte/string/string.hxx>
+#include <StormByte/safe/string.hxx>
 
 #include <string_view>
 
@@ -60,7 +59,7 @@ namespace StormByte::Config::Item {
 		Container,  ///< Group or list.
 		Double,     ///< Double leaf.
 		Integer,    ///< Integer leaf.
-		String,     ///< Text leaf (`StormByte::String::String`).
+		String,     ///< Text leaf (`StormByte::Safe::String`).
 		Binary,     ///< Binary leaf (`StormByte::BinaryData`).
 		Value       ///< Any leaf (`Value` node). Not used on the wire.
 	};
@@ -147,6 +146,6 @@ namespace StormByte::Config::Item {
 	struct Integer {};	///< Tag for `As<Integer>()` → `int`.
 	struct Double {};	///< Tag for `As<Double>()` → `double` (Integer promotes).
 	struct Bool {};		///< Tag for `As<Bool>()` → `bool`.
-	struct Text {};		///< Tag for `As<Text>()` → `StormByte::String::String`.
+	struct Text {};		///< Tag for `As<Text>()` → `StormByte::Safe::String`.
 	struct Binary {};	///< Tag for `As<Binary>()` → `StormByte::BinaryData`.
 }

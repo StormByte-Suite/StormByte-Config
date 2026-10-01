@@ -18,9 +18,8 @@
  *
  * Both licenses apply only to original StormByte-Config source in this
  * repository. They do not cover other StormByte modules or any third-party
- * material shipped with this repository (including everything under
- * thirdparty/, and in particular the bundled StormByte-String tree and
- * the StormByte Base tree it vendors), which remains under its own license.
+ * material shipped with this repository. The bundled StormByte Base tree
+ * under thirdparty/ remains under its own license.
  *
  * Neither license grants any patent rights. Any patent licenses required
  * to use this software or third-party components must be obtained separately
@@ -39,7 +38,7 @@
  */
 
 #include <StormByte/config/item/base.hxx>
-#include <StormByte/string/string.hxx>
+#include <StormByte/safe/string.hxx>
 
 #include <regex>
 #include <string>
@@ -49,12 +48,12 @@ using namespace StormByte::Config::Item;
 
 Base::Base() noexcept = default;
 
-Base::Base(const StormByte::String::String& name): m_name(name) {}
+Base::Base(const StormByte::Safe::String& name): m_name(name) {}
 
 Base::~Base() noexcept = default;
 
 void Base::Name(std::string_view name) {
-	m_name = StormByte::String::String(name);
+	m_name = StormByte::Safe::String(name);
 }
 
 bool Base::operator==(const Base& base) const noexcept {
@@ -69,20 +68,20 @@ bool Base::operator!=(const Base& base) const noexcept {
 	return !(*this == base);
 }
 
-bool Base::IsNameValid(const StormByte::String::String& name) noexcept {
+bool Base::IsNameValid(const StormByte::Safe::String& name) noexcept {
 	static const std::regex name_regex(R"(^[A-Za-z][A-Za-z0-9_]*$)");
 	return std::regex_match(static_cast<std::string>(name), name_regex);
 }
 
 bool Base::IsNameValid(std::string_view name) noexcept {
-	return IsNameValid(StormByte::String::String(name));
+	return IsNameValid(StormByte::Safe::String(name));
 }
 
-StormByte::String::String Base::Serialize(const int& indent_level) const {
+StormByte::Safe::String Base::Serialize(const int& indent_level) const {
 	std::string serialized(static_cast<std::size_t>(indent_level > 0 ? indent_level : 0), '\t');
 	if (!m_name.empty()) {
 		serialized += static_cast<std::string>(m_name);
 		serialized += " = ";
 	}
-	return StormByte::String::String(std::string_view(serialized));
+	return StormByte::Safe::String(std::string_view(serialized));
 }

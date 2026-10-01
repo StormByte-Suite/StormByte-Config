@@ -18,9 +18,8 @@
  *
  * Both licenses apply only to original StormByte-Config source in this
  * repository. They do not cover other StormByte modules or any third-party
- * material shipped with this repository (including everything under
- * thirdparty/, and in particular the bundled StormByte-String tree and
- * the StormByte Base tree it vendors), which remains under its own license.
+ * material shipped with this repository. The bundled StormByte Base tree
+ * under thirdparty/ remains under its own license.
  *
  * Neither license grants any patent rights. Any patent licenses required
  * to use this software or third-party components must be obtained separately
@@ -43,7 +42,7 @@
 #include <StormByte/binary_data.hxx>
 #include <StormByte/config/item/base.hxx>
 #include <StormByte/config/visibility.h>
-#include <StormByte/string/string.hxx>
+#include <StormByte/safe/string.hxx>
 
 #include <string_view>
 
@@ -80,13 +79,13 @@ namespace StormByte::Config::Item {
 			 * @brief Constructor
 			 * @param value string
 			 */
-			explicit Value(const StormByte::String::String& value);
+			explicit Value(const StormByte::Safe::String& value);
 
 			/**
 			 * @brief Constructor
 			 * @param value string
 			 */
-			explicit Value(StormByte::String::String&& value);
+			explicit Value(StormByte::Safe::String&& value);
 
 			/**
 			 * @brief Constructor
@@ -117,42 +116,42 @@ namespace StormByte::Config::Item {
 			 * @param name name
 			 * @param value integer
 			 */
-			Value(const StormByte::String::String& name, int value);
+			Value(const StormByte::Safe::String& name, int value);
 
 			/**
 			 * @brief Constructor
 			 * @param name name
 			 * @param value double
 			 */
-			Value(const StormByte::String::String& name, double value);
+			Value(const StormByte::Safe::String& name, double value);
 
 			/**
 			 * @brief Constructor
 			 * @param name name
 			 * @param value bool
 			 */
-			Value(const StormByte::String::String& name, bool value);
+			Value(const StormByte::Safe::String& name, bool value);
 
 			/**
 			 * @brief Constructor
 			 * @param name name
 			 * @param value string
 			 */
-			Value(const StormByte::String::String& name, const StormByte::String::String& value);
+			Value(const StormByte::Safe::String& name, const StormByte::Safe::String& value);
 
 			/**
 			 * @brief Constructor
 			 * @param name name
 			 * @param value string
 			 */
-			Value(const StormByte::String::String& name, const char* value);
+			Value(const StormByte::Safe::String& name, const char* value);
 
 			/**
 			 * @brief Constructor
 			 * @param name name
 			 * @param value bytes
 			 */
-			Value(const StormByte::String::String& name, const StormByte::BinaryData& value);
+			Value(const StormByte::Safe::String& name, const StormByte::BinaryData& value);
 
 			/**
 			 * @brief Constructor
@@ -265,7 +264,7 @@ namespace StormByte::Config::Item {
 			 * @param value string
 			 * @return this
 			 */
-			Value& operator=(const StormByte::String::String& value);
+			Value& operator=(const StormByte::Safe::String& value);
 
 			/**
 			 * @brief Assign string
@@ -314,12 +313,12 @@ namespace StormByte::Config::Item {
 			/**
 			 * @brief Convert to string
 			 */
-			operator StormByte::String::String&();
+			operator StormByte::Safe::String&();
 
 			/**
 			 * @brief Convert to string
 			 */
-			operator const StormByte::String::String&() const;
+			operator const StormByte::Safe::String&() const;
 
 			/**
 			 * @brief Convert to bytes
@@ -348,7 +347,7 @@ namespace StormByte::Config::Item {
 			 * @param indent_level indent
 			 * @return text
 			 */
-			StormByte::String::String Serialize(const int& indent_level) const override;
+			StormByte::Safe::String Serialize(const int& indent_level) const override;
 
 		protected:
 			/**
@@ -364,7 +363,7 @@ namespace StormByte::Config::Item {
 				int integer;
 				double floating;
 				bool boolean;
-				StormByte::String::String text;
+				StormByte::Safe::String text;
 				StormByte::BinaryData bytes;
 				Storage() noexcept {}
 				~Storage() noexcept {}

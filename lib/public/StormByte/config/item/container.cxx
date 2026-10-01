@@ -18,9 +18,8 @@
  *
  * Both licenses apply only to original StormByte-Config source in this
  * repository. They do not cover other StormByte modules or any third-party
- * material shipped with this repository (including everything under
- * thirdparty/, and in particular the bundled StormByte-String tree and
- * the StormByte Base tree it vendors), which remains under its own license.
+ * material shipped with this repository. The bundled StormByte Base tree
+ * under thirdparty/ remains under its own license.
  *
  * Neither license grants any patent rights. Any patent licenses required
  * to use this software or third-party components must be obtained separately
@@ -39,7 +38,7 @@
  */
 
 #include <StormByte/config/item/container.hxx>
-#include <StormByte/string/string.hxx>
+#include <StormByte/safe/string.hxx>
 
 #include <algorithm>
 #include <regex>
@@ -49,17 +48,17 @@
 using namespace StormByte::Config::Item;
 
 namespace {
-	StormByte::String::String Indent(const int indent_level) {
+	StormByte::Safe::String Indent(const int indent_level) {
 		const int level = indent_level > 0 ? indent_level : 0;
-		return StormByte::String::String(std::string(static_cast<std::size_t>(level), '\t'));
+		return StormByte::Safe::String(std::string(static_cast<std::size_t>(level), '\t'));
 	}
 }
 
 Container::Container() = default;
 
-Container::Container(const StormByte::String::String& name): Base(name) {}
+Container::Container(const StormByte::Safe::String& name): Base(name) {}
 
-Container::Container(StormByte::String::String&& name): Base(std::move(name)) {}
+Container::Container(StormByte::Safe::String&& name): Base(std::move(name)) {}
 
 Container::Container(const Container& base) = default;
 
@@ -103,7 +102,7 @@ const Base& Container::operator[](const StormByte::Size& index) const {
 	return *m_items[raw];
 }
 
-Base& Container::operator[](const StormByte::String::String& path) {
+Base& Container::operator[](const StormByte::Safe::String& path) {
 	return const_cast<Base&>(static_cast<const Container&>(*this)[path]);
 }
 
@@ -127,7 +126,7 @@ void Container::Clear() noexcept {
 	m_items.clear();
 }
 
-bool Container::Exists(const StormByte::String::String& path) const {
+bool Container::Exists(const StormByte::Safe::String& path) const {
 	try {
 		LookUp(path);
 		return true;
@@ -143,14 +142,14 @@ void Container::Remove(const StormByte::Size& index) {
 	m_items.erase(m_items.begin() + static_cast<std::ptrdiff_t>(raw));
 }
 
-void Container::Remove(const StormByte::String::String& path) {
+void Container::Remove(const StormByte::Safe::String& path) {
 	if (!IsPathValid(path))
 		throw InvalidPath("Invalid path '{}'", static_cast<std::string_view>(path));
 	auto path_queue = path.Explode('/');
 	Remove(path_queue);
 }
 
-StormByte::String::String Container::Serialize(const int& indent_level) const noexcept {
+StormByte::Safe::String Container::Serialize(const int& indent_level) const noexcept {
 	const auto enclosure_characters = EnclosureCharacters(ContainerType());
 	std::string serial = static_cast<std::string>(Base::Serialize(indent_level));
 	serial += enclosure_characters.first;
@@ -158,7 +157,7 @@ StormByte::String::String Container::Serialize(const int& indent_level) const no
 	serial += static_cast<std::string>(ContentsToString(indent_level + 1));
 	serial += static_cast<std::string>(Indent(indent_level));
 	serial += enclosure_characters.second;
-	return StormByte::String::String(std::string_view(serial));
+	return StormByte::Safe::String(std::string_view(serial));
 }
 
 StormByte::Size Container::Size() const noexcept {
@@ -176,32 +175,32 @@ StormByte::Size Container::Count() const noexcept {
 	return StormByte::Size{ count };
 }
 
-StormByte::String::String Container::ContentsToString(const int& indent_level) const noexcept {
+StormByte::Safe::String Container::ContentsToString(const int& indent_level) const noexcept {
 	std::string serial;
 	for (const auto& item : m_items) {
 		serial += static_cast<std::string>(item->Serialize(indent_level));
 		serial += '\n';
 	}
-	return StormByte::String::String(std::string_view(serial));
+	return StormByte::Safe::String(std::string_view(serial));
 }
 
-bool Container::IsPathValid(const StormByte::String::String& name) noexcept {
+bool Container::IsPathValid(const StormByte::Safe::String& name) noexcept {
 	static const std::regex name_regex(R"(^[A-Za-z0-9_]+(/([A-Za-z0-9_]+))*$)");
 	return std::regex_match(static_cast<std::string>(name), name_regex);
 }
 
-const Base& Container::LookUp(const StormByte::String::String& path) const {
+const Base& Container::LookUp(const StormByte::Safe::String& path) const {
 	if (!IsPathValid(path))
 		throw InvalidPath("Invalid path '{}'", static_cast<std::string_view>(path));
 	auto path_queue = path.Explode('/');
 	return LookUp(path_queue);
 }
 
-const Base& Container::LookUp(std::queue<StormByte::String::String>& path) const {
+const Base& Container::LookUp(std::queue<StormByte::Safe::String>& path) const {
 	if (path.empty())
 		throw InvalidPath("Empty path given for lookup");
 
-	const StormByte::String::String item_path = path.front();
+	const StormByte::Safe::String item_path = path.front();
 	path.pop();
 	const std::string item_text = static_cast<std::string>(item_path);
 	if (path.empty()) {
@@ -246,11 +245,11 @@ const Base& Container::LookUp(std::queue<StormByte::String::String>& path) const
 	return static_cast<const Container&>(item).LookUp(path);
 }
 
-void Container::Remove(std::queue<StormByte::String::String>& path) {
+void Container::Remove(std::queue<StormByte::Safe::String>& path) {
 	if (path.empty())
 		throw InvalidPath("Empty path given for remove");
 
-	StormByte::String::String item_path = path.front();
+	StormByte::Safe::String item_path = path.front();
 	path.pop();
 	const std::string item_text = static_cast<std::string>(item_path);
 	if (path.empty()) {

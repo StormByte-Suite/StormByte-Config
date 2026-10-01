@@ -18,9 +18,8 @@
  *
  * Both licenses apply only to original StormByte-Config source in this
  * repository. They do not cover other StormByte modules or any third-party
- * material shipped with this repository (including everything under
- * thirdparty/, and in particular the bundled StormByte-String tree and
- * the StormByte Base tree it vendors), which remains under its own license.
+ * material shipped with this repository. The bundled StormByte Base tree
+ * under thirdparty/ remains under its own license.
  *
  * Neither license grants any patent rights. Any patent licenses required
  * to use this software or third-party components must be obtained separately
@@ -44,7 +43,7 @@
 #include <StormByte/config/item/container.hxx>
 #include <StormByte/config/item/group.hxx>
 #include <StormByte/config/visibility.h>
-#include <StormByte/string/string.hxx>
+#include <StormByte/safe/string.hxx>
 
 #include <optional>
 #include <utility>
@@ -78,7 +77,7 @@ namespace StormByte::Config::Binary {
 			 * @param cursor Read position. Advanced past both fields.
 			 * @return Type and name.
 			 */
-			static Expected<std::pair<Item::Type, std::optional<StormByte::String::String>>, DeserializeError>
+			static Expected<std::pair<Item::Type, std::optional<StormByte::Safe::String>>, DeserializeError>
 			ReadBase(Cursor& cursor);
 
 			/**
@@ -86,14 +85,14 @@ namespace StormByte::Config::Binary {
 			 * @param item Item to name.
 			 * @param name Decoded name. Empty means the item stays unnamed.
 			 */
-			static void ApplyName(Item::Base& item, std::optional<StormByte::String::String>& name);
+			static void ApplyName(Item::Base& item, std::optional<StormByte::Safe::String>& name);
 
 			/**
 			 * @brief Read one item, including a nested container.
 			 * @param cursor Read position. Advanced past the item.
 			 * @return The item.
 			 */
-			static Expected<StormByte::Shared<Item::Base>, DeserializeError> ReadItem(Cursor& cursor);
+			static Expected<StormByte::Safe::Shared<Item::Base>, DeserializeError> ReadItem(Cursor& cursor);
 
 			/**
 			 * @brief Fill @p container from its header and its children.

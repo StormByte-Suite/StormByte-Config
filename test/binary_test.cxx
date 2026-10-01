@@ -18,9 +18,8 @@
  *
  * Both licenses apply only to original StormByte-Config source in this
  * repository. They do not cover other StormByte modules or any third-party
- * material shipped with this repository (including everything under
- * thirdparty/, and in particular the bundled StormByte-String tree and
- * the StormByte Base tree it vendors), which remains under its own license.
+ * material shipped with this repository. The bundled StormByte Base tree
+ * under thirdparty/ remains under its own license.
  *
  * Neither license grants any patent rights. Any patent licenses required
  * to use this software or third-party components must be obtained separately
@@ -39,14 +38,14 @@
  */
 
 #include <StormByte/config/config.hxx>
-#include <StormByte/string/string.hxx>
+#include <StormByte/safe/string.hxx>
 #include <StormByte/test_handlers.h>
 
 #include <fstream>
 #include <vector>
 
 using namespace StormByte::Config;
-using StormByte::String::String;
+using StormByte::Safe::String;
 
 namespace {
 	ExpectedConfig LoadBinaryFile(const std::filesystem::path& path) {

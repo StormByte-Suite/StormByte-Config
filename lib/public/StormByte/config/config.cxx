@@ -18,9 +18,8 @@
  *
  * Both licenses apply only to original StormByte-Config source in this
  * repository. They do not cover other StormByte modules or any third-party
- * material shipped with this repository (including everything under
- * thirdparty/, and in particular the bundled StormByte-String tree and
- * the StormByte Base tree it vendors), which remains under its own license.
+ * material shipped with this repository. The bundled StormByte Base tree
+ * under thirdparty/ remains under its own license.
  *
  * Neither license grants any patent rights. Any patent licenses required
  * to use this software or third-party components must be obtained separately
@@ -42,7 +41,7 @@
 #include <StormByte/config/binary/writer.hxx>
 #include <StormByte/config/config.hxx>
 #include <StormByte/config/parser/parser.hxx>
-#include <StormByte/string/string.hxx>
+#include <StormByte/safe/string.hxx>
 
 #include <string>
 #include <string_view>
@@ -74,7 +73,7 @@ void Config::operator<<(std::istream& istream) {
 		throw *res.error();
 }
 
-void Config::operator<<(const StormByte::String::String& str) {
+void Config::operator<<(const StormByte::Safe::String& str) {
 	auto res = Parser::Parse(std::string(static_cast<std::string_view>(str)), m_root, m_on_existing_action, m_before_read_hooks, m_after_read_hooks, m_on_parse_failure_hook);
 	if (!res)
 		throw *res.error();
@@ -91,7 +90,7 @@ Config& StormByte::Config::operator>>(std::istream& istream, Config& config) {
 	return config;
 }
 
-Config& StormByte::Config::operator>>(const StormByte::String::String& str, Config& config) {
+Config& StormByte::Config::operator>>(const StormByte::Safe::String& str, Config& config) {
 	config << str;
 	return config;
 }
@@ -126,13 +125,13 @@ std::string& operator<<(std::string& str, const Config& config) {
 	return str;
 }
 
-StormByte::String::String Config::Text() const {
+StormByte::Safe::String Config::Text() const {
 	std::string serialized;
 	for (const auto& item : Items()) {
 		serialized += static_cast<std::string>(item->Serialize(0));
 		serialized += '\n';
 	}
-	return StormByte::String::String(std::string_view(serialized));
+	return StormByte::Safe::String(std::string_view(serialized));
 }
 
 void Config::Save(std::ostream& stream, Mode mode) const {
@@ -199,7 +198,7 @@ void Config::OnParseFailure(OnFailureHook hook) {
 	m_on_parse_failure_hook = MakeFailureHook(hook);
 }
 
-void Config::OnParseFailure(StormByte::Shared<FailureHook> hook) {
+void Config::OnParseFailure(StormByte::Safe::Shared<FailureHook> hook) {
 	m_on_parse_failure_hook = std::move(hook);
 }
 
@@ -207,7 +206,7 @@ void Config::AddHookBeforeRead(HookFunction hook) {
 	m_before_read_hooks.push_back(MakeReadHook(hook));
 }
 
-void Config::AddHookBeforeRead(StormByte::Shared<ReadHook> hook) {
+void Config::AddHookBeforeRead(StormByte::Safe::Shared<ReadHook> hook) {
 	m_before_read_hooks.push_back(std::move(hook));
 }
 
@@ -215,6 +214,6 @@ void Config::AddHookAfterRead(HookFunction hook) {
 	m_after_read_hooks.push_back(MakeReadHook(hook));
 }
 
-void Config::AddHookAfterRead(StormByte::Shared<ReadHook> hook) {
+void Config::AddHookAfterRead(StormByte::Safe::Shared<ReadHook> hook) {
 	m_after_read_hooks.push_back(std::move(hook));
 }

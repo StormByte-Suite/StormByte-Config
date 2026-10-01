@@ -137,7 +137,7 @@ config.Add(Item::Comment<Item::CommentType::SingleLineBash>("bash comment"));
 | `Item::Integer` | `int` |
 | `Item::Double` | `double` (an Integer is accepted) |
 | `Item::Bool` | `bool` |
-| `Item::Text` | Text value |
+| `Item::Text` | `StormByte::Safe::String` |
 | `Item::Binary` | `StormByte::BinaryData` |
 | `Item::Group` / `Item::List` | Containers |
 | `Item::Comment<CommentType::…>` | Comment specializations |

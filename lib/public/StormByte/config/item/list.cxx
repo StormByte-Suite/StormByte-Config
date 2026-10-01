@@ -18,9 +18,8 @@
  *
  * Both licenses apply only to original StormByte-Config source in this
  * repository. They do not cover other StormByte modules or any third-party
- * material shipped with this repository (including everything under
- * thirdparty/, and in particular the bundled StormByte-String tree and
- * the StormByte Base tree it vendors), which remains under its own license.
+ * material shipped with this repository. The bundled StormByte Base tree
+ * under thirdparty/ remains under its own license.
  *
  * Neither license grants any patent rights. Any patent licenses required
  * to use this software or third-party components must be obtained separately
@@ -39,7 +38,7 @@
  */
 
 #include <StormByte/config/item/list.hxx>
-#include <StormByte/string/string.hxx>
+#include <StormByte/safe/string.hxx>
 
 #include <algorithm>
 #include <string>
@@ -48,11 +47,11 @@ using namespace StormByte::Config::Item;
 
 List::List() noexcept = default;
 
-List::List(const StormByte::String::String& name): Container(name) {}
+List::List(const StormByte::Safe::String& name): Container(name) {}
 
-List::List(StormByte::String::String&& name): Container(std::move(name)) {}
+List::List(StormByte::Safe::String&& name): Container(std::move(name)) {}
 
-List::List(std::string_view name): Container(StormByte::String::String(name)) {}
+List::List(std::string_view name): Container(StormByte::Safe::String(name)) {}
 
 List::List(const List& list) = default;
 

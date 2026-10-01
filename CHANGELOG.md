@@ -22,7 +22,7 @@ If you landed here from a release link and have not read the tree:
 
 [Unreleased]: https://github.com/StormByte-Suite/StormByte-Config/compare/v2.0.0...HEAD
 
-## [2.0.0] - 2026-09-29
+## [2.0.0] - 2026-10-02
 
 ### Changed
 - Shared vs static follows CMake `BUILD_SHARED_LIBS` (declared in the project root, default ON). There is no `STORMBYTE_CONFIG_SHARED` CMake option. When the library is shared, the compile definition `STORMBYTE_CONFIG_SHARED` is still set so `visibility.h` can distinguish `dllexport` / `dllimport` / static. CI passes `-DBUILD_SHARED_LIBS=ON`.
@@ -34,6 +34,7 @@ If you landed here from a release link and have not read the tree:
 - Names, paths, `Group`, `List` and `Value` accept `std::string_view` (a literal or a `std::string`). A custom exception path is a view plus a plain message; `StormByte::Exception::Path` stays protected.
 - **Breaking:** `Item::Base` is `Clonable<Base, StormByte::Shared<Base>>`. `PointerType` is no longer `std::shared_ptr`. Construction goes through `MakePointer`. `Serializable::Serialize` is `BinaryData`; the on-disk reader buffer stays a local `std::vector<std::byte>`.
 - **Breaking:** Read and failure hooks are no longer `std::function`. Stateless hooks are function pointers (`void (*)(Item::Group&)`, `bool (*)(const Item::Group&)`). Stateful hooks derive from `ReadHook` / `FailureHook` (`Clonable` + `Shared`, `MakePointer`). `AddHookBeforeRead` / `AddHookAfterRead` / `OnParseFailure` are out of line in this module. Capturing lambdas do not bind; wrap state in a hook class.
+- **Breaking:** Configuration names, text values and comments now use `StormByte::Safe::String` from Base. Text binary serialization uses Base's `Serializable<Safe::String>` codec.
 - Requires [StormByte Base](https://github.com/StormByte-Suite/StormByte/releases/tag/2.0.0) ≥ 2.0.0.
 
 [2.0.0]: https://github.com/StormByte-Suite/StormByte-Config/releases/tag/2.0.0

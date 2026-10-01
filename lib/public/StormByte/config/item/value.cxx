@@ -18,9 +18,8 @@
  *
  * Both licenses apply only to original StormByte-Config source in this
  * repository. They do not cover other StormByte modules or any third-party
- * material shipped with this repository (including everything under
- * thirdparty/, and in particular the bundled StormByte-String tree and
- * the StormByte Base tree it vendors), which remains under its own license.
+ * material shipped with this repository. The bundled StormByte Base tree
+ * under thirdparty/ remains under its own license.
  *
  * Neither license grants any patent rights. Any patent licenses required
  * to use this software or third-party components must be obtained separately
@@ -40,7 +39,7 @@
 
 #include <StormByte/base64.hxx>
 #include <StormByte/config/item/value.hxx>
-#include <StormByte/string/string.hxx>
+#include <StormByte/safe/string.hxx>
 
 #include <format>
 #include <new>
@@ -82,7 +81,7 @@ void Value::CopyFrom(const Value& value) {
 			m_store.boolean = value.m_store.boolean;
 			break;
 		case Type::String:
-			new (&m_store.text) StormByte::String::String(value.m_store.text);
+			new (&m_store.text) StormByte::Safe::String(value.m_store.text);
 			break;
 		case Type::Binary:
 			new (&m_store.bytes) StormByte::BinaryData(value.m_store.bytes);
@@ -105,7 +104,7 @@ void Value::MoveFrom(Value&& value) noexcept {
 			m_store.boolean = value.m_store.boolean;
 			break;
 		case Type::String:
-			new (&m_store.text) StormByte::String::String(std::move(value.m_store.text));
+			new (&m_store.text) StormByte::Safe::String(std::move(value.m_store.text));
 			break;
 		case Type::Binary:
 			new (&m_store.bytes) StormByte::BinaryData(std::move(value.m_store.bytes));
@@ -127,20 +126,20 @@ Value::Value(bool value): Base(), m_kind(Type::Bool) {
 	m_store.boolean = value;
 }
 
-Value::Value(const StormByte::String::String& value): Base(), m_kind(Type::String) {
-	new (&m_store.text) StormByte::String::String(value);
+Value::Value(const StormByte::Safe::String& value): Base(), m_kind(Type::String) {
+	new (&m_store.text) StormByte::Safe::String(value);
 }
 
-Value::Value(StormByte::String::String&& value): Base(), m_kind(Type::String) {
-	new (&m_store.text) StormByte::String::String(std::move(value));
+Value::Value(StormByte::Safe::String&& value): Base(), m_kind(Type::String) {
+	new (&m_store.text) StormByte::Safe::String(std::move(value));
 }
 
 Value::Value(const char* value): Base(), m_kind(Type::String) {
-	new (&m_store.text) StormByte::String::String(value);
+	new (&m_store.text) StormByte::Safe::String(value);
 }
 
 Value::Value(std::string_view value): Base(), m_kind(Type::String) {
-	new (&m_store.text) StormByte::String::String(value);
+	new (&m_store.text) StormByte::Safe::String(value);
 }
 
 Value::Value(const StormByte::BinaryData& value): Base(), m_kind(Type::Binary) {
@@ -151,51 +150,51 @@ Value::Value(StormByte::BinaryData&& value): Base(), m_kind(Type::Binary) {
 	new (&m_store.bytes) StormByte::BinaryData(std::move(value));
 }
 
-Value::Value(const StormByte::String::String& name, int value): Base(name), m_kind(Type::Integer) {
+Value::Value(const StormByte::Safe::String& name, int value): Base(name), m_kind(Type::Integer) {
 	m_store.integer = value;
 }
 
-Value::Value(const StormByte::String::String& name, double value): Base(name), m_kind(Type::Double) {
+Value::Value(const StormByte::Safe::String& name, double value): Base(name), m_kind(Type::Double) {
 	m_store.floating = value;
 }
 
-Value::Value(const StormByte::String::String& name, bool value): Base(name), m_kind(Type::Bool) {
+Value::Value(const StormByte::Safe::String& name, bool value): Base(name), m_kind(Type::Bool) {
 	m_store.boolean = value;
 }
 
-Value::Value(const StormByte::String::String& name, const StormByte::String::String& value): Base(name), m_kind(Type::String) {
-	new (&m_store.text) StormByte::String::String(value);
+Value::Value(const StormByte::Safe::String& name, const StormByte::Safe::String& value): Base(name), m_kind(Type::String) {
+	new (&m_store.text) StormByte::Safe::String(value);
 }
 
-Value::Value(const StormByte::String::String& name, const char* value): Base(name), m_kind(Type::String) {
-	new (&m_store.text) StormByte::String::String(value);
+Value::Value(const StormByte::Safe::String& name, const char* value): Base(name), m_kind(Type::String) {
+	new (&m_store.text) StormByte::Safe::String(value);
 }
 
-Value::Value(const StormByte::String::String& name, const StormByte::BinaryData& value): Base(name), m_kind(Type::Binary) {
+Value::Value(const StormByte::Safe::String& name, const StormByte::BinaryData& value): Base(name), m_kind(Type::Binary) {
 	new (&m_store.bytes) StormByte::BinaryData(value);
 }
 
-Value::Value(std::string_view name, int value): Base(StormByte::String::String(name)), m_kind(Type::Integer) {
+Value::Value(std::string_view name, int value): Base(StormByte::Safe::String(name)), m_kind(Type::Integer) {
 	m_store.integer = value;
 }
 
-Value::Value(std::string_view name, double value): Base(StormByte::String::String(name)), m_kind(Type::Double) {
+Value::Value(std::string_view name, double value): Base(StormByte::Safe::String(name)), m_kind(Type::Double) {
 	m_store.floating = value;
 }
 
-Value::Value(std::string_view name, bool value): Base(StormByte::String::String(name)), m_kind(Type::Bool) {
+Value::Value(std::string_view name, bool value): Base(StormByte::Safe::String(name)), m_kind(Type::Bool) {
 	m_store.boolean = value;
 }
 
-Value::Value(std::string_view name, std::string_view value): Base(StormByte::String::String(name)), m_kind(Type::String) {
-	new (&m_store.text) StormByte::String::String(value);
+Value::Value(std::string_view name, std::string_view value): Base(StormByte::Safe::String(name)), m_kind(Type::String) {
+	new (&m_store.text) StormByte::Safe::String(value);
 }
 
-Value::Value(std::string_view name, const char* value): Base(StormByte::String::String(name)), m_kind(Type::String) {
-	new (&m_store.text) StormByte::String::String(value);
+Value::Value(std::string_view name, const char* value): Base(StormByte::Safe::String(name)), m_kind(Type::String) {
+	new (&m_store.text) StormByte::Safe::String(value);
 }
 
-Value::Value(std::string_view name, const StormByte::BinaryData& value): Base(StormByte::String::String(name)), m_kind(Type::Binary) {
+Value::Value(std::string_view name, const StormByte::BinaryData& value): Base(StormByte::Safe::String(name)), m_kind(Type::Binary) {
 	new (&m_store.bytes) StormByte::BinaryData(value);
 }
 
@@ -278,7 +277,7 @@ Value& Value::operator=(bool value) {
 	return *this;
 }
 
-Value& Value::operator=(const StormByte::String::String& value) {
+Value& Value::operator=(const StormByte::Safe::String& value) {
 	if (m_kind != Type::String)
 		FailKind("String");
 	m_store.text = value;
@@ -288,7 +287,7 @@ Value& Value::operator=(const StormByte::String::String& value) {
 Value& Value::operator=(const char* value) {
 	if (m_kind != Type::String)
 		FailKind("String");
-	m_store.text = StormByte::String::String(value);
+	m_store.text = StormByte::Safe::String(value);
 	return *this;
 }
 
@@ -337,13 +336,13 @@ Value::operator const bool&() const {
 	return m_store.boolean;
 }
 
-Value::operator StormByte::String::String&() {
+Value::operator StormByte::Safe::String&() {
 	if (m_kind != Type::String)
 		FailKind("String");
 	return m_store.text;
 }
 
-Value::operator const StormByte::String::String&() const {
+Value::operator const StormByte::Safe::String&() const {
 	if (m_kind != Type::String)
 		FailKind("String");
 	return m_store.text;
@@ -365,7 +364,7 @@ void Value::Fail(const char* wanted) const {
 	FailKind(wanted);
 }
 
-StormByte::String::String Value::Serialize(const int& indent_level) const {
+StormByte::Safe::String Value::Serialize(const int& indent_level) const {
 	std::string out;
 	if (!m_name.empty())
 		out += std::string(static_cast<std::size_t>(indent_level > 0 ? indent_level : 0), '\t') + static_cast<std::string>(m_name) + " = ";
@@ -392,7 +391,7 @@ StormByte::String::String Value::Serialize(const int& indent_level) const {
 		default:
 			break;
 	}
-	return StormByte::String::String(std::string_view(out));
+	return StormByte::Safe::String(std::string_view(out));
 }
 
 Base::PointerType Value::Clone() const {

@@ -18,9 +18,8 @@
  *
  * Both licenses apply only to original StormByte-Config source in this
  * repository. They do not cover other StormByte modules or any third-party
- * material shipped with this repository (including everything under
- * thirdparty/, and in particular the bundled StormByte-String tree and
- * the StormByte Base tree it vendors), which remains under its own license.
+ * material shipped with this repository. The bundled StormByte Base tree
+ * under thirdparty/ remains under its own license.
  *
  * Neither license grants any patent rights. Any patent licenses required
  * to use this software or third-party components must be obtained separately
@@ -48,7 +47,7 @@
 #include <StormByte/config/typedefs.hxx>
 #include <StormByte/platform.h>
 #include <StormByte/size.hxx>
-#include <StormByte/string/string.hxx>
+#include <StormByte/safe/string.hxx>
 
 #include <istream>
 #include <ostream>
@@ -128,7 +127,7 @@ namespace StormByte::Config {
 			 * @param path	Path to the item.
 			 * @return		Item reference.
 			 */
-			inline Item::Base& operator[](const StormByte::String::String& path) {
+			inline Item::Base& operator[](const StormByte::Safe::String& path) {
 				return m_root.operator[](path);
 			}
 
@@ -137,7 +136,7 @@ namespace StormByte::Config {
 			 * @param path	Path to the item.
 			 * @return		Item const reference.
 			 */
-			inline const Item::Base& operator[](const StormByte::String::String& path) const {
+			inline const Item::Base& operator[](const StormByte::Safe::String& path) const {
 				return m_root.operator[](path);
 			}
 
@@ -219,7 +218,7 @@ namespace StormByte::Config {
 			 * @brief Initialize configuration from a string (text mode).
 			 * @param str	Input text. Copied into the parser; not stored as `std::string`.
 			 */
-			void operator<<(const StormByte::String::String& str);
+			void operator<<(const StormByte::Safe::String& str);
 
 			/**
 			 * @brief Initialize configuration from a caller-owned `std::string` (text mode).
@@ -241,7 +240,7 @@ namespace StormByte::Config {
 			 * @param file	Config to put data into.
 			 * @return		Reference to the Config.
 			 */
-			friend STORMBYTE_CONFIG_PUBLIC Config& operator>>(const StormByte::String::String& str, Config& file);
+			friend STORMBYTE_CONFIG_PUBLIC Config& operator>>(const StormByte::Safe::String& str, Config& file);
 
 			/**
 			 * @brief Initializes configuration when string is on the left-hand side.
@@ -297,7 +296,7 @@ namespace StormByte::Config {
 			 * @brief Serialized document as StormByte text.
 			 * @return	Owned UTF-8 text.
 			 */
-			StormByte::String::String Text() const;
+			StormByte::Safe::String Text() const;
 
 			/**
 			 * @brief Converts the current configuration to a string (text form).
@@ -379,7 +378,7 @@ namespace StormByte::Config {
 			 * @param path	Path to the item.
 			 * @return		true if the item exists.
 			 */
-			inline bool Exists(const StormByte::String::String& path) const {
+			inline bool Exists(const StormByte::Safe::String& path) const {
 				return m_root.Exists(path);
 			}
 
@@ -397,7 +396,7 @@ namespace StormByte::Config {
 			 * @param path	Item path.
 			 * @throw ItemNotFound if item is not found.
 			 */
-			inline void Remove(const StormByte::String::String& path) {
+			inline void Remove(const StormByte::Safe::String& path) {
 				m_root.Remove(path);
 			}
 
@@ -472,7 +471,7 @@ namespace StormByte::Config {
 			 * @brief Sets a stateful hook to execute on parse failure.
 			 * @param hook	Hook allocated with MakePointer / MakeFailureHook.
 			 */
-			void OnParseFailure(StormByte::Shared<FailureHook> hook);
+			void OnParseFailure(StormByte::Safe::Shared<FailureHook> hook);
 
 			/**
 			 * @brief Adds a stateless hook executed before reading starts.
@@ -484,7 +483,7 @@ namespace StormByte::Config {
 			 * @brief Adds a stateful hook executed before reading starts.
 			 * @param hook	Hook allocated with MakePointer / MakeReadHook.
 			 */
-			void AddHookBeforeRead(StormByte::Shared<ReadHook> hook);
+			void AddHookBeforeRead(StormByte::Safe::Shared<ReadHook> hook);
 
 			/**
 			 * @brief Adds a stateless hook executed after a successful read.
@@ -496,7 +495,7 @@ namespace StormByte::Config {
 			 * @brief Adds a stateful hook executed after a successful read.
 			 * @param hook	Hook allocated with MakePointer / MakeReadHook.
 			 */
-			void AddHookAfterRead(StormByte::Shared<ReadHook> hook);
+			void AddHookAfterRead(StormByte::Safe::Shared<ReadHook> hook);
 			/** @} */
 
 		protected:
@@ -522,7 +521,7 @@ namespace StormByte::Config {
 	 * @param file	Config to put data into.
 	 * @return		Reference to the Config.
 	 */
-	STORMBYTE_CONFIG_PUBLIC Config& operator>>(const StormByte::String::String& str, Config& file);
+	STORMBYTE_CONFIG_PUBLIC Config& operator>>(const StormByte::Safe::String& str, Config& file);
 
 	/**
 	 * @brief Initializes configuration when string is on the left-hand side.
