@@ -76,7 +76,7 @@ namespace StormByte::Config::Item {
 			 * @brief Constructor
 			 * @param name	name of the list
 			 */
-			explicit List(std::string_view name);
+			STORMBYTE_FORCE_INLINE explicit List(std::string_view name): List(StormByte::Safe::String(name)) {}
 
 			/**
 			 * @brief Copy constructor

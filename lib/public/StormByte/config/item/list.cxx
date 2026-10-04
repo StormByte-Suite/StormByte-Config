@@ -51,8 +51,6 @@ List::List(const StormByte::Safe::String& name): Container(name) {}
 
 List::List(StormByte::Safe::String&& name): Container(std::move(name)) {}
 
-List::List(std::string_view name): Container(StormByte::Safe::String(name)) {}
-
 List::List(const List& list) = default;
 
 List::List(List&& list) noexcept = default;
@@ -71,7 +69,7 @@ Base::PointerType List::BeforeAdditionActions(Base::PointerType item, const Stor
 		if (!item->Name().empty())
 			throw InvalidName("Lists do not support named items (received name '{}')", static_cast<std::string_view>(item->Name()));
 
-		auto item_iterator = std::find_if(m_items.begin(), m_items.end(), [&item](Base::PointerType& i) {
+		auto item_iterator = std::find_if(m_items.begin(), m_items.end(), [&item](const Base::PointerType& i) {
 			return *i == *item;
 		});
 		if (item_iterator != m_items.end()) {

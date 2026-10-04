@@ -41,14 +41,14 @@
 
 #include <StormByte/config/hook.hxx>
 
-#include <vector>
+#include <StormByte/safe/vector.hxx>
 
 /**
  * @brief Config module of the StormByte suite.
  */
 namespace StormByte::Config {
 	using HookFunction = ReadHookFunction; 							///< Stateless read hook.
-	using HookFunctions = std::vector<StormByte::Safe::Shared<ReadHook>>; ///< Read hooks owned by Config.
+	using HookFunctions = StormByte::Safe::Vector<StormByte::Safe::Shared<ReadHook>>; ///< Read hooks owned by Config.
 	using OnFailureHook = FailureHookFunction; 						///< Stateless failure hook.
 	using OptionalFailureHook = StormByte::Safe::Shared<FailureHook>; 	///< Failure hook, empty if unset.
 }

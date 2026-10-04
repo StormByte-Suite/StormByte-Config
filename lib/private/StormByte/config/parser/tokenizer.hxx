@@ -98,7 +98,7 @@ namespace StormByte::Config::Parser {
 			Tokenizer(const Tokenizer&) = delete;
 			Tokenizer(Tokenizer&&) = default;
 			Tokenizer& operator=(const Tokenizer&) = delete;
-			Tokenizer& operator=(Tokenizer&&) = default;
+			Tokenizer& operator=(Tokenizer&&) = delete;
 			~Tokenizer() = default;
 
 			/**
@@ -155,7 +155,7 @@ namespace StormByte::Config::Parser {
 			Token ReadSingleLineComment(CommentType type);
 
 			/**
-			 * @brief Reads a multi-line comment (`/*` … `*\/`).
+				 * @brief Reads a multi-line C-style block comment.
 			 * @return Token of type Comment, or a parse error if unclosed.
 			 */
 			Expected<Token, ParseError> ReadMultiLineComment();

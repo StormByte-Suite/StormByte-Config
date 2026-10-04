@@ -119,7 +119,8 @@ Base& Container::Add(Base::PointerType item, const StormByte::Config::OnExisting
 	if (i)
 		return *i;
 	m_items.push_back(item);
-	return *m_items.back();
+	const Base::PointerType added = m_items.back();
+	return *added;
 }
 
 void Container::Clear() noexcept {
@@ -145,7 +146,9 @@ void Container::Remove(const StormByte::Size& index) {
 void Container::Remove(const StormByte::Safe::String& path) {
 	if (!IsPathValid(path))
 		throw InvalidPath("Invalid path '{}'", static_cast<std::string_view>(path));
-	auto path_queue = path.Explode('/');
+	StormByte::Safe::Queue<StormByte::Safe::String> path_queue;
+	if (path.Explode('/', path_queue) != StormByte::Safe::Status::Success)
+		throw InvalidPath("Failed to split removal path");
 	Remove(path_queue);
 }
 
@@ -192,11 +195,13 @@ bool Container::IsPathValid(const StormByte::Safe::String& name) noexcept {
 const Base& Container::LookUp(const StormByte::Safe::String& path) const {
 	if (!IsPathValid(path))
 		throw InvalidPath("Invalid path '{}'", static_cast<std::string_view>(path));
-	auto path_queue = path.Explode('/');
+	StormByte::Safe::Queue<StormByte::Safe::String> path_queue;
+	if (path.Explode('/', path_queue) != StormByte::Safe::Status::Success)
+		throw InvalidPath("Failed to split lookup path");
 	return LookUp(path_queue);
 }
 
-const Base& Container::LookUp(std::queue<StormByte::Safe::String>& path) const {
+const Base& Container::LookUp(StormByte::Safe::Queue<StormByte::Safe::String>& path) const {
 	if (path.empty())
 		throw InvalidPath("Empty path given for lookup");
 
@@ -245,7 +250,7 @@ const Base& Container::LookUp(std::queue<StormByte::Safe::String>& path) const {
 	return static_cast<const Container&>(item).LookUp(path);
 }
 
-void Container::Remove(std::queue<StormByte::Safe::String>& path) {
+void Container::Remove(StormByte::Safe::Queue<StormByte::Safe::String>& path) {
 	if (path.empty())
 		throw InvalidPath("Empty path given for remove");
 

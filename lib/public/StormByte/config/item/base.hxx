@@ -140,7 +140,9 @@ namespace StormByte::Config::Item {
 			 * @brief Sets the name of the item
 			 * @param name	name
 			 */
-			void Name(std::string_view name);
+			STORMBYTE_FORCE_INLINE void Name(std::string_view name) {
+				Name(StormByte::Safe::String(name));
+			}
 
 			/**
 			 * @brief Gets the type of the item
@@ -152,7 +154,7 @@ namespace StormByte::Config::Item {
 			 * @brief Gets the type as string
 			 * @return	type as string
 			 */
-			constexpr std::string_view TypeToString() const noexcept {
+			STORMBYTE_FORCE_INLINE constexpr std::string_view TypeToString() const noexcept {
 				return Item::TypeToString(this->Type());
 			}
 
@@ -168,7 +170,9 @@ namespace StormByte::Config::Item {
 			 * @param name	name
 			 * @return		bool
 			 */
-			static bool IsNameValid(std::string_view name) noexcept;
+			STORMBYTE_FORCE_INLINE static bool IsNameValid(std::string_view name) noexcept {
+				return IsNameValid(StormByte::Safe::String(name));
+			}
 
 			/**
 			 * @brief Typed view of this item
@@ -202,3 +206,5 @@ namespace StormByte::Config::Item {
 			virtual bool Equals(const Base& base) const = 0;
 	};
 }
+
+STORMBYTE_DECLARE_MAYBE_SAFE(StormByte::Config::Item::Base);

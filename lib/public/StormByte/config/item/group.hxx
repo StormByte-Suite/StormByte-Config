@@ -76,7 +76,7 @@ namespace StormByte::Config::Item {
 			 * @brief Constructor
 			 * @param name	name of the group
 			 */
-			explicit Group(std::string_view name);
+			STORMBYTE_FORCE_INLINE explicit Group(std::string_view name): Group(StormByte::Safe::String(name)) {}
 
 			/**
 			 * @brief Copy constructor

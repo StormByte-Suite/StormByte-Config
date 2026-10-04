@@ -68,7 +68,7 @@ namespace StormByte::Config::Parser {
 			Parser(const Parser&) = delete;
 			Parser(Parser&&) = default;
 			Parser& operator=(const Parser&) = delete;
-			Parser& operator=(Parser&&) = default;
+			Parser& operator=(Parser&&) = delete;
 			~Parser() = default;
 
 			/**

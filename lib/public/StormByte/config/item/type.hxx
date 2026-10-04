@@ -69,7 +69,7 @@ namespace StormByte::Config::Item {
 	 * @param t The Type to convert.
 	 * @return Literal name. Lives for the program.
 	 */
-	static constexpr std::string_view TypeToString(const Type& t) noexcept {
+	static STORMBYTE_FORCE_INLINE constexpr std::string_view TypeToString(const Type& t) noexcept {
 		switch(t) {
 			case Type::String:		return "String";
 			case Type::Integer:		return "Integer";
@@ -98,7 +98,7 @@ namespace StormByte::Config::Item {
 	 * @param t Comment type to convert.
 	 * @return Literal description. Lives for the program.
 	 */
-	constexpr STORMBYTE_CONFIG_PUBLIC std::string_view TypeToString(const CommentType& t) noexcept {
+	STORMBYTE_FORCE_INLINE constexpr std::string_view TypeToString(const CommentType& t) noexcept {
 		switch(t) {
 			case CommentType::SingleLineBash:	return "Bash like single line comment";
 			case CommentType::SingleLineC:		return "C++ like single line comment";
@@ -121,7 +121,7 @@ namespace StormByte::Config::Item {
 	 * @param t Container type to convert.
 	 * @return Literal name. Lives for the program.
 	 */
-	constexpr STORMBYTE_CONFIG_PUBLIC std::string_view TypeToString(const ContainerType& t) noexcept {
+	STORMBYTE_FORCE_INLINE constexpr std::string_view TypeToString(const ContainerType& t) noexcept {
 		switch(t) {
 			case ContainerType::Group:	return "Group";
 			case ContainerType::List:	return "List";

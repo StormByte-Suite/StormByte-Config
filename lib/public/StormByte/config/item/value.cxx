@@ -134,14 +134,6 @@ Value::Value(StormByte::Safe::String&& value): Base(), m_kind(Type::String) {
 	new (&m_store.text) StormByte::Safe::String(std::move(value));
 }
 
-Value::Value(const char* value): Base(), m_kind(Type::String) {
-	new (&m_store.text) StormByte::Safe::String(value);
-}
-
-Value::Value(std::string_view value): Base(), m_kind(Type::String) {
-	new (&m_store.text) StormByte::Safe::String(value);
-}
-
 Value::Value(const StormByte::BinaryData& value): Base(), m_kind(Type::Binary) {
 	new (&m_store.bytes) StormByte::BinaryData(value);
 }
@@ -166,35 +158,7 @@ Value::Value(const StormByte::Safe::String& name, const StormByte::Safe::String&
 	new (&m_store.text) StormByte::Safe::String(value);
 }
 
-Value::Value(const StormByte::Safe::String& name, const char* value): Base(name), m_kind(Type::String) {
-	new (&m_store.text) StormByte::Safe::String(value);
-}
-
 Value::Value(const StormByte::Safe::String& name, const StormByte::BinaryData& value): Base(name), m_kind(Type::Binary) {
-	new (&m_store.bytes) StormByte::BinaryData(value);
-}
-
-Value::Value(std::string_view name, int value): Base(StormByte::Safe::String(name)), m_kind(Type::Integer) {
-	m_store.integer = value;
-}
-
-Value::Value(std::string_view name, double value): Base(StormByte::Safe::String(name)), m_kind(Type::Double) {
-	m_store.floating = value;
-}
-
-Value::Value(std::string_view name, bool value): Base(StormByte::Safe::String(name)), m_kind(Type::Bool) {
-	m_store.boolean = value;
-}
-
-Value::Value(std::string_view name, std::string_view value): Base(StormByte::Safe::String(name)), m_kind(Type::String) {
-	new (&m_store.text) StormByte::Safe::String(value);
-}
-
-Value::Value(std::string_view name, const char* value): Base(StormByte::Safe::String(name)), m_kind(Type::String) {
-	new (&m_store.text) StormByte::Safe::String(value);
-}
-
-Value::Value(std::string_view name, const StormByte::BinaryData& value): Base(StormByte::Safe::String(name)), m_kind(Type::Binary) {
 	new (&m_store.bytes) StormByte::BinaryData(value);
 }
 

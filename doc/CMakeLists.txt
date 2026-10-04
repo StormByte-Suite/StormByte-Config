@@ -17,7 +17,7 @@ if(ENABLE_DOC)
 		set(${name}_TAG_FILE "${tag_file}" PARENT_SCOPE)
 	endfunction()
 
-	download_doxygen_tag(StormByte "http://suite.stormbyte.org/StormByte/StormByte.tag")
+	download_doxygen_tag(StormByte "https://suite.stormbyte.org/StormByte/StormByte.tag")
 
 	set(DOXYGEN_PROJECT_NAME "StormByte-Config")
 	set(DOXYGEN_PROJECT_NUMBER "${PROJECT_VERSION}")
@@ -84,7 +84,7 @@ if(ENABLE_DOC)
 
 	set(DOXYGEN_GENERATE_TAGFILE "${CMAKE_SOURCE_DIR}/docs/StormByte-Config.tag")
 	set(DOXYGEN_TAGFILES
-		"${StormByte_TAG_FILE}=http://suite.stormbyte.org/StormByte"
+		"${StormByte_TAG_FILE}=https://suite.stormbyte.org/StormByte"
 	)
 
 	set(DOXYGEN_GENERATE_MAN NO)

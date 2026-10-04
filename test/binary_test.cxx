@@ -151,16 +151,31 @@ int test_binary_save_load_roundtrip_stream() {
 		RETURN_TEST("test_binary_save_load_roundtrip_stream", 1);
 	}
 
+	in.seekg(1, std::ios::beg);
 	auto loaded = Config::Load(in, Mode::Binary);
-	std::remove(tmp.string().c_str());
 	if (!loaded) {
 		std::cerr << loaded.error()->what() << std::endl;
+		std::remove(tmp.string().c_str());
 		RETURN_TEST("test_binary_save_load_roundtrip_stream", 1);
 	}
 
 	ASSERT_TRUE("test_binary_save_load_roundtrip_stream", original == loaded.value());
 	const int n = loaded.value()["n"].As<Item::Integer>();
 	ASSERT_EQUAL("test_binary_save_load_roundtrip_stream", 7, n);
+
+	std::ifstream after_eof(tmp, std::ios::binary);
+	after_eof.seekg(0, std::ios::end);
+	char last_byte = 0;
+	after_eof.get(last_byte);
+	ASSERT_TRUE("test_binary_save_load_roundtrip_stream", after_eof.fail());
+	auto recovered = Config::Load(after_eof, Mode::Binary);
+	if (!recovered) {
+		std::cerr << recovered.error()->what() << std::endl;
+		std::remove(tmp.string().c_str());
+		RETURN_TEST("test_binary_save_load_roundtrip_stream", 1);
+	}
+	ASSERT_TRUE("test_binary_save_load_roundtrip_stream", original == recovered.value());
+	std::remove(tmp.string().c_str());
 	RETURN_TEST("test_binary_save_load_roundtrip_stream", result);
 }
 

@@ -202,3 +202,6 @@ namespace StormByte::Config {
 	 */
 	STORMBYTE_CONFIG_PUBLIC StormByte::Safe::Shared<FailureHook> MakeFailureHook(FailureHookFunction function);
 }
+
+STORMBYTE_DECLARE_MAYBE_SAFE(StormByte::Config::ReadHook);
+STORMBYTE_DECLARE_MAYBE_SAFE(StormByte::Config::FailureHook);

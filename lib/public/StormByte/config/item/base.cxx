@@ -52,10 +52,6 @@ Base::Base(const StormByte::Safe::String& name): m_name(name) {}
 
 Base::~Base() noexcept = default;
 
-void Base::Name(std::string_view name) {
-	m_name = StormByte::Safe::String(name);
-}
-
 bool Base::operator==(const Base& base) const noexcept {
 	if (this->Type() != base.Type())
 		return false;
@@ -71,10 +67,6 @@ bool Base::operator!=(const Base& base) const noexcept {
 bool Base::IsNameValid(const StormByte::Safe::String& name) noexcept {
 	static const std::regex name_regex(R"(^[A-Za-z][A-Za-z0-9_]*$)");
 	return std::regex_match(static_cast<std::string>(name), name_regex);
-}
-
-bool Base::IsNameValid(std::string_view name) noexcept {
-	return IsNameValid(StormByte::Safe::String(name));
 }
 
 StormByte::Safe::String Base::Serialize(const int& indent_level) const {

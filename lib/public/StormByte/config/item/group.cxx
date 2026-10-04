@@ -51,8 +51,6 @@ Group::Group(const StormByte::Safe::String& name): Container(name) {}
 
 Group::Group(StormByte::Safe::String&& name): Container(std::move(name)) {}
 
-Group::Group(std::string_view name): Container(StormByte::Safe::String(name)) {}
-
 Group::Group(const Group& group) = default;
 
 Group::Group(Group&& group) noexcept = default;

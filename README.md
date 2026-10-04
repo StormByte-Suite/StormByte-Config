@@ -271,7 +271,9 @@ int main() {
 }
 ```
 
-`Load` returns `ExpectedConfig`. A bad magic or a newer format version is an error, not a thrown parse of the payload.
+`Load` returns `ExpectedConfig` (`StormByte::Expected<Config, StormByte::Exception>`). A bad magic or a newer format version is an error, not a thrown parse of the payload. For callers passing data across a DLL boundary, use `Config::Binary()` / `Config::Load(const StormByte::BinaryData&)` or the `Safe::String` text overload; stream overloads remain caller-side adapters.
+
+`Container::Items()` and `Config::Items()` return `StormByte::Safe::Vector<StormByte::Safe::Shared<Item::Base>>`. Path traversal uses Base's `StormByte::Safe::Queue` internally.
 
 ### Text syntax
 

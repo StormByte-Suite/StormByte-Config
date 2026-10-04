@@ -52,7 +52,7 @@
 namespace StormByte::Config::Item {
 	/**
 	 * @class Comment
-	 * @brief Comment item (`#`, `//` or `/* *\/`).
+	 * @brief Comment item using Bash, C++ line, or C/C++ block syntax.
 	 * @tparam T	Comment syntax (`CommentType`).
 	 */
 	template<CommentType T>
@@ -143,7 +143,7 @@ namespace StormByte::Config::Item {
 			 * @brief Converts comment syntax to string.
 			 * @return	Comment syntax string.
 			 */
-			constexpr std::string_view CommentTypeToString() const noexcept {
+			STORMBYTE_FORCE_INLINE constexpr std::string_view CommentTypeToString() const noexcept {
 				return Item::TypeToString(T);
 			}
 

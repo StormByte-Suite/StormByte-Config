@@ -70,7 +70,7 @@ namespace StormByte::Config {
 			 * @brief Format a plain message under `StormByte.Config`.
 			 * @param message Exception text. Not a format string.
 			 */
-			explicit Exception(std::string message)
+			STORMBYTE_FORCE_INLINE explicit Exception(std::string message)
 				: StormByte::Exception(StormByte::Exception::Path{"Config"}, "{}", std::move(message)) {}
 
 			/**
@@ -81,7 +81,7 @@ namespace StormByte::Config {
 			 * `StormByte::Exception::Path` is protected, so callers pass the
 			 * segments as a view. The view only needs to live for this call.
 			 */
-			Exception(std::string_view path, std::string message)
+			STORMBYTE_FORCE_INLINE Exception(std::string_view path, std::string message)
 				: StormByte::Exception(StormByte::Exception::Path{path}, "{}", std::move(message)) {}
 
 			/**

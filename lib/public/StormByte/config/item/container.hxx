@@ -43,12 +43,12 @@
 #include <StormByte/config/item/base.hxx>
 #include <StormByte/config/typedefs.hxx>
 #include <StormByte/size.hxx>
+#include <StormByte/safe/queue.hxx>
 #include <StormByte/safe/string.hxx>
+#include <StormByte/safe/vector.hxx>
 
-#include <queue>
-#include <span>
 #include <string_view>
-#include <vector>
+#include <utility>
 
 /**
  * @brief Configuration items (values, comments, groups, lists).
@@ -165,7 +165,7 @@ namespace StormByte::Config::Item {
 			 * @param path	Path to the item.
 			 * @return		Reference to the item.
 			 */
-			inline Base& operator[](std::string_view path) {
+			STORMBYTE_FORCE_INLINE Base& operator[](std::string_view path) {
 				return operator[](StormByte::Safe::String(path));
 			}
 
@@ -174,7 +174,7 @@ namespace StormByte::Config::Item {
 			 * @param path	Path to the item.
 			 * @return		Const reference to the item.
 			 */
-			inline const Base& operator[](std::string_view path) const {
+			STORMBYTE_FORCE_INLINE const Base& operator[](std::string_view path) const {
 				return operator[](StormByte::Safe::String(path));
 			}
 
@@ -206,7 +206,7 @@ namespace StormByte::Config::Item {
 			 * @param type	Container type.
 			 * @return		Pair of opening and closing characters.
 			 */
-			static constexpr std::pair<const char, const char> EnclosureCharacters(const ContainerType& type) noexcept {
+			static STORMBYTE_FORCE_INLINE constexpr std::pair<const char, const char> EnclosureCharacters(const ContainerType& type) noexcept {
 				switch (type) {
 					case ContainerType::Group: return {'{', '}'};
 					case ContainerType::List:  return {'[', ']'};
@@ -237,7 +237,7 @@ namespace StormByte::Config::Item {
 			 * @brief Gets the container type as string.
 			 * @return	Container type as string.
 			 */
-			constexpr std::string_view ContainerTypeToString() const noexcept {
+			STORMBYTE_FORCE_INLINE constexpr std::string_view ContainerTypeToString() const noexcept {
 				return Item::TypeToString(this->ContainerType());
 			}
 
@@ -326,7 +326,7 @@ namespace StormByte::Config::Item {
 			 * @param path	Path to the item.
 			 * @return		true if the item exists.
 			 */
-			inline bool Exists(std::string_view path) const {
+			STORMBYTE_FORCE_INLINE bool Exists(std::string_view path) const {
 				return Exists(StormByte::Safe::String(path));
 			}
 
@@ -349,24 +349,24 @@ namespace StormByte::Config::Item {
 			 * @brief Removes an item by a path view.
 			 * @param path	Path to the item to remove.
 			 */
-			inline void Remove(std::string_view path) {
+			STORMBYTE_FORCE_INLINE void Remove(std::string_view path) {
 				Remove(StormByte::Safe::String(path));
 			}
 
 			/**
-			 * @brief Items in this level. The span cannot reseat or grow the store; each pointer's item is mutable.
-			 * @return	Span of item pointers.
+			 * @brief Items in this level. The collection cannot grow; each pointer's item is mutable.
+			 * @return	DLL-safe collection of item pointers.
 			 */
-			constexpr std::span<const Base::PointerType> Items() noexcept {
-				return std::span<const Base::PointerType>(m_items);
+			const StormByte::Safe::Vector<Base::PointerType>& Items() noexcept {
+				return m_items;
 			}
 
 			/**
 			 * @brief Items in this level.
 			 * @return	Span of item pointers.
 			 */
-			constexpr std::span<const Base::PointerType> Items() const noexcept {
-				return std::span<const Base::PointerType>(m_items);
+			const StormByte::Safe::Vector<Base::PointerType>& Items() const noexcept {
+				return m_items;
 			}
 
 			/**
@@ -404,7 +404,7 @@ namespace StormByte::Config::Item {
 			/** @} */
 
 		protected:
-			std::vector<Base::PointerType> m_items;	///< Items stored in the container
+			StormByte::Safe::Vector<Base::PointerType> m_items;	///< Items stored in the container
 			StormByte::Config::OnExistingAction m_on_existing_action = StormByte::Config::OnExistingAction::ThrowException;	///< Collision policy
 
 			/**
@@ -442,12 +442,12 @@ namespace StormByte::Config::Item {
 			 * @param path	Path components.
 			 * @return		Const reference to the found item.
 			 */
-			const Base& LookUp(std::queue<StormByte::Safe::String>& path) const;
+			const Base& LookUp(StormByte::Safe::Queue<StormByte::Safe::String>& path) const;
 
 			/**
 			 * @brief Removes an item by path (queue version).
 			 * @param path	Path components.
 			 */
-			void Remove(std::queue<StormByte::Safe::String>& path);
+			void Remove(StormByte::Safe::Queue<StormByte::Safe::String>& path);
 	};
 }
