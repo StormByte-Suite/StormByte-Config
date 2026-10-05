@@ -8,8 +8,8 @@
  * 1. GNU Lesser General Public License v3.0 (or later)
  *    You may redistribute and/or modify this file under the terms of the
  *    GNU Lesser General Public License as published by the Free Software
- *    Foundation, either version 3 of the License, or (at your option)
- *    any later version.
+ *    Foundation, either version 3 of the License, or (at your option) any
+ *    later version.
  *
  * 2. Commercial license
  *    Alternatively, this file may be used under the terms of a commercial
@@ -47,209 +47,222 @@
 #include <utility>
 
 /**
- * @brief Configuration items (values, comments, groups, lists).
+ * @namespace StormByte
+ * @brief Root namespace of the StormByte suite.
  */
-namespace StormByte::Config::Item {
+namespace StormByte {
 	/**
-	 * @class Comment
-	 * @brief Comment item using Bash, C++ line, or C/C++ block syntax.
-	 * @tparam T	Comment syntax (`CommentType`).
+	 * @namespace StormByte::Config
+	 * @brief Config module of the StormByte suite.
 	 */
-	template<CommentType T>
-	class STORMBYTE_CONFIG_PUBLIC Comment final: public Base {
-		public:
-			static constexpr bool CommentTag = true;
+	namespace Config {
+		/**
+		 * @namespace StormByte::Config::Item
+		 * @brief Configuration document items.
+		 */
+		namespace Item {
+			/**
+			 * @class Comment
+			 * @brief Comment item using Bash, C++ line, or C/C++ block syntax.
+		 * @tparam T Comment syntax (`CommentType`).
+		 */
+			template<CommentType T>
+			class STORMBYTE_CONFIG_PUBLIC Comment final: public Base {
+				public:
+					static constexpr bool CommentTag = true; ///< Identifies this as a comment item.
+
+					/**
+					 * @brief Constructs a Comment with a Base-owned string.
+					 * @param comment The comment string.
+				 */
+					Comment(const StormByte::Safe::String& comment);
+
+					/**
+					 * @brief Constructs a Comment by moving a Base-owned string.
+					 * @param comment The comment string.
+				 */
+					Comment(StormByte::Safe::String&& comment);
+
+					/**
+					 * @brief Constructs a Comment from a NUL-terminated string.
+					 * @param comment Comment text.
+					 */
+					Comment(const char* comment);
+
+					/**
+					 * @brief Copy constructor.
+					 * @param comment Comment to copy.
+					 */
+					Comment(const Comment& comment);
+
+					/**
+					 * @brief Move constructor.
+					 * @param comment Comment to move.
+					 */
+					Comment(Comment&& comment) noexcept;
+
+					/**
+					 * @brief Copy assignment operator.
+					 * @param comment Comment to copy.
+					 * @return Reference to this Comment.
+					 */
+					Comment& operator=(const Comment& comment);
+
+					/**
+					 * @brief Move assignment operator.
+					 * @param comment Comment to move.
+					 * @return Reference to this Comment.
+					 */
+					Comment& operator=(Comment&& comment) noexcept;
+
+					/**
+					 * @brief Destructor, defined in the Config module.
+				 */
+					~Comment() noexcept override;
+
+					/**
+					 * @brief Polymorphic equality comparison.
+					 * @param other The other item.
+					 * @return True when type, name, and text match.
+					 */
+					bool Equals(const Base& other) const noexcept override;
+
+					/**
+					 * @brief Serializes the comment item.
+					 * @param indent_level Indentation level.
+					 * @return Serialized text.
+					 */
+					StormByte::Safe::String Serialize(const int& indent_level) const noexcept override;
+
+					/**
+					 * @brief Gets the item type.
+					 * @return Item type.
+					 */
+					constexpr Item::Type Type() const noexcept override {
+						return Item::Type::Comment;
+					}
+
+					/**
+					 * @brief Gets the comment syntax.
+					 * @return Comment syntax.
+					 */
+					constexpr StormByte::Config::Item::CommentType CommentType() const noexcept {
+						return T;
+					}
+
+					/**
+					 * @brief Converts comment syntax to its text representation.
+					 * @return Comment syntax string.
+					 */
+					STORMBYTE_FORCE_INLINE constexpr std::string_view CommentTypeToString() const noexcept {
+						return Item::TypeToString(T);
+					}
+
+					/**
+					 * @brief Gets mutable comment text.
+					 * @return Comment text.
+					 */
+					StormByte::Safe::String& Text() noexcept {
+						return m_text;
+					}
+
+					/**
+					 * @brief Gets const comment text.
+					 * @return Comment text.
+					 */
+					const StormByte::Safe::String& Text() const noexcept {
+						return m_text;
+					}
+
+					/**
+					 * @brief Clones the comment on Base's heap.
+					 * @return Cloned comment pointer.
+					 */
+					PointerType Clone() const override;
+
+					/**
+					 * @brief Moves the comment to Base's heap.
+					 * @return Moved comment pointer.
+					 */
+					PointerType Move() override;
+
+				private:
+					StormByte::Safe::String m_text; ///< Comment text.
+			};
 
 			/**
-			 * @brief Constructs a Comment with the given string.
-			 * @param comment	The comment string.
+			 * @brief Destructor for Bash single-line comments.
 			 */
-			Comment(const StormByte::Safe::String& comment): Base(), m_text(comment) {}
+			template<>
+			STORMBYTE_CONFIG_PUBLIC Comment<CommentType::SingleLineBash>::~Comment() noexcept;
 
 			/**
-			 * @brief Move constructor from comment string.
-			 * @param comment	Comment string.
+			 * @brief Destructor for C single-line comments.
 			 */
-			Comment(StormByte::Safe::String&& comment): Base(), m_text(std::move(comment)) {}
+			template<>
+			STORMBYTE_CONFIG_PUBLIC Comment<CommentType::SingleLineC>::~Comment() noexcept;
 
 			/**
-			 * @brief Constructs a Comment from a C string.
-			 * @param comment	Comment text.
+			 * @brief Destructor for C multi-line comments.
 			 */
-			Comment(const char* comment): Base(), m_text(StormByte::Safe::String(comment)) {}
+			template<>
+			STORMBYTE_CONFIG_PUBLIC Comment<CommentType::MultiLineC>::~Comment() noexcept;
 
 			/**
-			 * @brief Copy constructor.
-			 * @param base	Comment to copy.
+			 * @brief Equality for Bash single-line comments.
+			 * @param other The other item.
+			 * @return True when both comments match.
 			 */
-			Comment(const Comment& base) = default;
+			template<>
+			STORMBYTE_CONFIG_PUBLIC bool Comment<CommentType::SingleLineBash>::Equals(const Base& other) const noexcept;
 
 			/**
-			 * @brief Move constructor.
-			 * @param base	Comment to move.
+			 * @brief Equality for C single-line comments.
+			 * @param other The other item.
+			 * @return True when both comments match.
 			 */
-			Comment(Comment&& base) noexcept = default;
+			template<>
+			STORMBYTE_CONFIG_PUBLIC bool Comment<CommentType::SingleLineC>::Equals(const Base& other) const noexcept;
 
 			/**
-			 * @brief Copy assignment operator.
-			 * @param base	Comment to copy.
-			 * @return		Reference to this Comment.
+			 * @brief Equality for C multi-line comments.
+			 * @param other The other item.
+			 * @return True when both comments match.
 			 */
-			Comment& operator=(const Comment& base) = default;
+			template<>
+			STORMBYTE_CONFIG_PUBLIC bool Comment<CommentType::MultiLineC>::Equals(const Base& other) const noexcept;
 
 			/**
-			 * @brief Move assignment operator.
-			 * @param base	Comment to move.
-			 * @return		Reference to this Comment.
+			 * @brief Serializes a Bash single-line comment.
+			 * @param indent_level Indentation level.
+			 * @return Serialized comment.
 			 */
-			Comment& operator=(Comment&& base) noexcept = default;
+			template<>
+			STORMBYTE_CONFIG_PUBLIC StormByte::Safe::String Comment<CommentType::SingleLineBash>::Serialize(const int& indent_level) const noexcept;
 
 			/**
-			 * @brief Destructor. Defined in this module so `catch` matches across a DLL.
+			 * @brief Serializes a C single-line comment.
+			 * @param indent_level Indentation level.
+			 * @return Serialized comment.
 			 */
-			~Comment() noexcept override;
+			template<>
+			STORMBYTE_CONFIG_PUBLIC StormByte::Safe::String Comment<CommentType::SingleLineC>::Serialize(const int& indent_level) const noexcept;
 
 			/**
-			 * @brief Polymorphic equality comparison.
-			 * @param other	The other item to compare against.
-			 * @return		true if both are the same comment specialization and content.
+			 * @brief Serializes a C multi-line comment.
+			 * @param indent_level Indentation level.
+			 * @return Serialized comment.
 			 */
-			bool Equals(const Base& other) const noexcept override;
+			template<>
+			STORMBYTE_CONFIG_PUBLIC StormByte::Safe::String Comment<CommentType::MultiLineC>::Serialize(const int& indent_level) const noexcept;
 
-			/**
-			 * @brief Serializes the comment item.
-			 * @param indent_level	Indentation level.
-			 * @return				Serialized text.
-			 */
-			StormByte::Safe::String Serialize(const int& indent_level) const noexcept override;
-
-			/**
-			 * @brief Gets the item type.
-			 * @return	Item type.
-			 */
-			constexpr Item::Type Type() const noexcept override {
-				return Item::Type::Comment;
-			}
-
-			/**
-			 * @brief Gets the comment syntax.
-			 * @return	Comment syntax.
-			 */
-			constexpr StormByte::Config::Item::CommentType CommentType() const noexcept {
-				return T;
-			}
-
-			/**
-			 * @brief Converts comment syntax to string.
-			 * @return	Comment syntax string.
-			 */
-			STORMBYTE_FORCE_INLINE constexpr std::string_view CommentTypeToString() const noexcept {
-				return Item::TypeToString(T);
-			}
-
-			/**
-			 * @brief Comment text.
-			 * @return	Text payload.
-			 */
-			StormByte::Safe::String& Text() noexcept {
-				return m_text;
-			}
-
-			/**
-			 * @brief Comment text.
-			 * @return	Text payload.
-			 */
-			const StormByte::Safe::String& Text() const noexcept {
-				return m_text;
-			}
-
-			/**
-			 * @brief Clones the comment.
-			 * @return	Cloned comment.
-			 */
-			PointerType Clone() const override {
-				return MakePointer<Comment<T>>(*this);
-			}
-
-			/**
-			 * @brief Moves the comment.
-			 * @return	Moved comment.
-			 */
-			PointerType Move() override {
-				return MakePointer<Comment<T>>(std::move(*this));
-			}
-
-		private:
-			StormByte::Safe::String m_text;	///< Comment text
-	};
-
-	/**
-	 * @brief Destructor for bash single-line comments.
-	 */
-	template<>
-	STORMBYTE_CONFIG_PUBLIC Comment<CommentType::SingleLineBash>::~Comment() noexcept;
-
-	/**
-	 * @brief Destructor for C single-line comments.
-	 */
-	template<>
-	STORMBYTE_CONFIG_PUBLIC Comment<CommentType::SingleLineC>::~Comment() noexcept;
-
-	/**
-	 * @brief Destructor for C multi-line comments.
-	 */
-	template<>
-	STORMBYTE_CONFIG_PUBLIC Comment<CommentType::MultiLineC>::~Comment() noexcept;
-
-	/**
-	 * @brief Equality for bash single-line comments.
-	 * @param other	The other item.
-	 * @return		true if both are the same specialization and text.
-	 */
-	template<>
-	STORMBYTE_CONFIG_PUBLIC bool Comment<CommentType::SingleLineBash>::Equals(const Base& other) const noexcept;
-
-	/**
-	 * @brief Equality for C single-line comments.
-	 * @param other	The other item.
-	 * @return		true if both are the same specialization and text.
-	 */
-	template<>
-	STORMBYTE_CONFIG_PUBLIC bool Comment<CommentType::SingleLineC>::Equals(const Base& other) const noexcept;
-
-	/**
-	 * @brief Equality for C multi-line comments.
-	 * @param other	The other item.
-	 * @return		true if both are the same specialization and text.
-	 */
-	template<>
-	STORMBYTE_CONFIG_PUBLIC bool Comment<CommentType::MultiLineC>::Equals(const Base& other) const noexcept;
-
-	/**
-	 * @brief Serializes a bash single-line comment.
-	 * @param indent_level	Indentation level.
-	 * @return				Serialized text.
-	 */
-	template<>
-	STORMBYTE_CONFIG_PUBLIC StormByte::Safe::String Comment<CommentType::SingleLineBash>::Serialize(const int& indent_level) const noexcept;
-
-	/**
-	 * @brief Serializes a C single-line comment.
-	 * @param indent_level	Indentation level.
-	 * @return				Serialized text.
-	 */
-	template<>
-	STORMBYTE_CONFIG_PUBLIC StormByte::Safe::String Comment<CommentType::SingleLineC>::Serialize(const int& indent_level) const noexcept;
-
-	/**
-	 * @brief Serializes a C multi-line comment.
-	 * @param indent_level	Indentation level.
-	 * @return				Serialized text.
-	 */
-	template<>
-	STORMBYTE_CONFIG_PUBLIC StormByte::Safe::String Comment<CommentType::MultiLineC>::Serialize(const int& indent_level) const noexcept;
-
-	extern template class STORMBYTE_CONFIG_PUBLIC Comment<CommentType::SingleLineBash>;
-	extern template class STORMBYTE_CONFIG_PUBLIC Comment<CommentType::SingleLineC>;
-	extern template class STORMBYTE_CONFIG_PUBLIC Comment<CommentType::MultiLineC>;
+			extern template class STORMBYTE_CONFIG_PUBLIC Comment<CommentType::SingleLineBash>;
+			extern template class STORMBYTE_CONFIG_PUBLIC Comment<CommentType::SingleLineC>;
+			extern template class STORMBYTE_CONFIG_PUBLIC Comment<CommentType::MultiLineC>;
+		}
+	}
 }
+
+STORMBYTE_DECLARE_MAYBE_SAFE(StormByte::Config::Item::Comment<StormByte::Config::Item::CommentType::SingleLineBash>);
+STORMBYTE_DECLARE_MAYBE_SAFE(StormByte::Config::Item::Comment<StormByte::Config::Item::CommentType::SingleLineC>);
+STORMBYTE_DECLARE_MAYBE_SAFE(StormByte::Config::Item::Comment<StormByte::Config::Item::CommentType::MultiLineC>);

@@ -91,13 +91,13 @@ namespace StormByte::Config::Item {
 			 * @brief Constructor
 			 * @param value string
 			 */
-			STORMBYTE_FORCE_INLINE explicit Value(const char* value): Value(StormByte::Safe::String(value)) {}
+			explicit Value(const char* value);
 
 			/**
 			 * @brief Constructor
 			 * @param value string
 			 */
-			STORMBYTE_FORCE_INLINE explicit Value(std::string_view value): Value(StormByte::Safe::String(value)) {}
+			explicit Value(std::string_view value);
 
 			/**
 			 * @brief Constructor
@@ -144,8 +144,7 @@ namespace StormByte::Config::Item {
 			 * @param name name
 			 * @param value string
 			 */
-			STORMBYTE_FORCE_INLINE Value(const StormByte::Safe::String& name, const char* value)
-				: Value(name, StormByte::Safe::String(value)) {}
+			Value(const StormByte::Safe::String& name, const char* value);
 
 			/**
 			 * @brief Constructor
@@ -159,45 +158,42 @@ namespace StormByte::Config::Item {
 			 * @param name name
 			 * @param value integer
 			 */
-			STORMBYTE_FORCE_INLINE Value(std::string_view name, int value): Value(StormByte::Safe::String(name), value) {}
+			Value(std::string_view name, int value);
 
 			/**
 			 * @brief Constructor
 			 * @param name name
 			 * @param value double
 			 */
-			STORMBYTE_FORCE_INLINE Value(std::string_view name, double value): Value(StormByte::Safe::String(name), value) {}
+			Value(std::string_view name, double value);
 
 			/**
 			 * @brief Constructor
 			 * @param name name
 			 * @param value bool
 			 */
-			STORMBYTE_FORCE_INLINE Value(std::string_view name, bool value): Value(StormByte::Safe::String(name), value) {}
+			Value(std::string_view name, bool value);
 
 			/**
 			 * @brief Constructor
 			 * @param name name
 			 * @param value string
 			 */
-			STORMBYTE_FORCE_INLINE Value(std::string_view name, std::string_view value)
-				: Value(StormByte::Safe::String(name), StormByte::Safe::String(value)) {}
+			Value(std::string_view name, std::string_view value);
 
 			/**
 			 * @brief Constructor
 			 * @param name name
 			 * @param value string
 			 */
-			STORMBYTE_FORCE_INLINE Value(std::string_view name, const char* value)
-				: Value(StormByte::Safe::String(name), StormByte::Safe::String(value)) {}
+			Value(std::string_view name, const char* value);
 
 			/**
 			 * @brief Constructor
 			 * @param name name
 			 * @param value bytes
 			 */
-			STORMBYTE_FORCE_INLINE Value(std::string_view name, const StormByte::BinaryData& value)
-				: Value(StormByte::Safe::String(name), value) {}
+			Value(std::string_view name, const StormByte::BinaryData& value);
 
 			/**
 			 * @brief Copy constructor
@@ -386,3 +382,5 @@ namespace StormByte::Config::Item {
 }
 
 #include <StormByte/config/item/base.txx>
+
+STORMBYTE_DECLARE_MAYBE_SAFE(StormByte::Config::Item::Value);

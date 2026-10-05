@@ -20,7 +20,7 @@ The suite is split on purpose. Base, Buffer, Crypto, Database, Logger, Multimedi
 - **Values** — one concrete `Item::Value` (text, integer, double, boolean, `StormByte::BinaryData`). Access is `Base::As<T>()`. Text binary form is Base64 `b"..."`; the binary document stores raw bytes.
 - **Comments** — `#`, `//`, `/* */`.
 - **Containers** — lists `[]` and groups `{}`. Counts and indices use `StormByte::Size`.
-- **Hooks** — `AddHookBeforeRead` / `AddHookAfterRead` / `OnParseFailure`. Stateless hooks are function pointers. Stateful hooks derive from `ReadHook` / `FailureHook` and are built with `MakePointer`.
+- **Hooks** — `AddHookBeforeRead` / `AddHookAfterRead` / `OnParseFailure` use copyable `StormByte::Safe::Function` callbacks and Base-owned group handles.
 - **On existing** — `Keep`, `Overwrite`, or `ThrowException` (default).
 - **Heap** — items are `Clonable<Base, Shared<Base>>`. Build them with `MakePointer` when you hold `PointerType`.
 
@@ -163,11 +163,11 @@ Integer promotes to Double. Double does not narrow to Integer. A wrong tag throw
 
 Hooks run only on **text** read (`operator<<` / `>>` from a stream or string). They do not run on binary `Load`.
 
-- Before-read and after-read: `void (*)(Item::Group&)`. After-read runs only if parse succeeded.
-- Parse failure: `bool (*)(const Item::Group&)`. Return `false` to swallow the error; `true` (or no hook) keeps the throw.
-- Capturing lambdas and `std::function` are not accepted. A callback with no state is a function pointer. A callback with state is a class that derives from `ReadHook` or `FailureHook` and is created with `MakePointer`.
+- Before-read and after-read callbacks receive `StormByte::Safe::Shared<Item::Group>`. The handle owns a copy on Base's heap; mutations are committed to the document when the callback succeeds. After-read runs only if parsing succeeded.
+- Parse-failure callbacks receive `StormByte::Safe::Shared<const Item::Group>`. Return `false` to swallow the error; `true` (or no callback) keeps the throw.
+- Use `MakeReadHook` / `MakeFailureHook` to wrap copyable callables, including capturing lambdas. Base clones and releases each callable context through functions supplied by the module that created it.
 
-Stateless — inject a default timeout if the file omitted it, and refuse to throw on a known-bad lab fixture:
+Inject a default timeout if the file omitted it, and refuse to throw on a known-bad lab fixture:
 
 ```cpp
 #include <StormByte/config/config.hxx>
@@ -176,18 +176,18 @@ Stateless — inject a default timeout if the file omitted it, and refuse to thr
 
 using namespace StormByte::Config;
 
-void EnsureTimeout(Item::Group& root) {
-	if (!root.Exists("timeout"))
-		root.Add(Item::Value("timeout", 30));
+void EnsureTimeout(StormByte::Safe::Shared<Item::Group> root) {
+	if (!root->Exists("timeout"))
+		root->Add(Item::Value("timeout", 30));
 }
 
-bool IgnoreBrokenFixture(const Item::Group&) {
+bool IgnoreBrokenFixture(StormByte::Safe::Shared<const Item::Group>) {
 	return false;
 }
 
 void load_app_config(Config& config) {
-	config.AddHookAfterRead(&EnsureTimeout);
-	config.OnParseFailure(&IgnoreBrokenFixture);
+	config.AddHookAfterRead(MakeReadHook(&EnsureTimeout));
+	config.OnParseFailure(MakeFailureHook(&IgnoreBrokenFixture));
 
 	std::istringstream file("username = \"ada\"\n");
 	file >> config;
@@ -195,7 +195,7 @@ void load_app_config(Config& config) {
 }
 ```
 
-Stateful — count how many documents a loader accepted and stamp the count into the tree:
+Captured state is copied with the callback and remains owned by its creating module:
 
 ```cpp
 #include <StormByte/config/config.hxx>
@@ -204,41 +204,15 @@ Stateful — count how many documents a loader accepted and stamp the count into
 
 using namespace StormByte::Config;
 
-class LoadCounter final: public ReadHook {
-	public:
-		explicit LoadCounter(int& total) noexcept: m_total(total) {}
-
-		LoadCounter(const LoadCounter&) noexcept = default;
-		LoadCounter(LoadCounter&&) noexcept = default;
-		LoadCounter& operator=(const LoadCounter&) = delete;
-		LoadCounter& operator=(LoadCounter&&) = delete;
-		~LoadCounter() noexcept override = default;
-
-		PointerType Clone() const override {
-			return MakePointer<LoadCounter>(*this);
-		}
-
-		PointerType Move() override {
-			return MakePointer<LoadCounter>(std::move(*this));
-		}
-
-		void operator()(Item::Group& root) override {
-			++m_total;
-			root.Add(Item::Value("loads", m_total), OnExistingAction::Overwrite);
-		}
-
-	private:
-		int& m_total;
-};
-
 void load_with_counter(Config& config, int& total) {
-	config.AddHookAfterRead(ReadHook::MakePointer<LoadCounter>(total));
+	config.AddHookAfterRead(MakeReadHook([&total](StormByte::Safe::Shared<Item::Group> root) {
+		++total;
+		root->Add(Item::Value("loads", total), OnExistingAction::Overwrite);
+	}));
 	std::istringstream file("username = \"ada\"\n");
 	file >> config;
 }
 ```
-
-`MakeReadHook` / `MakeFailureHook` wrap a function pointer in the same `Shared` type when you already hold a `ReadHook::PointerType`.
 
 ### Binary Save / Load
 

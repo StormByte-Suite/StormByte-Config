@@ -25,17 +25,21 @@ If you landed here from a release link and have not read the tree:
 ## [2.0.0] - 2026-10-05
 
 ### Changed
+- Config item classes are registered with Base's `MaybeSafe` trait when their Base-owned storage and out-of-line destruction satisfy the documented DLL-boundary contract. Plain exception messages accept `std::string_view` and are copied into Base-owned exception storage inside the Config module.
 - Shared vs static follows CMake `BUILD_SHARED_LIBS` (declared in the project root, default ON). There is no `STORMBYTE_CONFIG_SHARED` CMake option. When the library is shared, the compile definition `STORMBYTE_CONFIG_SHARED` is still set so `visibility.h` can distinguish `dllexport` / `dllimport` / static. CI passes `-DBUILD_SHARED_LIBS=ON`.
-- **Breaking:** `Item::Value<T>` is gone. There is one concrete `Item::Value` leaf. Typed access is `Base::As<T>()`: node types (`Value`, `Group`, `List`, `Comment<...>`) or leaf tags (`Integer`, `Double`, `Bool`, `Text`, `Binary`). `item.As<Value>() = 3.65` and `int i = item.As<Integer>()` are the public getters. Integer promotes to Double; Double does not narrow to Integer.
-- **Breaking:** Public binary payloads are `StormByte::BinaryData`, not `std::vector<std::byte>`. Text still uses Base64 `b"..."`; the binary writer emits `Serializable<BinaryData>`.
-- **Breaking:** Counts and container indices use `StormByte::Size`. `operator[]` on `List` / `Group` is `Size`, not `size_t`.
-- **Breaking:** Item and Config destructors are out of line in this module so `catch` and `typeid` stay on one CRT across a DLL.
-- **Breaking:** `StormByte::Config::Exception` takes `StormByte::Exception::Path`. `Component` is gone. `what()` is `StormByte.Config: message`. Destructors are defined in this module so `catch` matches across a DLL.
-- Names, paths, `Group`, `List` and `Value` accept `std::string_view` (a literal or a `std::string`). A custom exception path is a view plus a plain message; `StormByte::Exception::Path` stays protected.
-- **Breaking:** `Item::Base` is `Clonable<Base, StormByte::Shared<Base>>`. `PointerType` is no longer `std::shared_ptr`. Construction goes through `MakePointer`. `Serializable::Serialize` is `BinaryData`; the on-disk reader buffer stays a local `std::vector<std::byte>`.
-- **Breaking:** Read and failure hooks are no longer `std::function`. Stateless hooks are function pointers (`void (*)(Item::Group&)`, `bool (*)(const Item::Group&)`). Stateful hooks derive from `ReadHook` / `FailureHook` (`Clonable` + `Shared`, `MakePointer`). `AddHookBeforeRead` / `AddHookAfterRead` / `OnParseFailure` are out of line in this module. Capturing lambdas do not bind; wrap state in a hook class.
-- **Breaking:** Configuration names, text values and comments now use `StormByte::Safe::String` from Base. Text binary serialization uses Base's `Serializable<Safe::String>` codec.
-- **Breaking:** Item and hook collections use `StormByte::Safe::Vector`, and path traversal uses `StormByte::Safe::Queue`. Public STL convenience adapters run on the consumer side; text, binary data and expected results use Base-owned storage across DLL boundaries.
+- **Breaking: Item model and storage APIs:**
+	- `Item::Value<T>` is gone. There is one concrete `Item::Value` leaf. Typed access is `Base::As<T>()`: node types (`Value`, `Group`, `List`, `Comment<...>`) or leaf tags (`Integer`, `Double`, `Bool`, `Text`, `Binary`). `item.As<Value>() = 3.65` and `int i = item.As<Integer>()` are the public getters. Integer promotes to Double; Double does not narrow to Integer.
+	- Public binary payloads are `StormByte::BinaryData`, not `std::vector<std::byte>`. Text still uses Base64 `b"..."`; the binary writer emits `Serializable<BinaryData>`.
+	- Counts and container indices use `StormByte::Size`. `operator[]` on `List` / `Group` is `Size`, not `size_t`.
+	- `Item::Base` is `Clonable<Base, StormByte::Shared<Base>>`. `PointerType` is no longer `std::shared_ptr`. Construction goes through `MakePointer`. `Serializable::Serialize` is `BinaryData`; the on-disk reader buffer stays a local `std::vector<std::byte>`.
+	- Configuration names, text values and comments use `StormByte::Safe::String` from Base. Text binary serialization uses Base's `Serializable<Safe::String>` codec.
+	- Item collections use `StormByte::Safe::Vector`; path traversal uses `StormByte::Safe::Queue`. Public STL convenience adapters run on the consumer side; text, binary data and expected results use Base-owned storage across DLL boundaries.
+- **Breaking: DLL-boundary lifetime and exception contracts:**
+	- Item and Config destructors are out of line in this module so `catch` and `typeid` stay on one CRT across a DLL.
+	- `StormByte::Config::Exception` uses its own explicit `Path` wrapper for additional segments nested below `StormByte.Config`; a custom segment can never replace `Config`. `Component` is gone, and `what()` starts with `StormByte.Config`.
+	- Item classes and `Config` are registered with Base's `MaybeSafe` trait only where construction, copy/move, assignment, destruction, storage ownership, and heap-affecting clone operations meet its documented provider contract. Plain Config exception messages accept `std::string_view` and are copied inside the Config module.
+- **Breaking: Read and failure hook API:** Hooks use copyable `StormByte::Safe::Function` values. Read callbacks receive a Base-owned `Safe::Shared<Item::Group>` handle and commit mutations only when the callback succeeds; failure callbacks receive a Base-owned const group handle and return whether the parse error should propagate. `MakeReadHook` / `MakeFailureHook` keep callable context cloning and release in the consumer module, including for capturing lambdas. Hook collections use Base-owned `Safe::Vector` storage.
+- Names, paths, `Group`, `List` and `Value` accept `std::string_view` (a literal or a `std::string`). A custom Config exception path is an `Exception::Path` plus a plain message.
 - Requires [StormByte Base](https://github.com/StormByte-Suite/StormByte/releases/tag/2.0.0) ≥ 2.0.0.
 
 [2.0.0]: https://github.com/StormByte-Suite/StormByte-Config/releases/tag/2.0.0

@@ -52,56 +52,25 @@ namespace {
 	int g_fail = 0;
 	int g_state = 0;
 
-	void AfterMark(Item::Group& root) {
+	void AfterMark(StormByte::Safe::Shared<Item::Group> root) {
 		++g_after;
-		root.Add(Item::Value("hooked", true));
+		root->Add(Item::Value("hooked", true));
 	}
 
-	void BeforeClear(Item::Group& root) {
+	void BeforeClear(StormByte::Safe::Shared<Item::Group> root) {
 		++g_before;
-		root.Clear();
+		root->Clear();
 	}
 
-	bool KeepFailure(const Item::Group&) {
+	bool KeepFailure(StormByte::Safe::Shared<const Item::Group>) {
 		++g_fail;
 		return true;
 	}
 
-	bool SwallowFailure(const Item::Group&) {
+	bool SwallowFailure(StormByte::Safe::Shared<const Item::Group>) {
 		++g_fail;
 		return false;
 	}
-
-	class CountingReadHook final: public ReadHook {
-		public:
-			explicit CountingReadHook(int& counter) noexcept: m_counter(counter) {}
-
-			CountingReadHook(const CountingReadHook& hook) noexcept = default;
-
-			CountingReadHook(CountingReadHook&& hook) noexcept = default;
-
-			CountingReadHook& operator=(const CountingReadHook&) = delete;
-
-			CountingReadHook& operator=(CountingReadHook&&) = delete;
-
-			~CountingReadHook() noexcept override = default;
-
-			PointerType Clone() const override {
-				return MakePointer<CountingReadHook>(*this);
-			}
-
-			PointerType Move() override {
-				return MakePointer<CountingReadHook>(std::move(*this));
-			}
-
-			void operator()(Item::Group& root) override {
-				++m_counter;
-				root.Add(Item::Value("stateful", 1));
-			}
-
-		private:
-			int& m_counter;
-	};
 }
 
 // -------------------
@@ -112,7 +81,7 @@ int test_failure_swallow() {
 	int result = 0;
 	g_fail = 0;
 	Config cfg;
-	cfg.OnParseFailure(&SwallowFailure);
+	cfg.OnParseFailure(MakeFailureHook(&SwallowFailure));
 	try {
 		cfg << std::string("= broken\n");
 	} catch (const Exception&) {
@@ -126,7 +95,7 @@ int test_failure_throw() {
 	int result = 0;
 	g_fail = 0;
 	Config cfg;
-	cfg.OnParseFailure(&KeepFailure);
+	cfg.OnParseFailure(MakeFailureHook(&KeepFailure));
 	try {
 		cfg << std::string("= broken\n");
 		result = 1;
@@ -146,8 +115,8 @@ int test_function_before_after() {
 	g_before = 0;
 	g_after = 0;
 	Config cfg;
-	cfg.AddHookBeforeRead(&BeforeClear);
-	cfg.AddHookAfterRead(&AfterMark);
+	cfg.AddHookBeforeRead(MakeReadHook(&BeforeClear));
+	cfg.AddHookAfterRead(MakeReadHook(&AfterMark));
 	try {
 		cfg << std::string("alpha = 1\n");
 		ASSERT_EQUAL("test_function_before_after", 1, g_before);
@@ -169,10 +138,20 @@ int test_stateful_after_read() {
 	int result = 0;
 	g_state = 0;
 	Config cfg;
-	cfg.AddHookAfterRead(ReadHook::MakePointer<CountingReadHook>(g_state));
+	auto callback = MakeReadHook([&counter = g_state](StormByte::Safe::Shared<Item::Group> root) {
+		++counter;
+		root->Add(Item::Value("stateful", 1));
+	});
+	ReadHook callback_copy = callback;
+	ASSERT_TRUE("test_stateful_after_read", callback_copy.HasValue());
+	auto copied_root = StormByte::Safe::Heap::MakeShared<Item::Group>();
+	ASSERT_EQUAL("test_stateful_after_read", StormByte::Safe::Status::Success, callback_copy.Call(copied_root));
+	ASSERT_TRUE("test_stateful_after_read", copied_root->Exists("stateful"));
+	ASSERT_EQUAL("test_stateful_after_read", 1, g_state);
+	cfg.AddHookAfterRead(std::move(callback));
 	try {
 		cfg << std::string("alpha = 7\n");
-		ASSERT_EQUAL("test_stateful_after_read", 1, g_state);
+		ASSERT_EQUAL("test_stateful_after_read", 2, g_state);
 		ASSERT_TRUE("test_stateful_after_read", cfg.Exists("stateful"));
 		ASSERT_EQUAL("test_stateful_after_read", 1, cfg["stateful"].As<Item::Integer>());
 	} catch (const Exception& ex) {

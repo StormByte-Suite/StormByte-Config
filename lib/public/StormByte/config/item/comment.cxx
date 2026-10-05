@@ -47,6 +47,37 @@
 
 using namespace StormByte::Config::Item;
 
+template<CommentType T>
+Comment<T>::Comment(const StormByte::Safe::String& comment): Base(), m_text(comment) {}
+
+template<CommentType T>
+Comment<T>::Comment(StormByte::Safe::String&& comment): Base(), m_text(std::move(comment)) {}
+
+template<CommentType T>
+Comment<T>::Comment(const char* comment): Base(), m_text(StormByte::Safe::String(comment)) {}
+
+template<CommentType T>
+Comment<T>::Comment(const Comment& base) = default;
+
+template<CommentType T>
+Comment<T>::Comment(Comment&& base) noexcept = default;
+
+template<CommentType T>
+Comment<T>& Comment<T>::operator=(const Comment& base) = default;
+
+template<CommentType T>
+Comment<T>& Comment<T>::operator=(Comment&& base) noexcept = default;
+
+template<CommentType T>
+typename Comment<T>::PointerType Comment<T>::Clone() const {
+	return MakePointer<Comment<T>>(*this);
+}
+
+template<CommentType T>
+typename Comment<T>::PointerType Comment<T>::Move() {
+	return MakePointer<Comment<T>>(std::move(*this));
+}
+
 namespace {
 	StormByte::Safe::String Indent(const int indent_level) {
 		const int level = indent_level > 0 ? indent_level : 0;

@@ -39,15 +39,35 @@
 
 #include <StormByte/config/exception.hxx>
 
-namespace StormByte::Config {
-	Exception::~Exception() noexcept = default;
-	WrongValueTypeConversion::~WrongValueTypeConversion() noexcept = default;
-	ValueFailure::~ValueFailure() noexcept = default;
-	InvalidName::~InvalidName() noexcept = default;
-	InvalidPath::~InvalidPath() noexcept = default;
-	ParseError::~ParseError() noexcept = default;
-	ItemNotFound::~ItemNotFound() noexcept = default;
-	ItemAlreadyExists::~ItemAlreadyExists() noexcept = default;
-	ItemNameAlreadyExists::~ItemNameAlreadyExists() noexcept = default;
-	OutOfBounds::~OutOfBounds() noexcept = default;
-}
+#include <string>
+
+using namespace StormByte::Config;
+
+Exception::Exception(std::string_view message)
+	: StormByte::Exception(StormByte::Exception::Path{"Config"}, "{}", message) {}
+
+Exception::Exception(Path path, std::string_view message)
+	: StormByte::Exception(
+		StormByte::Exception::Path{std::string("Config.") + std::string(path.segments)},
+		"{}",
+		message) {}
+
+Exception::~Exception() noexcept = default;
+
+WrongValueTypeConversion::~WrongValueTypeConversion() noexcept = default;
+
+ValueFailure::~ValueFailure() noexcept = default;
+
+InvalidName::~InvalidName() noexcept = default;
+
+InvalidPath::~InvalidPath() noexcept = default;
+
+ParseError::~ParseError() noexcept = default;
+
+ItemNotFound::~ItemNotFound() noexcept = default;
+
+ItemAlreadyExists::~ItemAlreadyExists() noexcept = default;
+
+ItemNameAlreadyExists::~ItemNameAlreadyExists() noexcept = default;
+
+OutOfBounds::~OutOfBounds() noexcept = default;

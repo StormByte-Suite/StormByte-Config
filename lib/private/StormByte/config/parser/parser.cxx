@@ -70,22 +70,34 @@ Expected<void, ParseError> Parser::Parser::Parse(
 	Tokenizer tokenizer(stream);
 	Parser parser(tokenizer, action);
 	for (const auto& hook : before) {
-		if (hook)
-			(*hook)(root);
+		if (!hook || !hook->HasValue())
+			continue;
+		auto safe_root = Safe::Heap::MakeShared<Item::Group>(root);
+		if (hook->Call(safe_root) != Safe::Status::Success)
+			throw Exception("Read callback failed before parsing");
+		root = *safe_root;
 	}
 	auto res = parser.Parse(root, Mode::Named);
 	if (!res) {
 		bool should_throw = true;
-		if (on_failure)
-			should_throw = (*on_failure)(root);
+		if (on_failure && on_failure->HasValue()) {
+			const auto safe_root = Safe::Heap::MakeShared<Item::Group>(root);
+			const StormByte::Safe::Shared<const Item::Group> const_root = safe_root;
+			if (on_failure->Call(should_throw, const_root) != Safe::Status::Success)
+				throw Exception("Parse-failure callback failed");
+		}
 		if (should_throw)
 			return Unexpected(std::move(res.error()));
 		return {};
 	}
 
 	for (const auto& hook : after) {
-		if (hook)
-			(*hook)(root);
+		if (!hook || !hook->HasValue())
+			continue;
+		auto safe_root = Safe::Heap::MakeShared<Item::Group>(root);
+		if (hook->Call(safe_root) != Safe::Status::Success)
+			throw Exception("Read callback failed after parsing");
+		root = *safe_root;
 	}
 	return {};
 }

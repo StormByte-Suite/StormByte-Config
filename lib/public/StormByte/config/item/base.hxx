@@ -79,27 +79,27 @@ namespace StormByte::Config::Item {
 			 * @brief Copy constructor
 			 * @param base	item to copy
 			 */
-			Base(const Base& base) noexcept = default;
+			Base(const Base& base) noexcept;
 
 			/**
 			 * @brief Move constructor
 			 * @param base	item to move
 			 */
-			Base(Base&& base) noexcept = default;
+			Base(Base&& base) noexcept;
 
 			/**
 			 * @brief Assignment operator
 			 * @param base	item to copy
 			 * @return		copied item
 			 */
-			Base& operator=(const Base& base) noexcept = default;
+			Base& operator=(const Base& base) noexcept;
 
 			/**
 			 * @brief Move assignment operator
 			 * @param base	item to move
 			 * @return		moved item
 			 */
-			Base& operator=(Base&& base) noexcept = default;
+			Base& operator=(Base&& base) noexcept;
 
 			/**
 			 * @brief Destructor

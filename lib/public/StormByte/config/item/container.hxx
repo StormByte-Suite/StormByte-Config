@@ -451,3 +451,5 @@ namespace StormByte::Config::Item {
 			void Remove(StormByte::Safe::Queue<StormByte::Safe::String>& path);
 	};
 }
+
+STORMBYTE_DECLARE_MAYBE_SAFE(StormByte::Config::Item::Container);

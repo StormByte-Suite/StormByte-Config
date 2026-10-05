@@ -114,26 +114,19 @@ void Config::OnExistingAction(const StormByte::Config::OnExistingAction& on_exis
 	m_root.SetOnExistingAction(on_existing);
 }
 
-void Config::OnParseFailure(OnFailureHook hook) {
-	m_on_parse_failure_hook = MakeFailureHook(hook);
+void Config::OnParseFailure(FailureHook hook) {
+	if (hook.HasValue())
+		m_on_parse_failure_hook = StormByte::Safe::Heap::MakeShared<FailureHook>(std::move(hook));
+	else
+		m_on_parse_failure_hook.reset();
 }
 
-void Config::OnParseFailure(StormByte::Safe::Shared<FailureHook> hook) {
-	m_on_parse_failure_hook = std::move(hook);
+void Config::AddHookBeforeRead(ReadHook hook) {
+	if (hook.HasValue())
+		m_before_read_hooks.push_back(StormByte::Safe::Heap::MakeShared<ReadHook>(std::move(hook)));
 }
 
-void Config::AddHookBeforeRead(HookFunction hook) {
-	m_before_read_hooks.push_back(MakeReadHook(hook));
-}
-
-void Config::AddHookBeforeRead(StormByte::Safe::Shared<ReadHook> hook) {
-	m_before_read_hooks.push_back(std::move(hook));
-}
-
-void Config::AddHookAfterRead(HookFunction hook) {
-	m_after_read_hooks.push_back(MakeReadHook(hook));
-}
-
-void Config::AddHookAfterRead(StormByte::Safe::Shared<ReadHook> hook) {
-	m_after_read_hooks.push_back(std::move(hook));
+void Config::AddHookAfterRead(ReadHook hook) {
+	if (hook.HasValue())
+		m_after_read_hooks.push_back(StormByte::Safe::Heap::MakeShared<ReadHook>(std::move(hook)));
 }

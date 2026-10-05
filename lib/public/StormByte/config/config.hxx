@@ -536,40 +536,22 @@ namespace StormByte::Config {
 			void OnExistingAction(const StormByte::Config::OnExistingAction& on_existing);
 
 			/**
-			 * @brief Sets a stateless function to execute on parse failure.
-			 * @param hook	Function to execute. Return false to swallow the error.
+			 * @brief Sets a safe function to execute on parse failure.
+			 * @param hook	Callback receiving a Base-owned const group handle. Return false to swallow the error.
 			 */
-			void OnParseFailure(OnFailureHook hook);
+			void OnParseFailure(FailureHook hook);
 
 			/**
-			 * @brief Sets a stateful hook to execute on parse failure.
-			 * @param hook	Hook allocated with MakePointer / MakeFailureHook.
+			 * @brief Adds a safe callback executed before reading starts.
+			 * @param hook	Callback receiving a Base-owned mutable group handle.
 			 */
-			void OnParseFailure(StormByte::Safe::Shared<FailureHook> hook);
+			void AddHookBeforeRead(ReadHook hook);
 
 			/**
-			 * @brief Adds a stateless hook executed before reading starts.
-			 * @param hook	Function pointer.
+			 * @brief Adds a safe callback executed after a successful read.
+			 * @param hook	Callback receiving a Base-owned mutable group handle.
 			 */
-			void AddHookBeforeRead(HookFunction hook);
-
-			/**
-			 * @brief Adds a stateful hook executed before reading starts.
-			 * @param hook	Hook allocated with MakePointer / MakeReadHook.
-			 */
-			void AddHookBeforeRead(StormByte::Safe::Shared<ReadHook> hook);
-
-			/**
-			 * @brief Adds a stateless hook executed after a successful read.
-			 * @param hook	Function pointer.
-			 */
-			void AddHookAfterRead(HookFunction hook);
-
-			/**
-			 * @brief Adds a stateful hook executed after a successful read.
-			 * @param hook	Hook allocated with MakePointer / MakeReadHook.
-			 */
-			void AddHookAfterRead(StormByte::Safe::Shared<ReadHook> hook);
+			void AddHookAfterRead(ReadHook hook);
 			/** @} */
 
 		protected:
@@ -577,7 +559,7 @@ namespace StormByte::Config {
 
 			HookFunctions m_before_read_hooks;	///< Hooks executed before reading
 			HookFunctions m_after_read_hooks;	///< Hooks executed after successful reading
-			OptionalFailureHook m_on_parse_failure_hook;	///< Hook executed on failure
+			OptionalFailureHook m_on_parse_failure_hook; ///< Callback executed on failure, empty if unset.
 			StormByte::Config::OnExistingAction m_on_existing_action;	///< Collision policy
 	};
 

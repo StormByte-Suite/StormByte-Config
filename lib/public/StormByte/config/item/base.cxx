@@ -50,6 +50,14 @@ Base::Base() noexcept = default;
 
 Base::Base(const StormByte::Safe::String& name): m_name(name) {}
 
+Base::Base(const Base& base) noexcept = default;
+
+Base::Base(Base&& base) noexcept = default;
+
+Base& Base::operator=(const Base& base) noexcept = default;
+
+Base& Base::operator=(Base&& base) noexcept = default;
+
 Base::~Base() noexcept = default;
 
 bool Base::operator==(const Base& base) const noexcept {

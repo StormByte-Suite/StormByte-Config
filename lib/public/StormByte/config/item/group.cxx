@@ -51,6 +51,8 @@ Group::Group(const StormByte::Safe::String& name): Container(name) {}
 
 Group::Group(StormByte::Safe::String&& name): Container(std::move(name)) {}
 
+Group::Group(std::string_view name): Group(StormByte::Safe::String(name)) {}
+
 Group::Group(const Group& group) = default;
 
 Group::Group(Group&& group) noexcept = default;
@@ -60,6 +62,14 @@ Group& Group::operator=(const Group& group) = default;
 Group& Group::operator=(Group&& group) noexcept = default;
 
 Group::~Group() noexcept = default;
+
+Base::PointerType Group::Clone() const {
+	return MakePointer<Group>(*this);
+}
+
+Base::PointerType Group::Move() {
+	return MakePointer<Group>(std::move(*this));
+}
 
 Base::PointerType Group::BeforeAdditionActions(Base::PointerType item, const StormByte::Config::OnExistingAction onexisting) {
 	if (!item)

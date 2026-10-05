@@ -76,7 +76,7 @@ namespace StormByte::Config::Item {
 			 * @brief Constructor
 			 * @param name	name of the group
 			 */
-			STORMBYTE_FORCE_INLINE explicit Group(std::string_view name): Group(StormByte::Safe::String(name)) {}
+			explicit Group(std::string_view name);
 
 			/**
 			 * @brief Copy constructor
@@ -113,17 +113,13 @@ namespace StormByte::Config::Item {
 			 * @brief Clone
 			 * @return	pointer
 			 */
-			inline PointerType Clone() const override {
-				return MakePointer<Group>(*this);
-			}
+			PointerType Clone() const override;
 
 			/**
 			 * @brief Move
 			 * @return	pointer
 			 */
-			inline PointerType Move() override {
-				return MakePointer<Group>(std::move(*this));
-			}
+			PointerType Move() override;
 
 			/**
 			 * @brief Container type
@@ -153,3 +149,5 @@ namespace StormByte::Config::Item {
 }
 
 #include <StormByte/config/item/base.txx>
+
+STORMBYTE_DECLARE_MAYBE_SAFE(StormByte::Config::Item::Group);

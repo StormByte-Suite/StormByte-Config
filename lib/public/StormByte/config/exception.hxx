@@ -42,203 +42,218 @@
 #include <StormByte/exception.hxx>
 #include <StormByte/config/visibility.h>
 
-#include <string>
 #include <string_view>
 #include <utility>
 
-/**
- * @brief Config module of the StormByte suite.
- */
-namespace StormByte::Config {
 	/**
-	 * @class Exception
-	 * @brief Root exception for Config. `what()` is `StormByte.Config: message`.
+	 * @namespace StormByte
+	 * @brief Root namespace of the StormByte suite.
 	 */
-	class STORMBYTE_CONFIG_PUBLIC Exception: public StormByte::Exception {
-		public:
+	namespace StormByte {
+		/**
+		 * @namespace StormByte::Config
+		 * @brief Config module of the StormByte suite.
+		 */
+		namespace Config {
 			/**
-			 * @brief Format under `StormByte.Config`.
-			 * @tparam Args Format argument types.
-			 * @param fmt Format string.
-			 * @param args Format arguments.
+			 * @class Exception
+			 * @brief Root exception for Config. `what()` starts with `StormByte.Config`.
 			 */
-			template <typename... Args>
-			explicit Exception(std::format_string<Args...> fmt, Args&&... args)
-				: StormByte::Exception(StormByte::Exception::Path{"Config"}, fmt, std::forward<Args>(args)...) {}
+			class STORMBYTE_CONFIG_PUBLIC Exception: public StormByte::Exception {
+				public:
+					/**
+					 * @struct Path
+					 * @brief Additional path segments nested below `StormByte.Config`.
+					 */
+					struct Path {
+						std::string_view segments; ///< Additional dotted path segments.
 
-			/**
-			 * @brief Format a plain message under `StormByte.Config`.
-			 * @param message Exception text. Not a format string.
-			 */
-			STORMBYTE_FORCE_INLINE explicit Exception(std::string message)
-				: StormByte::Exception(StormByte::Exception::Path{"Config"}, "{}", std::move(message)) {}
+						/**
+						 * @brief Wraps additional path segments.
+						 * @param segments Dotted segments appended below `Config`.
+						 */
+						explicit constexpr Path(std::string_view segments) noexcept: segments(segments) {}
+					};
 
-			/**
-			 * @brief Plain message under an explicit path.
-			 * @param path Segments under `StormByte`. Not a format string.
-			 * @param message Exception text. Not a format string.
-			 *
-			 * `StormByte::Exception::Path` is protected, so callers pass the
-			 * segments as a view. The view only needs to live for this call.
-			 */
-			STORMBYTE_FORCE_INLINE Exception(std::string_view path, std::string message)
-				: StormByte::Exception(StormByte::Exception::Path{path}, "{}", std::move(message)) {}
+					/**
+					 * @brief Format under `StormByte.Config`.
+					 * @tparam Args Format argument types.
+					 * @param fmt Format string.
+					 * @param args Format arguments.
+					 */
+					template <typename... Args>
+					explicit Exception(std::format_string<Args...> fmt, Args&&... args)
+						: StormByte::Exception(StormByte::Exception::Path{"Config"}, fmt, std::forward<Args>(args)...) {}
 
-			/**
-			 * @brief Copy constructor.
-			 * @param other Exception to copy.
-			 */
-			Exception(const Exception& other) = default;
+					/**
+					 * @brief Format a plain message under `StormByte.Config`.
+					 * @param message Exception text. Not a format string.
+					 */
+					explicit Exception(std::string_view message);
 
-			/**
-			 * @brief Move constructor.
-			 * @param other Exception to move.
-			 */
-			Exception(Exception&& other) noexcept = default;
+					/**
+					 * @brief Plain message under an additional Config path.
+					 * @param path Additional segments nested below `StormByte.Config`.
+					 * @param message Exception text. Not a format string.
+					 */
+					Exception(Path path, std::string_view message);
 
-			/**
-			 * @brief Destructor. Defined in this module so `catch` matches across a DLL.
-			 */
-			~Exception() noexcept override;
+					/**
+					 * @brief Copy constructor.
+					 * @param other Exception to copy.
+					 */
+					Exception(const Exception& other) = default;
 
-			/**
-			 * @brief Copy assignment operator.
-			 * @param other Exception to copy.
-			 * @return Reference to this Exception.
-			 */
-			Exception& operator=(const Exception& other) = default;
+					/**
+					 * @brief Move constructor.
+					 * @param other Exception to move.
+					 */
+					Exception(Exception&& other) noexcept = default;
 
-			/**
-			 * @brief Move assignment operator.
-			 * @param other Exception to move.
-			 * @return Reference to this Exception.
-			 */
-			Exception& operator=(Exception&& other) noexcept = default;
-	};
+					/**
+					 * @brief Destructor. Defined in this module so `catch` matches across a DLL.
+					 */
+					~Exception() noexcept override;
 
-	/**
-	 * @class WrongValueTypeConversion
-	 * @brief Thrown when a value is converted to an incorrect type.
-	 */
-	class STORMBYTE_CONFIG_PUBLIC WrongValueTypeConversion final: public Exception {
-		public:
-			using Exception::Exception;
+					/**
+					 * @brief Copy assignment operator.
+					 * @param other Exception to copy.
+					 * @return Reference to this Exception.
+					 */
+					Exception& operator=(const Exception& other) = default;
 
-			/**
-			 * @brief Destructor. Defined in this module so `catch` matches across a DLL.
-			 */
-			~WrongValueTypeConversion() noexcept override;
-	};
-
-	/**
-	 * @class ValueFailure
-	 * @brief Thrown when setting a value fails due to type mismatch.
-	 */
-	class STORMBYTE_CONFIG_PUBLIC ValueFailure final: public Exception {
-		public:
-			using Exception::Exception;
+					/**
+					 * @brief Move assignment operator.
+					 * @param other Exception to move.
+					 * @return Reference to this Exception.
+					 */
+					Exception& operator=(Exception&& other) noexcept = default;
+			};
 
 			/**
-			 * @brief Destructor. Defined in this module so `catch` matches across a DLL.
+			 * @class WrongValueTypeConversion
+			 * @brief Thrown when a value is converted to an incorrect type.
 			 */
-			~ValueFailure() noexcept override;
-	};
+			class STORMBYTE_CONFIG_PUBLIC WrongValueTypeConversion final: public Exception {
+				public:
+					using Exception::Exception;
 
-	/**
-	 * @class InvalidName
-	 * @brief Thrown when an invalid name is used for an item.
-	 */
-	class STORMBYTE_CONFIG_PUBLIC InvalidName final: public Exception {
-		public:
-			using Exception::Exception;
+					/**
+					 * @brief Destructor. Defined in this module so `catch` matches across a DLL.
+					 */
+					~WrongValueTypeConversion() noexcept override;
+			};
 
 			/**
-			 * @brief Destructor. Defined in this module so `catch` matches across a DLL.
+			 * @class ValueFailure
+			 * @brief Thrown when setting a value fails due to type mismatch.
 			 */
-			~InvalidName() noexcept override;
-	};
+			class STORMBYTE_CONFIG_PUBLIC ValueFailure final: public Exception {
+				public:
+					using Exception::Exception;
 
-	/**
-	 * @class InvalidPath
-	 * @brief Thrown when an invalid path is used for an item.
-	 */
-	class STORMBYTE_CONFIG_PUBLIC InvalidPath final: public Exception {
-		public:
-			using Exception::Exception;
+					/**
+					 * @brief Destructor. Defined in this module so `catch` matches across a DLL.
+					 */
+					~ValueFailure() noexcept override;
+			};
 
 			/**
-			 * @brief Destructor. Defined in this module so `catch` matches across a DLL.
+			 * @class InvalidName
+			 * @brief Thrown when an invalid name is used for an item.
 			 */
-			~InvalidPath() noexcept override;
-	};
+			class STORMBYTE_CONFIG_PUBLIC InvalidName final: public Exception {
+				public:
+					using Exception::Exception;
 
-	/**
-	 * @class ParseError
-	 * @brief Thrown when a parsing error occurs in a configuration file.
-	 */
-	class STORMBYTE_CONFIG_PUBLIC ParseError final: public Exception {
-		public:
-			using Exception::Exception;
+					/**
+					 * @brief Destructor. Defined in this module so `catch` matches across a DLL.
+					 */
+					~InvalidName() noexcept override;
+			};
 
 			/**
-			 * @brief Destructor. Defined in this module so `catch` matches across a DLL.
+			 * @class InvalidPath
+			 * @brief Thrown when an invalid path is used for an item.
 			 */
-			~ParseError() noexcept override;
-	};
+			class STORMBYTE_CONFIG_PUBLIC InvalidPath final: public Exception {
+				public:
+					using Exception::Exception;
 
-	/**
-	 * @class ItemNotFound
-	 * @brief Thrown when an item cannot be found by its path or name.
-	 */
-	class STORMBYTE_CONFIG_PUBLIC ItemNotFound final: public Exception {
-		public:
-			using Exception::Exception;
+					/**
+					 * @brief Destructor. Defined in this module so `catch` matches across a DLL.
+					 */
+					~InvalidPath() noexcept override;
+			};
 
 			/**
-			 * @brief Destructor. Defined in this module so `catch` matches across a DLL.
+			 * @class ParseError
+			 * @brief Thrown when a parsing error occurs in a configuration file.
 			 */
-			~ItemNotFound() noexcept override;
-	};
+			class STORMBYTE_CONFIG_PUBLIC ParseError final: public Exception {
+				public:
+					using Exception::Exception;
 
-	/**
-	 * @class ItemAlreadyExists
-	 * @brief Thrown when attempting to add an item that already exists.
-	 */
-	class STORMBYTE_CONFIG_PUBLIC ItemAlreadyExists final: public Exception {
-		public:
-			using Exception::Exception;
+					/**
+					 * @brief Destructor. Defined in this module so `catch` matches across a DLL.
+					 */
+					~ParseError() noexcept override;
+			};
 
 			/**
-			 * @brief Destructor. Defined in this module so `catch` matches across a DLL.
+			 * @class ItemNotFound
+			 * @brief Thrown when an item cannot be found by its path or name.
 			 */
-			~ItemAlreadyExists() noexcept override;
-	};
+			class STORMBYTE_CONFIG_PUBLIC ItemNotFound final: public Exception {
+				public:
+					using Exception::Exception;
 
-	/**
-	 * @class ItemNameAlreadyExists
-	 * @brief Thrown when an item's name conflicts with an existing name.
-	 */
-	class STORMBYTE_CONFIG_PUBLIC ItemNameAlreadyExists final: public Exception {
-		public:
-			using Exception::Exception;
+					/**
+					 * @brief Destructor. Defined in this module so `catch` matches across a DLL.
+					 */
+					~ItemNotFound() noexcept override;
+			};
 
 			/**
-			 * @brief Destructor. Defined in this module so `catch` matches across a DLL.
+			 * @class ItemAlreadyExists
+			 * @brief Thrown when attempting to add an item that already exists.
 			 */
-			~ItemNameAlreadyExists() noexcept override;
-	};
+			class STORMBYTE_CONFIG_PUBLIC ItemAlreadyExists final: public Exception {
+				public:
+					using Exception::Exception;
 
-	/**
-	 * @class OutOfBounds
-	 * @brief Thrown when an index is out of bounds.
-	 */
-	class STORMBYTE_CONFIG_PUBLIC OutOfBounds final: public Exception {
-		public:
-			using Exception::Exception;
+					/**
+					 * @brief Destructor. Defined in this module so `catch` matches across a DLL.
+					 */
+					~ItemAlreadyExists() noexcept override;
+			};
 
 			/**
-			 * @brief Destructor. Defined in this module so `catch` matches across a DLL.
+			 * @class ItemNameAlreadyExists
+			 * @brief Thrown when an item's name conflicts with an existing name.
 			 */
-			~OutOfBounds() noexcept override;
-	};
-}
+			class STORMBYTE_CONFIG_PUBLIC ItemNameAlreadyExists final: public Exception {
+				public:
+					using Exception::Exception;
+
+					/**
+					 * @brief Destructor. Defined in this module so `catch` matches across a DLL.
+					 */
+					~ItemNameAlreadyExists() noexcept override;
+			};
+
+			/**
+			 * @class OutOfBounds
+			 * @brief Thrown when an index is out of bounds.
+			 */
+			class STORMBYTE_CONFIG_PUBLIC OutOfBounds final: public Exception {
+				public:
+					using Exception::Exception;
+
+					/**
+					 * @brief Destructor. Defined in this module so `catch` matches across a DLL.
+					 */
+					~OutOfBounds() noexcept override;
+			};
+		}
+	}

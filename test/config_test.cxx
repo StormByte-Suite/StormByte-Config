@@ -39,6 +39,7 @@
 
 #include <StormByte/config/config.hxx>
 #include <StormByte/test_handlers.h>
+#include <StormByte/type_traits/safe.hxx>
 
 #include <climits>
 #include <filesystem>
@@ -46,9 +47,22 @@
 #include <iostream>
 #include <random>
 #include <sstream>
+#include <string_view>
 
 using namespace StormByte::Config;
 using StormByte::Safe::String;
+
+static_assert(StormByte::Type::MaybeSafe<Config>);
+static_assert(StormByte::Type::MaybeSafe<Item::Base>);
+static_assert(StormByte::Type::MaybeSafe<Item::Container>);
+static_assert(StormByte::Type::MaybeSafe<Item::Group>);
+static_assert(StormByte::Type::MaybeSafe<Item::List>);
+static_assert(StormByte::Type::MaybeSafe<Item::Value>);
+static_assert(StormByte::Type::MaybeSafe<Item::Comment<Item::CommentType::SingleLineBash>>);
+static_assert(StormByte::Type::MaybeSafe<Item::Comment<Item::CommentType::SingleLineC>>);
+static_assert(StormByte::Type::MaybeSafe<Item::Comment<Item::CommentType::MultiLineC>>);
+static_assert(StormByte::Type::MaybeSafe<ReadHook>);
+static_assert(StormByte::Type::MaybeSafe<FailureHook>);
 
 namespace {
 	std::filesystem::path TempConfigFile() {
@@ -61,11 +75,11 @@ namespace {
 		}
 	}
 
-	void HookAfterClear(Item::Group& root) {
-		root.Clear();
+	void HookAfterClear(StormByte::Safe::Shared<Item::Group> root) {
+		root->Clear();
 	}
 
-	bool HookSwallowFailure(const Item::Group&) {
+	bool HookSwallowFailure(StormByte::Safe::Shared<const Item::Group>) {
 		return false;
 	}
 }
@@ -423,6 +437,14 @@ int test_empty_string() {
 	}
 
 	RETURN_TEST("test_empty_string", result);
+}
+
+int test_embedded_null_string_value() {
+	constexpr std::string_view expected{"left\0right", 10};
+	Item::Value value("embedded_null", expected);
+	const auto actual = static_cast<std::string_view>(value.As<Item::Text>());
+	ASSERT_EQUAL("test_embedded_null_string_value", expected, actual);
+	RETURN_TEST("test_embedded_null_string_value", 0);
 }
 
 int test_integer_boundaries() {
@@ -913,7 +935,7 @@ int good_comment_multi_conf1() {
 int test_config_hooks() {
 	int result = 0;
 	Config cfg1;
-	cfg1.AddHookAfterRead(&HookAfterClear);
+	cfg1.AddHookAfterRead(MakeReadHook(&HookAfterClear));
 	try {
 		std::fstream file;
 		file.open(CurrentFileDirectory / "files" / "complex_conf1.conf", std::ios::in);
@@ -970,7 +992,7 @@ int all_comment_types_test() {
 int test_on_failure_hook() {
 	int result = 0;
 	Config cfg;
-	cfg.OnParseFailure(&HookSwallowFailure);
+	cfg.OnParseFailure(MakeFailureHook(&HookSwallowFailure));
 	try {
 		std::fstream file;
 		file.open(CurrentFileDirectory / "files" / "bad_config1.conf", std::ios::in);
@@ -1277,8 +1299,8 @@ int test_exception_component() {
 	StormByte::Config::InvalidName ex_derived("invalid item name");
 	ASSERT_EQUAL("test_exception_component", std::string("StormByte.Config: invalid item name"), std::string(ex_derived.what()));
 
-	StormByte::Config::Exception ex_custom("Custom", std::string("custom message"));
-	ASSERT_EQUAL("test_exception_component", std::string("StormByte.Custom: custom message"), std::string(ex_custom.what()));
+	StormByte::Config::Exception ex_custom(StormByte::Config::Exception::Path{"Custom"}, "custom message");
+	ASSERT_EQUAL("test_exception_component", std::string("StormByte.Config.Custom: custom message"), std::string(ex_custom.what()));
 
 	RETURN_TEST("test_exception_component", result);
 }
@@ -1419,6 +1441,7 @@ int main() {
 	result += test_add_and_lookup();
 	result += test_write_and_read();
 	result += test_empty_string();
+	result += test_embedded_null_string_value();
 	result += test_integer_boundaries();
 	result += test_special_characters_in_string();
 	result += test_invalid_syntax();

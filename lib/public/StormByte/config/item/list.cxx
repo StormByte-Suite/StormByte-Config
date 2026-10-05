@@ -51,6 +51,8 @@ List::List(const StormByte::Safe::String& name): Container(name) {}
 
 List::List(StormByte::Safe::String&& name): Container(std::move(name)) {}
 
+List::List(std::string_view name): List(StormByte::Safe::String(name)) {}
+
 List::List(const List& list) = default;
 
 List::List(List&& list) noexcept = default;
@@ -60,6 +62,14 @@ List& List::operator=(const List& list) = default;
 List& List::operator=(List&& list) noexcept = default;
 
 List::~List() noexcept = default;
+
+Base::PointerType List::Clone() const {
+	return MakePointer<List>(*this);
+}
+
+Base::PointerType List::Move() {
+	return MakePointer<List>(std::move(*this));
+}
 
 Base::PointerType List::BeforeAdditionActions(Base::PointerType item, const StormByte::Config::OnExistingAction on_existing) {
 	if (!item)
