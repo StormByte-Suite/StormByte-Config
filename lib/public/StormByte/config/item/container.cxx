@@ -41,7 +41,6 @@
 #include <StormByte/safe/string.hxx>
 
 #include <algorithm>
-#include <regex>
 #include <string>
 #include <string_view>
 
@@ -188,8 +187,30 @@ StormByte::Safe::String Container::ContentsToString(const int& indent_level) con
 }
 
 bool Container::IsPathValid(const StormByte::Safe::String& name) noexcept {
-	static const std::regex name_regex(R"(^[A-Za-z0-9_]+(/([A-Za-z0-9_]+))*$)");
-	return std::regex_match(static_cast<std::string>(name), name_regex);
+	const std::string_view text(name);
+	if (text.empty())
+		return false;
+
+	auto segment = [](unsigned char c) noexcept {
+		return (c >= 'A' && c <= 'Z')
+			|| (c >= 'a' && c <= 'z')
+			|| (c >= '0' && c <= '9')
+			|| c == '_';
+	};
+
+	bool in_segment = false;
+	for (const unsigned char c : text) {
+		if (c == '/') {
+			if (!in_segment)
+				return false;
+			in_segment = false;
+			continue;
+		}
+		if (!segment(c))
+			return false;
+		in_segment = true;
+	}
+	return in_segment;
 }
 
 const Base& Container::LookUp(const StormByte::Safe::String& path) const {

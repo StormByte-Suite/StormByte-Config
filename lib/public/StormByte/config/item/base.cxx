@@ -40,7 +40,6 @@
 #include <StormByte/config/item/base.hxx>
 #include <StormByte/safe/string.hxx>
 
-#include <regex>
 #include <string>
 #include <string_view>
 
@@ -73,8 +72,21 @@ bool Base::operator!=(const Base& base) const noexcept {
 }
 
 bool Base::IsNameValid(const StormByte::Safe::String& name) noexcept {
-	static const std::regex name_regex(R"(^[A-Za-z][A-Za-z0-9_]*$)");
-	return std::regex_match(static_cast<std::string>(name), name_regex);
+	const std::string_view text(name);
+	if (text.empty())
+		return false;
+	const auto head = static_cast<unsigned char>(text.front());
+	if ((head < 'A' || head > 'Z') && (head < 'a' || head > 'z'))
+		return false;
+	for (const unsigned char c : text.substr(1)) {
+		const bool ok = (c >= 'A' && c <= 'Z')
+			|| (c >= 'a' && c <= 'z')
+			|| (c >= '0' && c <= '9')
+			|| c == '_';
+		if (!ok)
+			return false;
+	}
+	return true;
 }
 
 StormByte::Safe::String Base::Serialize(const int& indent_level) const {
