@@ -47,11 +47,13 @@
 #include <StormByte/config/item/value.hxx>
 #include <StormByte/config/typedefs.hxx>
 #include <StormByte/platform.h>
-#include <StormByte/size.hxx>
+#include <StormByte/safe/binary.hxx>
 #include <StormByte/safe/string.hxx>
+#include <StormByte/size.hxx>
 
 #include <istream>
 #include <ostream>
+#include <span>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -125,37 +127,19 @@ namespace StormByte::Config {
 			 */
 			/**
 			 * @brief Gets a reference to an item by path.
-			 * @param path	Path to the item.
+			 * @param path	Path. A literal, `std::string` or `Safe::String` binds here.
 			 * @return		Item reference.
 			 */
-			inline Item::Base& operator[](const StormByte::Safe::String& path) {
+			inline Item::Base& operator[](std::string_view path) {
 				return m_root.operator[](path);
 			}
 
 			/**
 			 * @brief Gets a const reference to an item by path.
-			 * @param path	Path to the item.
+			 * @param path	Path. A literal, `std::string` or `Safe::String` binds here.
 			 * @return		Item const reference.
 			 */
-			inline const Item::Base& operator[](const StormByte::Safe::String& path) const {
-				return m_root.operator[](path);
-			}
-
-			/**
-			 * @brief Gets a reference to an item by a path view.
-			 * @param path	Path to the item.
-			 * @return		Item reference.
-			 */
-			STORMBYTE_FORCE_INLINE Item::Base& operator[](std::string_view path) {
-				return m_root.operator[](path);
-			}
-
-			/**
-			 * @brief Gets a const reference to an item by a path view.
-			 * @param path	Path to the item.
-			 * @return		Item const reference.
-			 */
-			STORMBYTE_FORCE_INLINE const Item::Base& operator[](std::string_view path) const {
+			inline const Item::Base& operator[](std::string_view path) const {
 				return m_root.operator[](path);
 			}
 
@@ -215,25 +199,17 @@ namespace StormByte::Config {
 			 */
 			STORMBYTE_FORCE_INLINE void operator<<(std::istream& istream) {
 				std::string text;
-			char chunk[4096];
+				char chunk[4096];
 				while (istream.read(chunk, sizeof(chunk)) || istream.gcount() > 0)
 					text.append(chunk, static_cast<std::size_t>(istream.gcount()));
-				operator<<(StormByte::Safe::String(std::string_view(text)));
+				operator<<(std::string_view(text));
 			}
 
 			/**
-			 * @brief Initialize configuration from a string (text mode).
-			 * @param str	Input text. Copied into the parser; not stored as `std::string`.
+			 * @brief Initialize configuration from text.
+			 * @param str	Input text. A literal, `std::string` or `Safe::String` binds here.
 			 */
-			void operator<<(const StormByte::Safe::String& str);
-
-			/**
-			 * @brief Initialize configuration from a caller-owned `std::string` (text mode).
-			 * @param str	Input text.
-			 */
-			STORMBYTE_FORCE_INLINE void operator<<(const std::string& str) {
-				operator<<(StormByte::Safe::String(std::string_view(str)));
-			}
+			void operator<<(std::string_view str);
 
 			/**
 			 * @brief Initializes configuration when istream is on the left-hand side.
@@ -244,20 +220,12 @@ namespace StormByte::Config {
 			friend Config& operator>>(std::istream& istream, Config& file);
 
 			/**
-			 * @brief Initializes configuration when String is on the left-hand side.
+			 * @brief Initializes configuration when text is on the left-hand side.
 			 * @param str	Input text.
 			 * @param file	Config to put data into.
 			 * @return		Reference to the Config.
 			 */
-			friend Config& operator>>(const StormByte::Safe::String& str, Config& file);
-
-			/**
-			 * @brief Initializes configuration when string is on the left-hand side.
-			 * @param str	Input text.
-			 * @param file	Config to put data into.
-			 * @return		Reference to the Config.
-			 */
-			friend Config& operator>>(const std::string& str, Config& file);
+			friend Config& operator>>(std::string_view str, Config& file);
 			/** @} */
 
 			/**
@@ -325,7 +293,7 @@ namespace StormByte::Config {
 			 * @brief Serialize the document to Base-owned binary bytes.
 			 * @return Versioned binary document.
 			 */
-			StormByte::BinaryData Binary() const;
+			StormByte::Safe::Binary Binary() const;
 
 			/**
 			 * @brief Write this document to an output stream.
@@ -339,24 +307,24 @@ namespace StormByte::Config {
 				}
 
 				const auto data = Binary();
-				const auto size = static_cast<std::size_t>(data.size());
-				if (size > 0)
-					stream.write(reinterpret_cast<const char*>(data.data()), static_cast<std::streamsize>(size));
+				const auto view = data.span();
+				if (!view.empty())
+					stream.write(reinterpret_cast<const char*>(view.data()), static_cast<std::streamsize>(view.size()));
 			}
 
 			/**
-			 * @brief Load a document from Base-owned UTF-8 text.
-			 * @param text Configuration document text.
+			 * @brief Load a document from text.
+			 * @param text Configuration document text. A literal, `std::string` or `Safe::String` binds here.
 			 * @return Config on success, or a StormByte::Exception derivative on failure.
 			 */
-			static ExpectedConfig Load(const StormByte::Safe::String& text);
+			static ExpectedConfig Load(std::string_view text);
 
 			/**
 			 * @brief Load a document from Base-owned binary bytes.
 			 * @param data Versioned binary document.
 			 * @return Config on success, or a StormByte::Exception derivative on failure.
 			 */
-			static ExpectedConfig Load(const StormByte::BinaryData& data);
+			static ExpectedConfig Load(const StormByte::Safe::Binary& data);
 
 			/**
 			 * @brief Read a document from a caller-owned stream.
@@ -370,7 +338,7 @@ namespace StormByte::Config {
 					char chunk[4096];
 					while (stream.read(chunk, sizeof(chunk)) || stream.gcount() > 0)
 						text.append(chunk, static_cast<std::size_t>(stream.gcount()));
-					return Load(StormByte::Safe::String(std::string_view(text)));
+					return Load(std::string_view(text));
 				}
 
 				if (stream.bad())
@@ -393,7 +361,7 @@ namespace StormByte::Config {
 					if (size > 0 && !stream.read(reinterpret_cast<char*>(bytes.data()), size))
 						return StormByte::Unexpected<StormByte::DeserializeError>("Failed to read binary config stream");
 				}
-				return Load(StormByte::BinaryData(bytes));
+				return Load(StormByte::Safe::Binary(std::span<const std::byte>(bytes)));
 			}
 			/** @} */
 
@@ -450,36 +418,19 @@ namespace StormByte::Config {
 
 			/**
 			 * @brief Checks if an item exists by path.
-			 * @param path	Path to the item.
+			 * @param path	Path. A literal, `std::string` or `Safe::String` binds here.
 			 * @return		true if the item exists.
 			 */
-			inline bool Exists(const StormByte::Safe::String& path) const {
-				return m_root.Exists(path);
-			}
-
-			/**
-			 * @brief Checks if an item exists by a path view.
-			 * @param path	Path to the item.
-			 * @return		true if the item exists.
-			 */
-			STORMBYTE_FORCE_INLINE bool Exists(std::string_view path) const {
+			inline bool Exists(std::string_view path) const {
 				return m_root.Exists(path);
 			}
 
 			/**
 			 * @brief Removes an item by path.
-			 * @param path	Item path.
+			 * @param path	Item path. A literal, `std::string` or `Safe::String` binds here.
 			 * @throw ItemNotFound if item is not found.
 			 */
-			inline void Remove(const StormByte::Safe::String& path) {
-				m_root.Remove(path);
-			}
-
-			/**
-			 * @brief Removes an item by a path view.
-			 * @param path	Item path.
-			 */
-			STORMBYTE_FORCE_INLINE void Remove(std::string_view path) {
+			inline void Remove(std::string_view path) {
 				m_root.Remove(path);
 			}
 
@@ -576,23 +527,12 @@ namespace StormByte::Config {
 	}
 
 	/**
-	 * @brief Initializes configuration when String is on the left-hand side.
+	 * @brief Initializes configuration when text is on the left-hand side.
 	 * @param str	Input text.
 	 * @param file	Config to put data into.
 	 * @return		Reference to the Config.
 	 */
-	STORMBYTE_FORCE_INLINE Config& operator>>(const StormByte::Safe::String& str, Config& file) {
-		file << str;
-		return file;
-	}
-
-	/**
-	 * @brief Initializes configuration when string is on the left-hand side.
-	 * @param str	Input text.
-	 * @param file	Config to put data into.
-	 * @return		Reference to the Config.
-	 */
-	STORMBYTE_FORCE_INLINE Config& operator>>(const std::string& str, Config& file) {
+	STORMBYTE_FORCE_INLINE Config& operator>>(std::string_view str, Config& file) {
 		file << str;
 		return file;
 	}

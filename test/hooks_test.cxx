@@ -88,8 +88,8 @@ int test_failure_swallow() {
 	} catch (const Exception&) {
 		result = 1;
 	}
-	ASSERT_EQUAL("test_failure_swallow", 1, g_fail);
-	RETURN_TEST("test_failure_swallow", result);
+	ASSERT_EQUAL(1, g_fail);
+	RETURN_TEST(result);
 }
 
 int test_failure_throw() {
@@ -103,8 +103,8 @@ int test_failure_throw() {
 	} catch (const Exception&) {
 		result = 0;
 	}
-	ASSERT_EQUAL("test_failure_throw", 1, g_fail);
-	RETURN_TEST("test_failure_throw", result);
+	ASSERT_EQUAL(1, g_fail);
+	RETURN_TEST(result);
 }
 
 // -------------------
@@ -120,15 +120,15 @@ int test_function_before_after() {
 	cfg.AddHookAfterRead(MakeReadHook(&AfterMark));
 	try {
 		cfg << std::string("alpha = 1\n");
-		ASSERT_EQUAL("test_function_before_after", 1, g_before);
-		ASSERT_EQUAL("test_function_before_after", 1, g_after);
-		ASSERT_TRUE("test_function_before_after", cfg.Exists("hooked"));
-		ASSERT_TRUE("test_function_before_after", static_cast<bool>(cfg["hooked"].As<Item::Bool>()));
+		ASSERT_EQUAL(1, g_before);
+		ASSERT_EQUAL(1, g_after);
+		ASSERT_TRUE(cfg.Exists("hooked"));
+		ASSERT_TRUE(static_cast<bool>(cfg["hooked"].As<Item::Bool>()));
 	} catch (const Exception& ex) {
 		std::cerr << ex.what() << std::endl;
 		result = 1;
 	}
-	RETURN_TEST("test_function_before_after", result);
+	RETURN_TEST(result);
 }
 
 // -------------------
@@ -144,22 +144,22 @@ int test_stateful_after_read() {
 		root->Add(Item::Value("stateful", 1));
 	});
 	ReadHook callback_copy = callback;
-	ASSERT_TRUE("test_stateful_after_read", callback_copy.HasValue());
-	auto copied_root = StormByte::Safe::Heap::MakeShared<Item::Group>();
-	ASSERT_EQUAL("test_stateful_after_read", StormByte::Safe::Status::Success, callback_copy.Call(copied_root));
-	ASSERT_TRUE("test_stateful_after_read", copied_root->Exists("stateful"));
-	ASSERT_EQUAL("test_stateful_after_read", 1, g_state);
+	ASSERT_TRUE(callback_copy.HasValue());
+	auto copied_root = StormByte::Safe::MakeShared<Item::Group>();
+	ASSERT_EQUAL(StormByte::Safe::Status::Success, callback_copy.Call(copied_root));
+	ASSERT_TRUE(copied_root->Exists("stateful"));
+	ASSERT_EQUAL(1, g_state);
 	cfg.AddHookAfterRead(std::move(callback));
 	try {
 		cfg << std::string("alpha = 7\n");
-		ASSERT_EQUAL("test_stateful_after_read", 2, g_state);
-		ASSERT_TRUE("test_stateful_after_read", cfg.Exists("stateful"));
-		ASSERT_EQUAL("test_stateful_after_read", 1, cfg["stateful"].As<Item::Integer>());
+		ASSERT_EQUAL(2, g_state);
+		ASSERT_TRUE(cfg.Exists("stateful"));
+		ASSERT_EQUAL(1, cfg["stateful"].As<Item::Integer>());
 	} catch (const Exception& ex) {
 		std::cerr << ex.what() << std::endl;
 		result = 1;
 	}
-	RETURN_TEST("test_stateful_after_read", result);
+	RETURN_TEST(result);
 }
 
 int main() {

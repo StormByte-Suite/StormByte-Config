@@ -39,12 +39,12 @@
  */
 
 #include <StormByte/base64.hxx>
-#include <StormByte/binary_data.hxx>
 #include <StormByte/config/item/comment.hxx>
 #include <StormByte/config/item/group.hxx>
 #include <StormByte/config/item/list.hxx>
 #include <StormByte/config/item/value.hxx>
 #include <StormByte/config/parser/parser.hxx>
+#include <StormByte/safe/binary.hxx>
 #include <StormByte/safe/string.hxx>
 
 #include <sstream>
@@ -73,7 +73,7 @@ Expected<void, ParseError> Parser::Parser::Parse(
 	for (const auto& hook : before) {
 		if (!hook || !hook->HasValue())
 			continue;
-		auto safe_root = Safe::Heap::MakeShared<Item::Group>(root);
+		auto safe_root = Safe::MakeShared<Item::Group>(root);
 		if (hook->Call(safe_root) != Safe::Status::Success)
 			throw Exception("Read callback failed before parsing");
 		root = *safe_root;
@@ -82,7 +82,7 @@ Expected<void, ParseError> Parser::Parser::Parse(
 	if (!res) {
 		bool should_throw = true;
 		if (on_failure && on_failure->HasValue()) {
-			const auto safe_root = Safe::Heap::MakeShared<Item::Group>(root);
+			const auto safe_root = Safe::MakeShared<Item::Group>(root);
 			const StormByte::Safe::Shared<const Item::Group> const_root = safe_root;
 			if (on_failure->Call(should_throw, const_root) != Safe::Status::Success)
 				throw Exception("Parse-failure callback failed");
@@ -95,7 +95,7 @@ Expected<void, ParseError> Parser::Parser::Parse(
 	for (const auto& hook : after) {
 		if (!hook || !hook->HasValue())
 			continue;
-		auto safe_root = Safe::Heap::MakeShared<Item::Group>(root);
+		auto safe_root = Safe::MakeShared<Item::Group>(root);
 		if (hook->Call(safe_root) != Safe::Status::Success)
 			throw Exception("Read callback failed after parsing");
 		root = *safe_root;
@@ -153,7 +153,7 @@ Expected<void, ParseError> Parser::Parser::Parse(Item::Container& container, Mod
 				break;
 			case TokenType::Binary: {
 				try {
-					BinaryData bytes = Base64Decode(token.value);
+					Safe::Binary bytes = Base64Decode(token.value);
 					item_res = Item::Base::MakePointer<Item::Value>(std::move(bytes));
 				} catch (const Base64Error& ex) {
 					return Unexpected<ParseError>("Invalid Base64 data on line {}: {}", token.line, ex.what());

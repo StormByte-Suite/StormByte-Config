@@ -43,16 +43,13 @@
 
 #include <algorithm>
 #include <string>
+#include <string_view>
 
 using namespace StormByte::Config::Item;
 
 List::List() noexcept = default;
 
-List::List(const StormByte::Safe::String& name): Container(name) {}
-
-List::List(StormByte::Safe::String&& name): Container(std::move(name)) {}
-
-List::List(std::string_view name): List(StormByte::Safe::String(name)) {}
+List::List(std::string_view name): Container(StormByte::Safe::String(name)) {}
 
 List::List(const List& list) = default;
 

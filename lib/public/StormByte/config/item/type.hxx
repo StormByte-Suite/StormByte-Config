@@ -61,7 +61,7 @@ namespace StormByte::Config::Item {
 		Double,     ///< Double leaf.
 		Integer,    ///< Integer leaf.
 		String,     ///< Text leaf (`StormByte::Safe::String`).
-		Binary,     ///< Binary leaf (`StormByte::BinaryData`).
+		Binary,     ///< Binary leaf (`StormByte::Safe::Binary`).
 		Value       ///< Any leaf (`Value` node). Not used on the wire.
 	};
 
@@ -75,8 +75,8 @@ namespace StormByte::Config::Item {
 			case Type::String:		return "String";
 			case Type::Integer:		return "Integer";
 			case Type::Double:		return "Double";
-			case Type::Comment:		return "Comment";
 			case Type::Bool:		return "Bool";
+			case Type::Comment:		return "Comment";
 			case Type::Container:	return "Container";
 			case Type::Binary:		return "Binary";
 			case Type::Value:		return "Value";
@@ -148,5 +148,5 @@ namespace StormByte::Config::Item {
 	struct Double {};	///< Tag for `As<Double>()` → `double` (Integer promotes).
 	struct Bool {};		///< Tag for `As<Bool>()` → `bool`.
 	struct Text {};		///< Tag for `As<Text>()` → `StormByte::Safe::String`.
-	struct Binary {};	///< Tag for `As<Binary>()` → `StormByte::BinaryData`.
+	struct Binary {};	///< Tag for `As<Binary>()` → `StormByte::Safe::Binary`.
 }

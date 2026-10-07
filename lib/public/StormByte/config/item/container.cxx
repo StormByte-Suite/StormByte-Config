@@ -102,8 +102,12 @@ const Base& Container::operator[](const StormByte::Size& index) const {
 	return *m_items[raw];
 }
 
-Base& Container::operator[](const StormByte::Safe::String& path) {
+Base& Container::operator[](std::string_view path) {
 	return const_cast<Base&>(static_cast<const Container&>(*this)[path]);
+}
+
+const Base& Container::operator[](std::string_view path) const {
+	return LookUp(StormByte::Safe::String(path));
 }
 
 Base& Container::Add(Base::PointerType item, const StormByte::Config::OnExistingAction& on_existing) {
@@ -127,9 +131,9 @@ void Container::Clear() noexcept {
 	m_items.clear();
 }
 
-bool Container::Exists(const StormByte::Safe::String& path) const {
+bool Container::Exists(std::string_view path) const {
 	try {
-		LookUp(path);
+		LookUp(StormByte::Safe::String(path));
 		return true;
 	} catch (const Exception&) {
 		return false;
@@ -143,12 +147,11 @@ void Container::Remove(const StormByte::Size& index) {
 	m_items.erase(m_items.begin() + static_cast<std::ptrdiff_t>(raw));
 }
 
-void Container::Remove(const StormByte::Safe::String& path) {
-	if (!IsPathValid(path))
-		throw InvalidPath("Invalid path '{}'", static_cast<std::string_view>(path));
-	StormByte::Safe::Queue<StormByte::Safe::String> path_queue;
-	if (path.Explode('/', path_queue) != StormByte::Safe::Status::Success)
-		throw InvalidPath("Failed to split removal path");
+void Container::Remove(std::string_view path) {
+	const StormByte::Safe::String owned(path);
+	if (!IsPathValid(owned))
+		throw InvalidPath("Invalid path '{}'", path);
+	StormByte::Safe::Queue<StormByte::Safe::String> path_queue = owned.Explode('/');
 	Remove(path_queue);
 }
 
@@ -217,9 +220,7 @@ bool Container::IsPathValid(const StormByte::Safe::String& name) noexcept {
 const Base& Container::LookUp(const StormByte::Safe::String& path) const {
 	if (!IsPathValid(path))
 		throw InvalidPath("Invalid path '{}'", static_cast<std::string_view>(path));
-	StormByte::Safe::Queue<StormByte::Safe::String> path_queue;
-	if (path.Explode('/', path_queue) != StormByte::Safe::Status::Success)
-		throw InvalidPath("Failed to split lookup path");
+	StormByte::Safe::Queue<StormByte::Safe::String> path_queue = path.Explode('/');
 	return LookUp(path_queue);
 }
 
@@ -266,7 +267,7 @@ const Base& Container::LookUp(StormByte::Safe::Queue<StormByte::Safe::String>& p
 		}
 	}
 
-	const Base& item = is_num ? operator[](idx) : operator[](item_path);
+	const Base& item = is_num ? operator[](idx) : operator[](static_cast<std::string_view>(item_path));
 	if (item.Type() != Type::Container)
 		throw Exception("Lookup path {} applied to non container item", item_text);
 	return static_cast<const Container&>(item).LookUp(path);
@@ -318,7 +319,7 @@ void Container::Remove(StormByte::Safe::Queue<StormByte::Safe::String>& path) {
 		}
 	}
 
-	Base& item = is_num ? operator[](idx) : operator[](item_path);
+	Base& item = is_num ? operator[](idx) : operator[](static_cast<std::string_view>(item_path));
 	if (item.Type() != Type::Container)
 		throw Exception("Lookup path {} applied to non container item", item_text);
 	static_cast<Container&>(item).Remove(path);

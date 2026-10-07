@@ -143,41 +143,21 @@ namespace StormByte::Config::Item {
 
 			/**
 			 * @brief Gets a reference to an item by path.
-			 * @param path	Path to the item.
+			 * @param path	Path. A literal, `std::string` or `Safe::String` binds here.
 			 * @throw InvalidPath if path is invalid.
 			 * @throw ItemNotFound if item is not found.
 			 * @return		Reference to the item.
 			 */
-			Base& operator[](const StormByte::Safe::String& path);
+			Base& operator[](std::string_view path);
 
 			/**
 			 * @brief Gets a const reference to an item by path.
-			 * @param path	Path to the item.
+			 * @param path	Path. A literal, `std::string` or `Safe::String` binds here.
 			 * @throw InvalidPath if path is invalid.
 			 * @throw ItemNotFound if item is not found.
 			 * @return		Const reference to the item.
 			 */
-			inline const Base& operator[](const StormByte::Safe::String& path) const {
-				return LookUp(path);
-			}
-
-			/**
-			 * @brief Gets a reference to an item by a path view.
-			 * @param path	Path to the item.
-			 * @return		Reference to the item.
-			 */
-			STORMBYTE_FORCE_INLINE Base& operator[](std::string_view path) {
-				return operator[](StormByte::Safe::String(path));
-			}
-
-			/**
-			 * @brief Gets a const reference to an item by a path view.
-			 * @param path	Path to the item.
-			 * @return		Const reference to the item.
-			 */
-			STORMBYTE_FORCE_INLINE const Base& operator[](std::string_view path) const {
-				return operator[](StormByte::Safe::String(path));
-			}
+			const Base& operator[](std::string_view path) const;
 
 			/**
 			 * @brief Equality operator.
@@ -317,19 +297,10 @@ namespace StormByte::Config::Item {
 
 			/**
 			 * @brief Checks if an item exists by path.
-			 * @param path	Path to the item.
+			 * @param path	Path. A literal, `std::string` or `Safe::String` binds here.
 			 * @return		true if the item exists.
 			 */
-			bool Exists(const StormByte::Safe::String& path) const;
-
-			/**
-			 * @brief Checks if an item exists by a path view.
-			 * @param path	Path to the item.
-			 * @return		true if the item exists.
-			 */
-			STORMBYTE_FORCE_INLINE bool Exists(std::string_view path) const {
-				return Exists(StormByte::Safe::String(path));
-			}
+			bool Exists(std::string_view path) const;
 
 			/**
 			 * @brief Removes an item by index.
@@ -340,19 +311,11 @@ namespace StormByte::Config::Item {
 
 			/**
 			 * @brief Removes an item by path.
-			 * @param path	Path to the item to remove.
+			 * @param path	Path. A literal, `std::string` or `Safe::String` binds here.
 			 * @throw InvalidPath if path is invalid.
 			 * @throw ItemNotFound if item is not found.
 			 */
-			void Remove(const StormByte::Safe::String& path);
-
-			/**
-			 * @brief Removes an item by a path view.
-			 * @param path	Path to the item to remove.
-			 */
-			STORMBYTE_FORCE_INLINE void Remove(std::string_view path) {
-				Remove(StormByte::Safe::String(path));
-			}
+			void Remove(std::string_view path);
 
 			/**
 			 * @brief Items in this level. The collection cannot grow; each pointer's item is mutable.

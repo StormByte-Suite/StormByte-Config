@@ -65,7 +65,7 @@ int test_version_1_1_0_matches_text() {
 	std::ifstream text_in(text_path);
 	if (!text_in) {
 		std::cerr << "cannot open " << text_path << std::endl;
-		RETURN_TEST("test_version_1_1_0_matches_text", 1);
+		RETURN_TEST(1);
 	}
 
 	Config from_text;
@@ -73,23 +73,23 @@ int test_version_1_1_0_matches_text() {
 		text_in >> from_text;
 	} catch (const StormByte::Exception& ex) {
 		std::cerr << ex.what() << std::endl;
-		RETURN_TEST("test_version_1_1_0_matches_text", 1);
+		RETURN_TEST(1);
 	}
 
 	std::ifstream bin_in(bin_path, std::ios::binary);
 	if (!bin_in) {
 		std::cerr << "cannot open " << bin_path << std::endl;
-		RETURN_TEST("test_version_1_1_0_matches_text", 1);
+		RETURN_TEST(1);
 	}
 
 	auto from_bin = Config::Load(bin_in, Mode::Binary);
 	if (!from_bin) {
 		std::cerr << from_bin.error()->what() << std::endl;
-		RETURN_TEST("test_version_1_1_0_matches_text", 1);
+		RETURN_TEST(1);
 	}
 
-	ASSERT_EQUAL("test_version_1_1_0_matches_text", from_text, from_bin.value());
-	RETURN_TEST("test_version_1_1_0_matches_text", result);
+	ASSERT_EQUAL(from_text, from_bin.value());
+	RETURN_TEST(result);
 }
 
 int main() {

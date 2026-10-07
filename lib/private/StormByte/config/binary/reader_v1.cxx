@@ -38,15 +38,14 @@
  * SPDX-License-Identifier: LGPL-3.0-or-later OR LicenseRef-StormByte-Commercial
  */
 
-#include <StormByte/binary_data.hxx>
 #include <StormByte/config/binary/reader_v1.hxx>
 #include <StormByte/config/item/comment.hxx>
 #include <StormByte/config/item/group.hxx>
 #include <StormByte/config/item/list.hxx>
 #include <StormByte/config/item/value.hxx>
-#include <StormByte/serializable.hxx>
-#include <StormByte/serializable.hxx>
+#include <StormByte/safe/binary.hxx>
 #include <StormByte/safe/string.hxx>
+#include <StormByte/serializable.hxx>
 
 #include <cstdint>
 #include <optional>
@@ -161,7 +160,7 @@ Expected<StormByte::Safe::Shared<Item::Base>, DeserializeError> ReaderV1::ReadIt
 			return item;
 		}
 		case Item::Type::Binary: {
-			auto value = cursor.Take<BinaryData>();
+			auto value = cursor.Take<StormByte::Safe::Binary>();
 			if (!value)
 				return Unexpected(value.error());
 			auto item = Item::Base::MakePointer<Item::Value>(std::move(value.value()));

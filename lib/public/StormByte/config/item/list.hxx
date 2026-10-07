@@ -63,19 +63,7 @@ namespace StormByte::Config::Item {
 
 			/**
 			 * @brief Constructor
-			 * @param name	name of the list
-			 */
-			explicit List(const StormByte::Safe::String& name);
-
-			/**
-			 * @brief Constructor
-			 * @param name	name of the list
-			 */
-			explicit List(StormByte::Safe::String&& name);
-
-			/**
-			 * @brief Constructor
-			 * @param name	name of the list
+			 * @param name	name of the list. A literal, `std::string`, `string_view` or `Safe::String` binds here.
 			 */
 			explicit List(std::string_view name);
 

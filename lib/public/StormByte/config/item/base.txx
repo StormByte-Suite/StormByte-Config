@@ -44,6 +44,7 @@
 #include <StormByte/config/item/group.hxx>
 #include <StormByte/config/item/list.hxx>
 #include <StormByte/config/item/value.hxx>
+#include <StormByte/safe/binary.hxx>
 #include <StormByte/type_traits.hxx>
 
 #include <string_view>
@@ -102,7 +103,7 @@ namespace StormByte::Config::Item {
 		} else if constexpr (StormByte::Type::SameAs<T, Text>) {
 			return static_cast<StormByte::Safe::String&>(RequireValue(*this));
 		} else if constexpr (StormByte::Type::SameAs<T, Binary>) {
-			return static_cast<StormByte::BinaryData&>(RequireValue(*this));
+			return static_cast<StormByte::Safe::Binary&>(RequireValue(*this));
 		} else if constexpr (requires { T::CommentTag; }) {
 			if (this->Type() != Item::Type::Comment)
 				FailAs(*this, "Comment");
@@ -143,7 +144,7 @@ namespace StormByte::Config::Item {
 		} else if constexpr (StormByte::Type::SameAs<T, Text>) {
 			return static_cast<const StormByte::Safe::String&>(RequireValue(*this));
 		} else if constexpr (StormByte::Type::SameAs<T, Binary>) {
-			return static_cast<const StormByte::BinaryData&>(RequireValue(*this));
+			return static_cast<const StormByte::Safe::Binary&>(RequireValue(*this));
 		} else if constexpr (requires { T::CommentTag; }) {
 			if (this->Type() != Item::Type::Comment)
 				FailAs(*this, "Comment");

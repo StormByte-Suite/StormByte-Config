@@ -63,19 +63,7 @@ namespace StormByte::Config::Item {
 
 			/**
 			 * @brief Constructor
-			 * @param name	name of the group
-			 */
-			explicit Group(const StormByte::Safe::String& name);
-
-			/**
-			 * @brief Constructor
-			 * @param name	name of the group
-			 */
-			explicit Group(StormByte::Safe::String&& name);
-
-			/**
-			 * @brief Constructor
-			 * @param name	name of the group
+			 * @param name	name of the group. A literal, `std::string`, `string_view` or `Safe::String` binds here.
 			 */
 			explicit Group(std::string_view name);
 

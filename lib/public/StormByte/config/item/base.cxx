@@ -72,14 +72,13 @@ bool Base::operator!=(const Base& base) const noexcept {
 	return !(*this == base);
 }
 
-bool Base::IsNameValid(const StormByte::Safe::String& name) noexcept {
-	const std::string_view text(name);
-	if (text.empty())
+bool Base::IsNameValid(std::string_view name) noexcept {
+	if (name.empty())
 		return false;
-	const auto head = static_cast<unsigned char>(text.front());
+	const auto head = static_cast<unsigned char>(name.front());
 	if ((head < 'A' || head > 'Z') && (head < 'a' || head > 'z'))
 		return false;
-	for (const unsigned char c : text.substr(1)) {
+	for (const unsigned char c : name.substr(1)) {
 		const bool ok = (c >= 'A' && c <= 'Z')
 			|| (c >= 'a' && c <= 'z')
 			|| (c >= '0' && c <= '9')

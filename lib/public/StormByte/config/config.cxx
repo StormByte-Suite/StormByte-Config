@@ -42,8 +42,10 @@
 #include <StormByte/config/binary/writer.hxx>
 #include <StormByte/config/config.hxx>
 #include <StormByte/config/parser/parser.hxx>
+#include <StormByte/safe/binary.hxx>
 #include <StormByte/safe/string.hxx>
 
+#include <span>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -68,8 +70,9 @@ Config& Config::operator<<(const Config& source) {
 	return *this;
 }
 
-void Config::operator<<(const StormByte::Safe::String& str) {
-	auto res = Parser::Parse(std::string(static_cast<std::string_view>(str)), m_root, m_on_existing_action, m_before_read_hooks, m_after_read_hooks, m_on_parse_failure_hook);
+void Config::operator<<(std::string_view str) {
+	const StormByte::Safe::String text(str);
+	auto res = Parser::Parse(std::string(static_cast<std::string_view>(text)), m_root, m_on_existing_action, m_before_read_hooks, m_after_read_hooks, m_on_parse_failure_hook);
 	if (!res)
 		throw *res.error();
 }
@@ -88,12 +91,12 @@ StormByte::Safe::String Config::Text() const {
 	return StormByte::Safe::String(std::string_view(serialized));
 }
 
-
-StormByte::BinaryData Config::Binary() const {
-	return StormByte::BinaryData(Binary::Writer(*this).Serialize());
+StormByte::Safe::Binary Config::Binary() const {
+	const auto bytes = Binary::Writer(*this).Serialize();
+	return StormByte::Safe::Binary(std::span<const std::byte>(bytes));
 }
 
-ExpectedConfig Config::Load(const StormByte::Safe::String& text) {
+ExpectedConfig Config::Load(std::string_view text) {
 	Config config;
 	try {
 		config << text;
@@ -103,7 +106,7 @@ ExpectedConfig Config::Load(const StormByte::Safe::String& text) {
 	return config;
 }
 
-ExpectedConfig Config::Load(const StormByte::BinaryData& data) {
+ExpectedConfig Config::Load(const StormByte::Safe::Binary& data) {
 	auto result = Binary::Reader(data.span()).Deserialize();
 	if (!result)
 		return StormByte::Unexpected(result.error());
@@ -117,17 +120,17 @@ void Config::OnExistingAction(const StormByte::Config::OnExistingAction& on_exis
 
 void Config::OnParseFailure(FailureHook hook) {
 	if (hook.HasValue())
-		m_on_parse_failure_hook = StormByte::Safe::Heap::MakeShared<FailureHook>(std::move(hook));
+		m_on_parse_failure_hook = StormByte::Safe::MakeShared<FailureHook>(std::move(hook));
 	else
 		m_on_parse_failure_hook.reset();
 }
 
 void Config::AddHookBeforeRead(ReadHook hook) {
 	if (hook.HasValue())
-		m_before_read_hooks.push_back(StormByte::Safe::Heap::MakeShared<ReadHook>(std::move(hook)));
+		m_before_read_hooks.push_back(StormByte::Safe::MakeShared<ReadHook>(std::move(hook)));
 }
 
 void Config::AddHookAfterRead(ReadHook hook) {
 	if (hook.HasValue())
-		m_after_read_hooks.push_back(StormByte::Safe::Heap::MakeShared<ReadHook>(std::move(hook)));
+		m_after_read_hooks.push_back(StormByte::Safe::MakeShared<ReadHook>(std::move(hook)));
 }

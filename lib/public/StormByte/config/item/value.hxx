@@ -40,346 +40,336 @@
 
 #pragma once
 
-#include <StormByte/binary_data.hxx>
 #include <StormByte/config/item/base.hxx>
 #include <StormByte/config/visibility.h>
+#include <StormByte/safe/binary.hxx>
 #include <StormByte/safe/string.hxx>
+#include <StormByte/safe/variant.hxx>
 
 #include <string_view>
 
 /**
- * @namespace Item
- * @brief All the classes for item configuration
+ * @namespace StormByte
+ * @brief Root namespace of the StormByte suite.
  */
-namespace StormByte::Config::Item {
+namespace StormByte {
 	/**
-	 * @class Value
-	 * @brief Scalar configuration item
+	 * @namespace StormByte::Config
+	 * @brief Human-readable and versioned configuration documents.
 	 */
-	class STORMBYTE_CONFIG_PUBLIC Value: public Base {
-		public:
+	namespace Config {
+		/**
+		 * @namespace StormByte::Config::Item
+		 * @brief Nodes stored in a document.
+		 */
+		namespace Item {
 			/**
-			 * @brief Constructor
-			 * @param value integer
+			 * @class Value
+			 * @brief Scalar configuration item.
+			 *
+			 * The payload is a @ref StormByte::Safe::Variant. Integer, double, bool, text and bytes do not share storage by hand.
+			 * A text literal binds to `const char*`. That overload is exact and beats the `bool` conversion of a pointer. `std::string` and `Safe::String` bind to `string_view`.
 			 */
-			explicit Value(int value);
+			class STORMBYTE_CONFIG_PUBLIC Value: public Base {
+				public:
+					/**
+					 * @brief Integer payload.
+					 * @param value Integer.
+					 */
+					explicit Value(int value);
 
-			/**
-			 * @brief Constructor
-			 * @param value double
-			 */
-			explicit Value(double value);
+					/**
+					 * @brief Double payload.
+					 * @param value Double.
+					 */
+					explicit Value(double value);
 
-			/**
-			 * @brief Constructor
-			 * @param value bool
-			 */
-			explicit Value(bool value);
+					/**
+					 * @brief Bool payload.
+					 * @param value Bool.
+					 */
+					explicit Value(bool value);
 
-			/**
-			 * @brief Constructor
-			 * @param value string
-			 */
-			explicit Value(const StormByte::Safe::String& value);
+					/**
+					 * @brief Text payload from a C string.
+					 * @param value Source. A null pointer is empty text.
+					 */
+					explicit Value(const char* value);
 
-			/**
-			 * @brief Constructor
-			 * @param value string
-			 */
-			explicit Value(StormByte::Safe::String&& value);
+					/**
+					 * @brief Text payload from a view.
+					 * @param value Source. A `std::string` or `Safe::String` binds here. Embedded NUL counts.
+					 */
+					explicit Value(std::string_view value);
 
-			/**
-			 * @brief Constructor
-			 * @param value string
-			 */
-			explicit Value(const char* value);
+					/**
+					 * @brief Text payload.
+					 * @param value Owned text. Left empty.
+					 */
+					explicit Value(StormByte::Safe::String&& value);
 
-			/**
-			 * @brief Constructor
-			 * @param value string
-			 */
-			explicit Value(std::string_view value);
+					/**
+					 * @brief Byte payload.
+					 * @param value Owned bytes.
+					 */
+					explicit Value(const StormByte::Safe::Binary& value);
 
-			/**
-			 * @brief Constructor
-			 * @param value bytes
-			 */
-			explicit Value(const StormByte::BinaryData& value);
+					/**
+					 * @brief Byte payload.
+					 * @param value Owned bytes. Left empty.
+					 */
+					explicit Value(StormByte::Safe::Binary&& value);
 
-			/**
-			 * @brief Constructor
-			 * @param value bytes
-			 */
-			explicit Value(StormByte::BinaryData&& value);
+					/**
+					 * @brief Named integer.
+					 * @param name Item name.
+					 * @param value Integer.
+					 */
+					Value(std::string_view name, int value);
 
-			/**
-			 * @brief Constructor
-			 * @param name name
-			 * @param value integer
-			 */
-			Value(const StormByte::Safe::String& name, int value);
+					/**
+					 * @brief Named double.
+					 * @param name Item name.
+					 * @param value Double.
+					 */
+					Value(std::string_view name, double value);
 
-			/**
-			 * @brief Constructor
-			 * @param name name
-			 * @param value double
-			 */
-			Value(const StormByte::Safe::String& name, double value);
+					/**
+					 * @brief Named bool.
+					 * @param name Item name.
+					 * @param value Bool.
+					 */
+					Value(std::string_view name, bool value);
 
-			/**
-			 * @brief Constructor
-			 * @param name name
-			 * @param value bool
-			 */
-			Value(const StormByte::Safe::String& name, bool value);
+					/**
+					 * @brief Named text from a C string.
+					 * @param name Item name.
+					 * @param value C string. A null pointer is empty text.
+					 */
+					Value(std::string_view name, const char* value);
 
-			/**
-			 * @brief Constructor
-			 * @param name name
-			 * @param value string
-			 */
-			Value(const StormByte::Safe::String& name, const StormByte::Safe::String& value);
+					/**
+					 * @brief Named text.
+					 * @param name Item name.
+					 * @param value Text. A `std::string` or `Safe::String` binds here. Embedded NUL counts.
+					 */
+					Value(std::string_view name, std::string_view value);
 
-			/**
-			 * @brief Constructor
-			 * @param name name
-			 * @param value string
-			 */
-			Value(const StormByte::Safe::String& name, const char* value);
+					/**
+					 * @brief Named bytes.
+					 * @param name Item name.
+					 * @param value Owned bytes.
+					 */
+					Value(std::string_view name, const StormByte::Safe::Binary& value);
 
-			/**
-			 * @brief Constructor
-			 * @param name name
-			 * @param value bytes
-			 */
-			Value(const StormByte::Safe::String& name, const StormByte::BinaryData& value);
+					/**
+					 * @brief Named bytes.
+					 * @param name Item name.
+					 * @param value Owned bytes. Left empty.
+					 */
+					Value(std::string_view name, StormByte::Safe::Binary&& value);
 
-			/**
-			 * @brief Constructor
-			 * @param name name
-			 * @param value integer
-			 */
-			Value(std::string_view name, int value);
+					/**
+					 * @brief Copy constructor.
+					 * @param value Source.
+					 */
+					Value(const Value& value);
 
-			/**
-			 * @brief Constructor
-			 * @param name name
-			 * @param value double
-			 */
-			Value(std::string_view name, double value);
+					/**
+					 * @brief Move constructor.
+					 * @param value Source. Left as an integer zero.
+					 */
+					Value(Value&& value) noexcept;
 
-			/**
-			 * @brief Constructor
-			 * @param name name
-			 * @param value bool
-			 */
-			Value(std::string_view name, bool value);
+					/**
+					 * @brief Destructor.
+					 */
+					~Value() noexcept override;
 
-			/**
-			 * @brief Constructor
-			 * @param name name
-			 * @param value string
-			 */
-			Value(std::string_view name, std::string_view value);
+					/**
+					 * @brief Copy assignment.
+					 * @param value Source.
+					 * @return This item.
+					 */
+					Value& operator=(const Value& value);
 
-			/**
-			 * @brief Constructor
-			 * @param name name
-			 * @param value string
-			 */
-			Value(std::string_view name, const char* value);
+					/**
+					 * @brief Move assignment.
+					 * @param value Source. Left as an integer zero.
+					 * @return This item.
+					 */
+					Value& operator=(Value&& value) noexcept;
 
-			/**
-			 * @brief Constructor
-			 * @param name name
-			 * @param value bytes
-			 */
-			Value(std::string_view name, const StormByte::BinaryData& value);
+					/**
+					 * @brief Payload kind.
+					 * @return Active alternative as an item type.
+					 */
+					Item::Type Kind() const noexcept;
 
-			/**
-			 * @brief Copy constructor
-			 * @param value item
-			 */
-			Value(const Value& value);
+					/**
+					 * @brief Item type.
+					 * @return Same as @ref Kind.
+					 */
+					Item::Type Type() const noexcept override;
 
-			/**
-			 * @brief Move constructor
-			 * @param value item
-			 */
-			Value(Value&& value) noexcept;
+					/**
+					 * @brief Assign an integer. The kind must already be integer.
+					 * @param value Integer.
+					 * @return This item.
+					 * @throws Exception The payload is not an integer.
+					 */
+					Value& operator=(int value);
 
-			/**
-			 * @brief Assignment operator
-			 * @param value item
-			 * @return this
-			 */
-			Value& operator=(const Value& value);
+					/**
+					 * @brief Assign a double. The kind must already be double.
+					 * @param value Double.
+					 * @return This item.
+					 * @throws Exception The payload is not a double.
+					 */
+					Value& operator=(double value);
 
-			/**
-			 * @brief Move assignment operator
-			 * @param value item
-			 * @return this
-			 */
-			Value& operator=(Value&& value) noexcept;
+					/**
+					 * @brief Assign a bool. The kind must already be bool.
+					 * @param value Bool.
+					 * @return This item.
+					 * @throws Exception The payload is not a bool.
+					 */
+					Value& operator=(bool value);
 
-			/**
-			 * @brief Destructor
-			 */
-			~Value() noexcept override;
+					/**
+					 * @brief Assign text from a C string. The kind must already be text.
+					 * @param value C string. A null pointer is empty text.
+					 * @return This item.
+					 * @throws Exception The payload is not text.
+					 */
+					Value& operator=(const char* value);
 
-			/**
-			 * @brief Payload kind
-			 * @return item type
-			 */
-			Item::Type Kind() const noexcept;
+					/**
+					 * @brief Assign text. The kind must already be text.
+					 * @param value Text. A `std::string` or `Safe::String` binds here.
+					 * @return This item.
+					 * @throws Exception The payload is not text.
+					 */
+					Value& operator=(std::string_view value);
 
-			/**
-			 * @brief Item type
-			 * @return item type
-			 */
-			Item::Type Type() const noexcept override;
+					/**
+					 * @brief Assign bytes. The kind must already be bytes.
+					 * @param value Owned bytes.
+					 * @return This item.
+					 * @throws Exception The payload is not bytes.
+					 */
+					Value& operator=(const StormByte::Safe::Binary& value);
 
-			/**
-			 * @brief Assign integer
-			 * @param value integer
-			 * @return this
-			 */
-			Value& operator=(int value);
+					/**
+					 * @brief Integer reference.
+					 * @return Active integer.
+					 * @throws Exception The payload is not an integer.
+					 */
+					operator int&();
 
-			/**
-			 * @brief Assign double
-			 * @param value double
-			 * @return this
-			 */
-			Value& operator=(double value);
+					/**
+					 * @brief Integer reference.
+					 * @return Active integer.
+					 * @throws Exception The payload is not an integer.
+					 */
+					operator const int&() const;
 
-			/**
-			 * @brief Assign bool
-			 * @param value bool
-			 * @return this
-			 */
-			Value& operator=(bool value);
+					/**
+					 * @brief Double value. An integer promotes.
+					 * @return Active double, or the integer widened.
+					 * @throws Exception The payload is neither double nor integer.
+					 */
+					operator double() const;
 
-			/**
-			 * @brief Assign string
-			 * @param value string
-			 * @return this
-			 */
-			Value& operator=(const StormByte::Safe::String& value);
+					/**
+					 * @brief Double reference. An integer does not promote.
+					 * @return Active double.
+					 * @throws Exception The payload is not a double.
+					 */
+					operator double&();
 
-			/**
-			 * @brief Assign string
-			 * @param value string
-			 * @return this
-			 */
-			Value& operator=(const char* value);
+					/**
+					 * @brief Bool reference.
+					 * @return Active bool.
+					 * @throws Exception The payload is not a bool.
+					 */
+					operator bool&();
 
-			/**
-			 * @brief Assign bytes
-			 * @param value bytes
-			 * @return this
-			 */
-			Value& operator=(const StormByte::BinaryData& value);
+					/**
+					 * @brief Bool reference.
+					 * @return Active bool.
+					 * @throws Exception The payload is not a bool.
+					 */
+					operator const bool&() const;
 
-			/**
-			 * @brief Convert to integer
-			 */
-			operator int&();
+					/**
+					 * @brief Text reference.
+					 * @return Active text.
+					 * @throws Exception The payload is not text.
+					 */
+					operator StormByte::Safe::String&();
 
-			/**
-			 * @brief Convert to integer
-			 */
-			operator const int&() const;
+					/**
+					 * @brief Text reference.
+					 * @return Active text.
+					 * @throws Exception The payload is not text.
+					 */
+					operator const StormByte::Safe::String&() const;
 
-			/**
-			 * @brief Convert to double (Integer promotes)
-			 */
-			operator double() const;
+					/**
+					 * @brief Byte reference.
+					 * @return Active bytes.
+					 * @throws Exception The payload is not bytes.
+					 */
+					operator StormByte::Safe::Binary&();
 
-			/**
-			 * @brief Convert to double reference
-			 */
-			operator double&();
+					/**
+					 * @brief Byte reference.
+					 * @return Active bytes.
+					 * @throws Exception The payload is not bytes.
+					 */
+					operator const StormByte::Safe::Binary&() const;
 
-			/**
-			 * @brief Convert to bool
-			 */
-			operator bool&();
+					/**
+					 * @brief Clone onto the Config heap.
+					 * @return Shared copy.
+					 */
+					PointerType Clone() const override;
 
-			/**
-			 * @brief Convert to bool
-			 */
-			operator const bool&() const;
+					/**
+					 * @brief Move onto the Config heap.
+					 * @return Shared value. This item is left as an integer zero.
+					 */
+					PointerType Move() override;
 
-			/**
-			 * @brief Convert to string
-			 */
-			operator StormByte::Safe::String&();
+					/**
+					 * @brief Text form of this item.
+					 * @param indent_level Tab count before the line.
+					 * @return One line, without a trailing newline.
+					 */
+					StormByte::Safe::String Serialize(const int& indent_level) const override;
 
-			/**
-			 * @brief Convert to string
-			 */
-			operator const StormByte::Safe::String&() const;
+				protected:
+					/**
+					 * @brief Compare payloads after the base has matched the type.
+					 * @param base Other item, already a @ref Value.
+					 * @return Whether the payloads are equal.
+					 */
+					bool Equals(const Base& base) const override;
 
-			/**
-			 * @brief Convert to bytes
-			 */
-			operator StormByte::BinaryData&();
+				private:
+					using Payload = StormByte::Safe::Variant<int, double, bool, StormByte::Safe::String, StormByte::Safe::Binary>;	///< Active scalar.
 
-			/**
-			 * @brief Convert to bytes
-			 */
-			operator const StormByte::BinaryData&() const;
+					Payload m_store;	///< Active scalar.
 
-			/**
-			 * @brief Clone
-			 * @return pointer
-			 */
-			PointerType Clone() const override;
-
-			/**
-			 * @brief Move
-			 * @return pointer
-			 */
-			PointerType Move() override;
-
-			/**
-			 * @brief Serialize
-			 * @param indent_level indent
-			 * @return text
-			 */
-			StormByte::Safe::String Serialize(const int& indent_level) const override;
-
-		protected:
-			/**
-			 * @brief Equals
-			 * @param base item
-			 * @return bool
-			 */
-			bool Equals(const Base& base) const override;
-
-		private:
-			Item::Type m_kind; ///< Discriminator
-			union Storage {
-				int integer;
-				double floating;
-				bool boolean;
-				StormByte::Safe::String text;
-				StormByte::BinaryData bytes;
-				Storage() noexcept {}
-				~Storage() noexcept {}
-			} m_store; ///< Active payload
-
-			void Destroy() noexcept;
-			void CopyFrom(const Value& value);
-			void MoveFrom(Value&& value) noexcept;
-
-			/**
-			 * @brief Throw on kind mismatch
-			 * @param wanted expected kind name
-			 */
-			[[noreturn]] void Fail(const char* wanted) const;
-	};
+					/**
+					 * @brief Throw when the active alternative is not @p wanted.
+					 * @param wanted Expected kind name.
+					 */
+					[[noreturn]] void Fail(const char* wanted) const;
+			};
+		}
+	}
 }
 
 #include <StormByte/config/item/base.txx>

@@ -42,7 +42,9 @@
 #include <StormByte/safe/string.hxx>
 #include <StormByte/test_handlers.h>
 
+#include <filesystem>
 #include <fstream>
+#include <iostream>
 #include <vector>
 
 using namespace StormByte::Config;
@@ -65,25 +67,24 @@ namespace {
 // -------------------
 
 int test_binary_accepts_golden() {
-	int result = 0;
 	const auto path = CurrentFileDirectory / "files" / "config_example.bin";
 	auto loaded = LoadBinaryFile(path);
 	if (!loaded) {
-		std::cerr << "test_binary_accepts_golden: " << loaded.error()->what() << std::endl;
-		RETURN_TEST("test_binary_accepts_golden", 1);
+		std::cerr << loaded.error()->what() << std::endl;
+		RETURN_TEST(1);
 	}
 
 	const auto text_path = CurrentFileDirectory / "files" / "complex_conf1.conf";
 	std::ifstream text_in(text_path);
 	if (!text_in) {
 		std::cerr << "cannot open " << text_path << std::endl;
-		RETURN_TEST("test_binary_accepts_golden", 1);
+		RETURN_TEST(1);
 	}
 
 	Config from_text;
 	text_in >> from_text;
-	ASSERT_EQUAL("test_binary_accepts_golden", loaded.value(), from_text);
-	RETURN_TEST("test_binary_accepts_golden", result);
+	ASSERT_EQUAL(loaded.value(), from_text);
+	RETURN_TEST(0);
 }
 
 // -------------------
@@ -91,39 +92,24 @@ int test_binary_accepts_golden() {
 // -------------------
 
 int test_binary_rejects_bad_magic() {
-	int result = 0;
 	const auto path = CurrentFileDirectory / "files" / "config_example_bad_magic.bin";
 	auto loaded = LoadBinaryFile(path);
-	if (loaded) {
-		std::cerr << "test_binary_rejects_bad_magic: corrupted magic was accepted\n";
-		RETURN_TEST("test_binary_rejects_bad_magic", 1);
-	}
-
-	RETURN_TEST("test_binary_rejects_bad_magic", result);
+	ASSERT_FALSE(static_cast<bool>(loaded));
+	RETURN_TEST(0);
 }
 
 int test_binary_rejects_bad_version() {
-	int result = 0;
 	const auto path = CurrentFileDirectory / "files" / "config_example_bad_version.bin";
 	auto loaded = LoadBinaryFile(path);
-	if (loaded) {
-		std::cerr << "test_binary_rejects_bad_version: version 0 was accepted\n";
-		RETURN_TEST("test_binary_rejects_bad_version", 1);
-	}
-
-	RETURN_TEST("test_binary_rejects_bad_version", result);
+	ASSERT_FALSE(static_cast<bool>(loaded));
+	RETURN_TEST(0);
 }
 
 int test_binary_rejects_legacy_payload() {
-	int result = 0;
 	const auto path = CurrentFileDirectory / "files" / "config_example_legacy.bin";
 	auto loaded = LoadBinaryFile(path);
-	if (loaded) {
-		std::cerr << "test_binary_rejects_legacy_payload: legacy payload was accepted\n";
-		RETURN_TEST("test_binary_rejects_legacy_payload", 1);
-	}
-
-	RETURN_TEST("test_binary_rejects_legacy_payload", result);
+	ASSERT_FALSE(static_cast<bool>(loaded));
+	RETURN_TEST(0);
 }
 
 // -------------------
@@ -131,7 +117,6 @@ int test_binary_rejects_legacy_payload() {
 // -------------------
 
 int test_binary_save_load_roundtrip_stream() {
-	int result = 0;
 	Config original;
 	original.Add(Item::Value("name", "StormByte"));
 	original.Add(Item::Value("n", 7));
@@ -140,7 +125,7 @@ int test_binary_save_load_roundtrip_stream() {
 		std::ofstream out(tmp, std::ios::binary | std::ios::trunc);
 		if (!out) {
 			std::cerr << "cannot write " << tmp << std::endl;
-			RETURN_TEST("test_binary_save_load_roundtrip_stream", 1);
+			RETURN_TEST(1);
 		}
 
 		original.Save(out, Mode::Binary);
@@ -149,7 +134,7 @@ int test_binary_save_load_roundtrip_stream() {
 	std::ifstream in(tmp, std::ios::binary);
 	if (!in) {
 		std::cerr << "cannot read " << tmp << std::endl;
-		RETURN_TEST("test_binary_save_load_roundtrip_stream", 1);
+		RETURN_TEST(1);
 	}
 
 	in.seekg(1, std::ios::beg);
@@ -157,27 +142,27 @@ int test_binary_save_load_roundtrip_stream() {
 	if (!loaded) {
 		std::cerr << loaded.error()->what() << std::endl;
 		std::remove(tmp.string().c_str());
-		RETURN_TEST("test_binary_save_load_roundtrip_stream", 1);
+		RETURN_TEST(1);
 	}
 
-	ASSERT_TRUE("test_binary_save_load_roundtrip_stream", original == loaded.value());
+	ASSERT_TRUE(original == loaded.value());
 	const int n = loaded.value()["n"].As<Item::Integer>();
-	ASSERT_EQUAL("test_binary_save_load_roundtrip_stream", 7, n);
+	ASSERT_EQUAL(7, n);
 
 	std::ifstream after_eof(tmp, std::ios::binary);
 	after_eof.seekg(0, std::ios::end);
 	char last_byte = 0;
 	after_eof.get(last_byte);
-	ASSERT_TRUE("test_binary_save_load_roundtrip_stream", after_eof.fail());
+	ASSERT_TRUE(after_eof.fail());
 	auto recovered = Config::Load(after_eof, Mode::Binary);
 	if (!recovered) {
 		std::cerr << recovered.error()->what() << std::endl;
 		std::remove(tmp.string().c_str());
-		RETURN_TEST("test_binary_save_load_roundtrip_stream", 1);
+		RETURN_TEST(1);
 	}
-	ASSERT_TRUE("test_binary_save_load_roundtrip_stream", original == recovered.value());
+	ASSERT_TRUE(original == recovered.value());
 	std::remove(tmp.string().c_str());
-	RETURN_TEST("test_binary_save_load_roundtrip_stream", result);
+	RETURN_TEST(0);
 }
 
 int main() {

@@ -131,18 +131,10 @@ namespace StormByte::Config::Item {
 
 			/**
 			 * @brief Sets the name of the item
-			 * @param name	name
-			 */
-			constexpr void Name(const StormByte::Safe::String& name) {
-				m_name = name;
-			}
-
-			/**
-			 * @brief Sets the name of the item
-			 * @param name	name
+			 * @param name	name. A literal, `std::string` or `Safe::String` binds here.
 			 */
 			STORMBYTE_FORCE_INLINE void Name(std::string_view name) {
-				Name(StormByte::Safe::String(name));
+				m_name = StormByte::Safe::String(name);
 			}
 
 			/**
@@ -161,19 +153,10 @@ namespace StormByte::Config::Item {
 
 			/**
 			 * @brief Checks if name is valid
-			 * @param name	name
+			 * @param name	name. A literal, `std::string` or `Safe::String` binds here.
 			 * @return		bool
 			 */
-			static bool IsNameValid(const StormByte::Safe::String& name) noexcept;
-
-			/**
-			 * @brief Checks if name is valid
-			 * @param name	name
-			 * @return		bool
-			 */
-			STORMBYTE_FORCE_INLINE static bool IsNameValid(std::string_view name) noexcept {
-				return IsNameValid(StormByte::Safe::String(name));
-			}
+			static bool IsNameValid(std::string_view name) noexcept;
 
 			/**
 			 * @brief Typed view of this item

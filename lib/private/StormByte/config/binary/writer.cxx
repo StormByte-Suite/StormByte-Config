@@ -38,16 +38,15 @@
  * SPDX-License-Identifier: LGPL-3.0-or-later OR LicenseRef-StormByte-Commercial
  */
 
-#include <StormByte/binary_data.hxx>
 #include <StormByte/config/binary/writer.hxx>
 #include <StormByte/config/item/comment.hxx>
 #include <StormByte/config/item/group.hxx>
 #include <StormByte/config/item/list.hxx>
 #include <StormByte/config/item/value.hxx>
 #include <StormByte/helpers.hxx>
-#include <StormByte/serializable.hxx>
-#include <StormByte/serializable.hxx>
+#include <StormByte/safe/binary.hxx>
 #include <StormByte/safe/string.hxx>
+#include <StormByte/serializable.hxx>
 
 #include <optional>
 #include <typeinfo>
@@ -57,7 +56,7 @@ using namespace StormByte::Config::Binary;
 using namespace StormByte::Config::Item;
 
 namespace {
-	void Append(Buffer& out, const StormByte::BinaryData& bytes) noexcept {
+	void Append(Buffer& out, const StormByte::Safe::Binary& bytes) noexcept {
 		const auto view = bytes.span();
 		out.insert(out.end(), view.begin(), view.end());
 	}
@@ -112,7 +111,7 @@ namespace {
 				break;
 			case Type::Binary:
 				WriteBase(out, item);
-				Append(out, StormByte::Serializable<StormByte::BinaryData>(item.As<Item::Binary>()).Serialize());
+				Append(out, StormByte::Serializable<StormByte::Safe::Binary>(item.As<Item::Binary>()).Serialize());
 				break;
 			case Type::Comment: {
 				WriteBase(out, item);
