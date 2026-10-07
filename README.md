@@ -17,12 +17,12 @@ The suite is split on purpose. Base, Buffer, Crypto, Database, Logger, Multimedi
 
 - **Text and binary I/O** — `Save` / `Load` with `Mode::Text` or `Mode::Binary` on any `std::ostream` / `std::istream`. Stream operators stay text-only.
 - **Versioned binary** — magic `STBTCF` + format version. Older layouts load; newer ones are rejected; save always writes the current version.
-- **Values** — one concrete `Item::Value` (text, integer, double, boolean, `StormByte::BinaryData`). Access is `Base::As<T>()`. Text binary form is Base64 `b"..."`; the binary document stores raw bytes.
+- **Values** — one concrete `Item::Value` (text, integer, double, boolean, `StormByte::Safe::Binary`). Access is `Base::As<T>()`. Text binary form is Base64 `b"..."`; the binary document stores raw bytes.
 - **Comments** — `#`, `//`, `/* */`.
 - **Containers** — lists `[]` and groups `{}`. Counts and indices use `StormByte::Size`.
 - **Hooks** — `AddHookBeforeRead` / `AddHookAfterRead` / `OnParseFailure` use copyable `StormByte::Safe::Function` callbacks and Base-owned group handles.
 - **On existing** — `Keep`, `Overwrite`, or `ThrowException` (default).
-- **Heap** — items are `Clonable<Base, Shared<Base>>`. Build them with `MakePointer` when you hold `PointerType`.
+- **Heap** — items are `Clonable<Base, Safe::Shared<Base>>`. Build them with `MakePointer` when you hold `PointerType`.
 
 ## The rest of the suite
 
@@ -69,11 +69,13 @@ Shared vs static follows CMake `BUILD_SHARED_LIBS` (declared in `lib/`, default 
 
 A shared build keeps this library as its own `.so` / `.dll`. Under the LGPL that is usually the simpler way to ship: the user can replace that file. A static archive is folded into your binary. The LGPL still applies to this code; you must give the recipient a way to relink your product with a different build of this library. If that does not fit how you distribute the final product, a commercial license is available from the copyright holder (see [License](#license)).
 
-Link `StormByte-Config` (and String / Base). Include path: the public install prefix, headers as `#include <StormByte/config/….hxx>`.
+Link `StormByte-Config` and Base. Include path: the public install prefix, headers as `#include <StormByte/config/….hxx>`.
 
 ## Usage
 
 Headers are `#include <StormByte/config/….hxx>`. Namespace root is `StormByte::Config`.
+
+A name or a path takes `std::string_view`. A literal, a `std::string` and a `Safe::String` bind without a cast. A text literal passed to `Item::Value` binds to `const char*`: a pointer would otherwise prefer `bool`.
 
 ### Load from a stream
 
@@ -91,7 +93,7 @@ int main() {
 
 	const int timeout = config["timeout"].As<Item::Integer>();
 	const auto& user = config["settings/username"].As<Item::Text>();
-	std::cout << user << " " << timeout << std::endl;
+	std::cout << static_cast<std::string_view>(user) << " " << timeout << std::endl;
 }
 ```
 
@@ -101,7 +103,7 @@ Existing keys: `OnExistingAction` (`Keep`, `Overwrite`, `ThrowException`; defaul
 
 ```cpp
 #include <StormByte/config/config.hxx>
-#include <StormByte/binary_data.hxx>
+#include <StormByte/safe/binary.hxx>
 
 using namespace StormByte::Config;
 
@@ -110,7 +112,7 @@ config.Add(Item::Value("username", "example_user"));
 config.Add(Item::Value("timeout", 30));
 config.Add(Item::Value("feature_timeout", 60.5));
 config.Add(Item::Value("enabled", true));
-config.Add(Item::Value("payload", StormByte::BinaryData({
+config.Add(Item::Value("payload", StormByte::Safe::Binary({
 	std::byte{'H'}, std::byte{'i'}
 })));
 
@@ -125,7 +127,7 @@ numbers.Add(Item::Value("pi constant"));
 config.Add(Item::Comment<Item::CommentType::SingleLineBash>("bash comment"));
 ```
 
-`Add` copies or moves the item onto the Config heap (`Shared<Base>`). After `Add`, look the node up and mutate it through `As`.
+`Add` copies or moves the item onto the Config heap (`Safe::Shared<Base>`). After `Add`, look the node up and mutate it through `As`.
 
 ### As
 
@@ -138,7 +140,7 @@ config.Add(Item::Comment<Item::CommentType::SingleLineBash>("bash comment"));
 | `Item::Double` | `double` (an Integer is accepted) |
 | `Item::Bool` | `bool` |
 | `Item::Text` | `StormByte::Safe::String` |
-| `Item::Binary` | `StormByte::BinaryData` |
+| `Item::Binary` | `StormByte::Safe::Binary` |
 | `Item::Group` / `Item::List` | Containers |
 | `Item::Comment<CommentType::…>` | Comment specializations |
 
@@ -153,7 +155,7 @@ const auto& name = config["username"].As<Item::Text>();
 Item::Group& settings = config["settings"].As<Item::Group>();
 const int retries = settings["retries"].As<Item::Integer>();
 
-const StormByte::BinaryData& bytes = config["payload"].As<Item::Binary>();
+const StormByte::Safe::Binary& bytes = config["payload"].As<Item::Binary>();
 const auto first = numbers[StormByte::Size{0}].As<Item::Integer>();
 ```
 
@@ -240,12 +242,12 @@ int main() {
 		return 1;
 	}
 
-	std::cout << loaded.value()["username"].As<Item::Text>() << std::endl;
+	std::cout << static_cast<std::string_view>(loaded.value()["username"].As<Item::Text>()) << std::endl;
 	std::cout << loaded.value()["timeout"].As<Item::Integer>() << std::endl;
 }
 ```
 
-`Load` returns `ExpectedConfig` (`StormByte::Expected<Config, StormByte::Exception>`). A bad magic or a newer format version is an error, not a thrown parse of the payload. For callers passing data across a DLL boundary, use `Config::Binary()` / `Config::Load(const StormByte::BinaryData&)` or the `Safe::String` text overload; stream overloads remain caller-side adapters.
+`Load` returns `ExpectedConfig` (`StormByte::Expected<Config, StormByte::Exception>`). A bad magic or a newer format version is an error, not a thrown parse of the payload. For callers passing data across a DLL boundary, use `Config::Binary()` / `Config::Load(const StormByte::Safe::Binary&)` or `Config::Load(std::string_view)` for text. Stream overloads remain caller-side adapters.
 
 `Container::Items()` and `Config::Items()` return `StormByte::Safe::Vector<StormByte::Safe::Shared<Item::Base>>`. Path traversal uses Base's `StormByte::Safe::Queue` internally.
 
@@ -267,7 +269,7 @@ settings = {
 /* multiline */
 ```
 
-Text values are UTF-8. Binary values are `StormByte::BinaryData`. Paths use `/`. List slots are numeric path segments (`list/0`).
+Text values are UTF-8 and are stored as `StormByte::Safe::String`. Binary values are `StormByte::Safe::Binary`. Paths use `/`. List slots are numeric path segments (`list/0`).
 
 ## Contributing
 
