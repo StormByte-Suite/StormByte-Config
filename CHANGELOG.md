@@ -22,7 +22,7 @@ If you landed here from a release link and have not read the tree:
 
 [Unreleased]: https://github.com/StormByte-Suite/StormByte-Config/compare/v2.0.0...HEAD
 
-## [2.0.0] - 2026-10-07
+## [2.0.0] - 2026-10-10
 
 ### Changed
 
