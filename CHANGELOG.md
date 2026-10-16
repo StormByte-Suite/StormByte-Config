@@ -20,6 +20,14 @@ If you landed here from a release link and have not read the tree:
 
 ## [Unreleased]
 
+### Added
+
+- `ENABLE_PGO` and `ENABLE_LTO`. Profile-guided optimization trains in `pgo-instr` and installs this build. Link-time optimization follows `ENABLE_LTO` (default ON) for every build type, and the vendored Base build receives the same two options.
+
+### Changed
+
+- Requires [StormByte Base](https://github.com/StormByte-Suite/StormByte/releases/tag/2.1.0) 2.1.0.
+
 [Unreleased]: https://github.com/StormByte-Suite/StormByte-Config/compare/v2.0.1...HEAD
 
 ## [2.0.1] - 2026-10-13
