@@ -9,7 +9,7 @@
 
 This repository is **StormByte Config**: human-readable text and versioned binary documents for the StormByte C++ suite.
 
-It depends on [StormByte Base](https://github.com/StormByte-Suite/StormByte) 2.1.0. Public headers live under `StormByte/config/` and cover the document, items (values, comments, groups, lists), `Save` / `Load`, and collision / hook policy.
+It depends on [StormByte Base](https://github.com/StormByte-Suite/StormByte) 2.1.0 and [StormByte-BuildMaster](https://github.com/StormByte-Suite/StormByte-BuildMaster) >= 2.1.0. Public headers live under `StormByte/config/` and cover the document, items (values, comments, groups, lists), `Save` / `Load`, and collision / hook policy.
 
 The suite is split on purpose. Base, Buffer, Crypto, Database, Logger, Multimedia, Network and System are **other repositories**. This one does not implement them.
 
@@ -56,7 +56,7 @@ The suite is split on purpose. Base, Buffer, Crypto, Database, Logger, Multimedi
 
 ## Installation
 
-Needs a C++26 compiler, CMake 3.28 or newer, and [StormByte Base](https://github.com/StormByte-Suite/StormByte/releases/tag/2.1.0) 2.1.0. Configure downloads the matching release archive. There is no Base submodule.
+Needs a C++26 compiler, CMake 3.28 or newer, [StormByte-BuildMaster](https://github.com/StormByte-Suite/StormByte-BuildMaster) >= 2.1.0, and [StormByte Base](https://github.com/StormByte-Suite/StormByte/releases/tag/2.1.0) 2.1.0. Configure downloads the matching Base release archive. There is no Base submodule. BuildMaster is the installed package when it is >= 2.1.0, otherwise the `buildmaster` submodule.
 
 ```sh
 git clone --recursive https://github.com/StormByte-Suite/StormByte-Config.git

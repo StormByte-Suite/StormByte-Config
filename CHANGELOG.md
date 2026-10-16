@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 StormByte Config is the configuration-document module of the StormByte C++ suite.
 
-It depends on StormByte Base 2.1.0. This repository is not Base, Buffer, Crypto, Database, Logger, Multimedia, Network or System.
+It depends on StormByte Base 2.1.0 and StormByte-BuildMaster >= 2.1.0. This repository is not Base, Buffer, Crypto, Database, Logger, Multimedia, Network or System.
 
 Public headers under `StormByte/config/` cover text and versioned binary documents: values, groups, lists, comments, hooks and `Save` / `Load`.
 
@@ -20,22 +20,28 @@ If you landed here from a release link and have not read the tree:
 
 ## [Unreleased]
 
+[Unreleased]: https://github.com/StormByte-Suite/StormByte-Config/compare/v2.0.2...HEAD
+
+## [2.0.2] - 2026-10-16
+
 ### Added
 
 - `ENABLE_PGO` and `ENABLE_LTO`. Profile-guided optimization trains in `pgo-instr` and installs this build. Link-time optimization follows `ENABLE_LTO` (default ON) for every build type. Both apply to Config. Base is not rebuilt.
 
 ### Changed
 
+- Requires [StormByte-BuildMaster](https://github.com/StormByte-Suite/StormByte-BuildMaster) >= 2.1.0. An older install is not used; the `buildmaster` submodule supplies 2.1.0.
 - Requires [StormByte Base](https://github.com/StormByte-Suite/StormByte/releases/tag/2.1.0) 2.1.0. The build downloads that release archive (`stormbyte_component_url`) and links it with `BACKEND=binary`. The Base submodule is gone. The archive matches this OS and C++ runtime: `libstdc++` or `libc++` on Linux and macOS, no runtime suffix on Windows.
 - **Breaking:** `Config::Exception` no longer formats with `std::format`. A message with arguments replaces literal `{}` through `Safe::String::ReplaceToken`, the same rule as Base 2.1.0. `what()` stays `StormByte.Config: message`, and `Exception::Path` still appends a segment under `Config`.
 - `Value::Serialize` writes an integer or a double with `Safe::String::ReplaceToken`, which uses `std::to_string`. A double is six digits after the decimal (`42.0` is `42.000000`), not the shorter `std::format` text. A value with no decimal point still gets `.0`.
+- Bumped version to 2.0.2.
 
 ### Fixed
 
 - Release builds with MSVC or clang-cl store `/arch:AVX2`, `/fp:fast` and `/DNDEBUG` in the CMake cache, so `ENABLE_PGO` forwards them to the instrumented tree.
 - The Base archive follows the C++ library this compiler actually uses. A Gentoo clang config that selects libc++ does not appear in `CMAKE_CXX_FLAGS`, so the helper used to download the libstdc++ zip and the tests failed to link. It now preprocesses one line with that compiler and reads `_LIBCPP_VERSION` or `__GLIBCXX__`.
 
-[Unreleased]: https://github.com/StormByte-Suite/StormByte-Config/compare/v2.0.1...HEAD
+[2.0.2]: https://github.com/StormByte-Suite/StormByte-Config/releases/tag/2.0.2
 
 ## [2.0.1] - 2026-10-13
 
