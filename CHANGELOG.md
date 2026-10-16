@@ -23,6 +23,7 @@ If you landed here from a release link and have not read the tree:
 ### Fixed
 
 - `Value::Serialize` writes a double with six digits after the decimal on every standard library. `ReplaceToken` uses `std::to_string`, and libc++ prints the shortest round-trip (`3.141592653589793`, `42`), so the text was not `3.141593` and `42.000000`. The digits now come from `std::to_chars` with a fixed format and are passed to `ReplaceToken` as text.
+- `cmake/pgo.cmake` matches Base. MSVC PGO links with `/LTCG:PGINSTRUMENT` and `/LTCG:PGOPTIMIZE`. `/GENPROFILE` alone fails with LNK1220 because the current `link.exe` requires an `/LTCG` specification, and CMake's own `/LTCG` stays off so it does not replace the profile mode.
 
 [Unreleased]: https://github.com/StormByte-Suite/StormByte-Config/compare/v2.0.2...HEAD
 
@@ -42,7 +43,7 @@ If you landed here from a release link and have not read the tree:
 
 ### Fixed
 
-- `cmake/optimizations.cmake` is the same file as Base. On Release, and only when that language was not set from the outside, it appends `OPTIMIZATION_FLAGS_LINUX`, `OPTIMIZATION_FLAGS_MAC` or `OPTIMIZATION_FLAGS_WINDOWS`. Linux is `-O2 -march=x86-64-v3`, Apple is `-O2 -mcpu=apple-m1`, Windows is `/O2 /arch:AVX2`. There is no `/fp:fast` and no `/EHsc`. `cmake/pgo.cmake` is the same file as Base, so a forwarded list keeps its semicolons. MSVC PGO links with `/LTCG:PGINSTRUMENT` and `/LTCG:PGOPTIMIZE`. `/GENPROFILE` alone fails with LNK1220 because the current `link.exe` requires an `/LTCG` specification, and CMake's own `/LTCG` stays off so it does not replace the profile mode.
+- `cmake/optimizations.cmake` is the same file as Base. On Release, and only when that language was not set from the outside, it appends `OPTIMIZATION_FLAGS_LINUX`, `OPTIMIZATION_FLAGS_MAC` or `OPTIMIZATION_FLAGS_WINDOWS`. Linux is `-O2 -march=x86-64-v3`, Apple is `-O2 -mcpu=apple-m1`, Windows is `/O2 /arch:AVX2`. There is no `/fp:fast` and no `/EHsc`. `cmake/pgo.cmake` is the same file as Base, so a forwarded list keeps its semicolons.
 - The Base archive follows the C++ library this compiler actually uses. A Gentoo clang config that selects libc++ does not appear in `CMAKE_CXX_FLAGS`, so the helper used to download the libstdc++ zip and the tests failed to link. It now preprocesses one line with that compiler and reads `_LIBCPP_VERSION` or `__GLIBCXX__`.
 
 [2.0.2]: https://github.com/StormByte-Suite/StormByte-Config/releases/tag/2.0.2
