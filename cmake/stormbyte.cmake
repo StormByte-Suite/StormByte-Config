@@ -3,9 +3,9 @@
 # stormbyte_component_url(<outvar> <tag>)
 # Writes the download URL for that release tag into <outvar>.
 # The archive name matches release.yml: StormByte-<tag>-<os>-<arch>[-stdlib].zip
-# Windows has no runtime suffix. Linux is libstdc++ unless -stdlib=libc++
-# is set. macOS is libc++ unless the compiler is GCC or -stdlib=libstdc++
-# is set.
+# Windows has no runtime suffix. Linux and macOS ask the C++ compiler which
+# standard library it will use, including a clang config that never appears
+# as a -stdlib flag. One preprocessor pass, no compile and no link.
 
 function(_stormbyte_cxx_blob _out)
 	set(_blob "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_INIT} $ENV{CXXFLAGS}")
@@ -17,15 +17,34 @@ function(_stormbyte_cxx_blob _out)
 endfunction()
 
 function(_stormbyte_stdlib _out)
+	if(NOT CMAKE_CXX_COMPILER)
+		message(FATAL_ERROR
+			"stormbyte_component_url: the C++ compiler is not known yet")
+	endif()
 	_stormbyte_cxx_blob(_blob)
-	if(_blob MATCHES "(^| )-stdlib=libc\\+\\+")
+	separate_arguments(_flags UNIX_COMMAND "${_blob}")
+	set(_src "${CMAKE_BINARY_DIR}/CMakeFiles/stormbyte-stdlib.cpp")
+	file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/CMakeFiles")
+	file(WRITE "${_src}" "#include <cstddef>\n")
+	execute_process(
+		COMMAND "${CMAKE_CXX_COMPILER}" -E -dM -x c++ ${_flags} "${_src}"
+		OUTPUT_VARIABLE _defs
+		ERROR_VARIABLE _err
+		RESULT_VARIABLE _rc
+	)
+	if(NOT _rc EQUAL 0)
+		message(FATAL_ERROR
+			"stormbyte_component_url: cannot detect the C++ standard library "
+			"(${CMAKE_CXX_COMPILER})\n${_err}")
+	endif()
+	if(_defs MATCHES "(^|\n)[ \t]*#define[ \t]+_LIBCPP_VERSION[ \t]")
 		set(${_out} "libc++" PARENT_SCOPE)
-	elseif(_blob MATCHES "(^| )-stdlib=libstdc\\+\\+")
+	elseif(_defs MATCHES "(^|\n)[ \t]*#define[ \t]+__GLIBCXX__[ \t]")
 		set(${_out} "libstdc++" PARENT_SCOPE)
-	elseif(APPLE AND NOT CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-		set(${_out} "libc++" PARENT_SCOPE)
 	else()
-		set(${_out} "libstdc++" PARENT_SCOPE)
+		message(FATAL_ERROR
+			"stormbyte_component_url: ${CMAKE_CXX_COMPILER} uses neither "
+			"libc++ nor libstdc++")
 	endif()
 endfunction()
 
@@ -57,6 +76,7 @@ function(stormbyte_component_url out tag)
 	endif()
 
 	set(_name "StormByte-${tag}-${_tag}.zip")
+	message(STATUS "StormByte Base archive: ${_name}")
 	set(${out}
 		"https://github.com/StormByte-Suite/StormByte/releases/download/${tag}/${_name}"
 		PARENT_SCOPE)

@@ -33,6 +33,7 @@ If you landed here from a release link and have not read the tree:
 ### Fixed
 
 - Release builds with MSVC or clang-cl store `/arch:AVX2`, `/fp:fast` and `/DNDEBUG` in the CMake cache, so `ENABLE_PGO` forwards them to the instrumented tree.
+- The Base archive follows the C++ library this compiler actually uses. A Gentoo clang config that selects libc++ does not appear in `CMAKE_CXX_FLAGS`, so the helper used to download the libstdc++ zip and the tests failed to link. It now preprocesses one line with that compiler and reads `_LIBCPP_VERSION` or `__GLIBCXX__`.
 
 [Unreleased]: https://github.com/StormByte-Suite/StormByte-Config/compare/v2.0.1...HEAD
 
