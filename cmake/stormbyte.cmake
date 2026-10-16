@@ -1,8 +1,8 @@
 # URL of a StormByte Base release archive for the system being configured.
 #
-# stormbyte_component_url(<version>)
-# Sets STORMBYTE_COMPONENT_URL in the caller. The archive name matches
-# release.yml: StormByte-<version>-<os>-<arch>[-stdlib].zip
+# stormbyte_component_url(<outvar> <tag>)
+# Writes the download URL for that release tag into <outvar>.
+# The archive name matches release.yml: StormByte-<tag>-<os>-<arch>[-stdlib].zip
 # Windows has no runtime suffix. Linux is libstdc++ unless -stdlib=libc++
 # is set. macOS is libc++ unless the compiler is GCC or -stdlib=libstdc++
 # is set.
@@ -29,9 +29,9 @@ function(_stormbyte_stdlib _out)
 	endif()
 endfunction()
 
-function(stormbyte_component_url version)
-	if("${version}" STREQUAL "")
-		message(FATAL_ERROR "stormbyte_component_url: version is empty")
+function(stormbyte_component_url out tag)
+	if("${out}" STREQUAL "" OR "${tag}" STREQUAL "")
+		message(FATAL_ERROR "stormbyte_component_url: <outvar> and <tag> are required")
 	endif()
 
 	if(CMAKE_SYSTEM_PROCESSOR MATCHES "^(aarch64|arm64|ARM64)$")
@@ -56,8 +56,8 @@ function(stormbyte_component_url version)
 			"stormbyte_component_url: unsupported system '${CMAKE_SYSTEM_NAME}'")
 	endif()
 
-	set(_name "StormByte-${version}-${_tag}.zip")
-	set(STORMBYTE_COMPONENT_URL
-		"https://github.com/StormByte-Suite/StormByte/releases/download/${version}/${_name}"
+	set(_name "StormByte-${tag}-${_tag}.zip")
+	set(${out}
+		"https://github.com/StormByte-Suite/StormByte/releases/download/${tag}/${_name}"
 		PARENT_SCOPE)
 endfunction()
