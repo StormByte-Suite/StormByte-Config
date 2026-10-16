@@ -43,7 +43,6 @@
 #include <StormByte/config/item/value.hxx>
 #include <StormByte/safe/string.hxx>
 
-#include <string>
 #include <string_view>
 #include <utility>
 
@@ -238,24 +237,32 @@ void Value::Fail(const char* wanted) const {
 }
 
 StormByte::Safe::String Value::Serialize(const int& indent_level) const {
-	std::string out;
-	if (!m_name.empty())
-		out += std::string(static_cast<std::size_t>(indent_level > 0 ? indent_level : 0), '\t') + static_cast<std::string>(m_name) + " = ";
-	else
-		out += std::string(static_cast<std::size_t>(indent_level > 0 ? indent_level : 0), '\t');
+	StormByte::Safe::String out(StormByte::Size(indent_level > 0 ? indent_level : 0), '\t');
+	if (!m_name.empty()) {
+		out += m_name;
+		out += " = ";
+	}
 	if (StormByte::Safe::holds_alternative<int>(m_store))
-		out += static_cast<std::string>(StormByte::Safe::String::ReplaceToken("{}", StormByte::Safe::get<int>(m_store)));
+		out += StormByte::Safe::String::ReplaceToken("{}", StormByte::Safe::get<int>(m_store));
 	else if (StormByte::Safe::holds_alternative<double>(m_store)) {
-		out += static_cast<std::string>(StormByte::Safe::String::ReplaceToken("{}", StormByte::Safe::get<double>(m_store)));
-		if (out.find('.') == std::string::npos && out.find('e') == std::string::npos && out.find('E') == std::string::npos)
+		const StormByte::Safe::String number = StormByte::Safe::String::ReplaceToken("{}", StormByte::Safe::get<double>(m_store));
+		out += number;
+		if (number.find('.') == StormByte::Safe::String::npos
+				&& number.find('e') == StormByte::Safe::String::npos
+				&& number.find('E') == StormByte::Safe::String::npos)
 			out += ".0";
 	} else if (StormByte::Safe::holds_alternative<bool>(m_store))
 		out += StormByte::Safe::get<bool>(m_store) ? "true" : "false";
-	else if (StormByte::Safe::holds_alternative<StormByte::Safe::String>(m_store))
-		out += "\"" + static_cast<std::string>(StormByte::Safe::get<StormByte::Safe::String>(m_store)) + "\"";
-	else
-		out += "b\"" + static_cast<std::string>(StormByte::Base64Encode(StormByte::Safe::get<StormByte::Safe::Binary>(m_store))) + "\"";
-	return StormByte::Safe::String(std::string_view(out));
+	else if (StormByte::Safe::holds_alternative<StormByte::Safe::String>(m_store)) {
+		out += '"';
+		out += StormByte::Safe::get<StormByte::Safe::String>(m_store);
+		out += '"';
+	} else {
+		out += "b\"";
+		out += StormByte::Base64Encode(StormByte::Safe::get<StormByte::Safe::Binary>(m_store));
+		out += '"';
+	}
+	return out;
 }
 
 Base::PointerType Value::Clone() const {
