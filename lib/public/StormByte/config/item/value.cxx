@@ -43,7 +43,6 @@
 #include <StormByte/config/item/value.hxx>
 #include <StormByte/safe/string.hxx>
 
-#include <format>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -245,9 +244,9 @@ StormByte::Safe::String Value::Serialize(const int& indent_level) const {
 	else
 		out += std::string(static_cast<std::size_t>(indent_level > 0 ? indent_level : 0), '\t');
 	if (StormByte::Safe::holds_alternative<int>(m_store))
-		out += std::format("{}", StormByte::Safe::get<int>(m_store));
+		out += static_cast<std::string>(StormByte::Safe::String::ReplaceToken("{}", StormByte::Safe::get<int>(m_store)));
 	else if (StormByte::Safe::holds_alternative<double>(m_store)) {
-		out += std::format("{}", StormByte::Safe::get<double>(m_store));
+		out += static_cast<std::string>(StormByte::Safe::String::ReplaceToken("{}", StormByte::Safe::get<double>(m_store)));
 		if (out.find('.') == std::string::npos && out.find('e') == std::string::npos && out.find('E') == std::string::npos)
 			out += ".0";
 	} else if (StormByte::Safe::holds_alternative<bool>(m_store))

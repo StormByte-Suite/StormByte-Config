@@ -28,6 +28,7 @@ If you landed here from a release link and have not read the tree:
 
 - Requires [StormByte Base](https://github.com/StormByte-Suite/StormByte/releases/tag/2.1.0) 2.1.0. The build downloads that release archive (`stormbyte_component_url`) and links it with `BACKEND=binary`. The Base submodule is gone. The archive matches this OS and C++ runtime: `libstdc++` or `libc++` on Linux and macOS, no runtime suffix on Windows.
 - **Breaking:** `Config::Exception` no longer formats with `std::format`. A message with arguments replaces literal `{}` through `Safe::String::ReplaceToken`, the same rule as Base 2.1.0. `what()` stays `StormByte.Config: message`, and `Exception::Path` still appends a segment under `Config`.
+- `Value::Serialize` writes an integer or a double with `Safe::String::ReplaceToken`, which uses `std::to_string`. A double is six digits after the decimal (`42.0` is `42.000000`), not the shorter `std::format` text. A value with no decimal point still gets `.0`.
 
 ### Fixed
 

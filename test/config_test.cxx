@@ -1344,11 +1344,11 @@ int test_double_precision_serialization() {
 	int result = 0;
 	Item::Value v("pi", 3.141592653589793);
 	std::string serialized = static_cast<std::string>(v.Serialize(0));
-	ASSERT_EQUAL(std::string("pi = 3.141592653589793"), serialized);
+	ASSERT_EQUAL(std::string("pi = 3.141593"), serialized);
 
 	Item::Value integer_double("val", 42.0);
 	std::string serialized_int = static_cast<std::string>(integer_double.Serialize(0));
-	ASSERT_EQUAL(std::string("val = 42.0"), serialized_int);
+	ASSERT_EQUAL(std::string("val = 42.000000"), serialized_int);
 
 	RETURN_TEST(result);
 }
