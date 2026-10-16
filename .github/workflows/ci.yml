@@ -36,7 +36,7 @@ jobs:
       - name: Warm submodule / checkout cache
         uses: stormbytepp/githubactions/.github/actions/checkout-cached@master
         with:
-          fetch-depth: 0
+          fetch-depth: 1
           submodules: recursive
 
   apt-bootstrap:
@@ -67,7 +67,7 @@ jobs:
       - name: Checkout repository and submodules
         uses: stormbytepp/githubactions/.github/actions/checkout-cached@master
         with:
-          fetch-depth: 0
+          fetch-depth: 1
           submodules: recursive
 
       - name: Build with toolchain
@@ -103,7 +103,7 @@ jobs:
       - name: Checkout repository and submodules
         uses: stormbytepp/githubactions/.github/actions/checkout-cached@master
         with:
-          fetch-depth: 0
+          fetch-depth: 1
           submodules: recursive
 
       - name: Build with toolchain
@@ -132,7 +132,7 @@ jobs:
       - name: Checkout repository and submodules
         uses: stormbytepp/githubactions/.github/actions/checkout-cached@master
         with:
-          fetch-depth: 0
+          fetch-depth: 1
           submodules: recursive
 
       - name: Add DLL directories to PATH
