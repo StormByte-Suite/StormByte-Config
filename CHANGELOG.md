@@ -29,6 +29,10 @@ If you landed here from a release link and have not read the tree:
 - Requires [StormByte Base](https://github.com/StormByte-Suite/StormByte/releases/tag/2.1.0) 2.1.0.
 - **Breaking:** `Config::Exception` no longer formats with `std::format`. A message with arguments replaces literal `{}` through `Safe::String::ReplaceToken`, the same rule as Base 2.1.0. `what()` stays `StormByte.Config: message`, and `Exception::Path` still appends a segment under `Config`.
 
+### Fixed
+
+- Release builds with MSVC or clang-cl store `/arch:AVX2`, `/fp:fast` and `/DNDEBUG` in the CMake cache, so `ENABLE_PGO` forwards them to the instrumented tree.
+
 [Unreleased]: https://github.com/StormByte-Suite/StormByte-Config/compare/v2.0.1...HEAD
 
 ## [2.0.1] - 2026-10-13
