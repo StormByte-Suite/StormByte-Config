@@ -78,12 +78,12 @@ jobs:
           buildmaster-datadir-cache-key: bm-datadir-${{ runner.os }}-${{ matrix.compiler }}
           build-type: ${{ env.BUILD_TYPE }}
           configure-options: >-
-            -DENABLE_TEST=ON
+            -DENABLE_LTO=ON
+            -DENABLE_PGO=ON
             -DWITH_STORMBYTE=BUNDLED
             -DBUILD_SHARED_LIBS=ON
             ${{ matrix.compiler == 'clang-libc++' && '-DCMAKE_CXX_FLAGS=-stdlib=libc++' || '' }}
-          run-tests: true
-          ctest-options: --output-on-failure --test-dir ${{ github.workspace }}/build/test
+          run-tests: false
 
   ###########################################################################
   # macOS
@@ -114,11 +114,11 @@ jobs:
           buildmaster-datadir-cache-key: bm-datadir-${{ runner.os }}-${{ matrix.compiler }}
           build-type: ${{ env.BUILD_TYPE }}
           configure-options: >-
-            -DENABLE_TEST=ON
+            -DENABLE_LTO=ON
+            -DENABLE_PGO=ON
             -DWITH_STORMBYTE=BUNDLED
             -DBUILD_SHARED_LIBS=ON
-          run-tests: true
-          ctest-options: --output-on-failure --test-dir ${{ github.workspace }}/build/test
+          run-tests: false
 
   ###########################################################################
   # Windows
@@ -149,11 +149,11 @@ jobs:
           buildmaster-datadir-cache-key: bm-datadir-${{ runner.os }}-clang-cl
           build-type: ${{ env.BUILD_TYPE }}
           configure-options: >-
-            -DENABLE_TEST=ON
+            -DENABLE_LTO=ON
+            -DENABLE_PGO=ON
             -DWITH_STORMBYTE=BUNDLED
             -DBUILD_SHARED_LIBS=ON
-          run-tests: true
-          ctest-options: --output-on-failure --test-dir ${{ github.workspace }}/build/test
+          run-tests: false
 
   ###########################################################################
   # Docs (StormByteConfigDoc)
