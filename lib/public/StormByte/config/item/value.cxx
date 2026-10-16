@@ -43,7 +43,9 @@
 #include <StormByte/config/item/value.hxx>
 #include <StormByte/safe/string.hxx>
 
+#include <charconv>
 #include <string_view>
+#include <system_error>
 #include <utility>
 
 using namespace StormByte::Config::Item;
@@ -245,12 +247,23 @@ StormByte::Safe::String Value::Serialize(const int& indent_level) const {
 	if (StormByte::Safe::holds_alternative<int>(m_store))
 		out += StormByte::Safe::String::ReplaceToken("{}", StormByte::Safe::get<int>(m_store));
 	else if (StormByte::Safe::holds_alternative<double>(m_store)) {
-		const StormByte::Safe::String number = StormByte::Safe::String::ReplaceToken("{}", StormByte::Safe::get<double>(m_store));
-		out += number;
-		if (number.find('.') == StormByte::Safe::String::npos
-				&& number.find('e') == StormByte::Safe::String::npos
-				&& number.find('E') == StormByte::Safe::String::npos)
-			out += ".0";
+		// std::to_string(double) is %f on libstdc++ and the shortest
+		// round-trip on libc++. Six digits after the point is the text format.
+		char text[512];
+		const double value = StormByte::Safe::get<double>(m_store);
+		const std::to_chars_result written = std::to_chars(
+			text, text + sizeof(text), value, std::chars_format::fixed, 6);
+		if (written.ec == std::errc{}) {
+			out += StormByte::Safe::String::ReplaceToken("{}",
+				std::string_view(text, static_cast<std::size_t>(written.ptr - text)));
+		} else {
+			const StormByte::Safe::String number = StormByte::Safe::String::ReplaceToken("{}", value);
+			out += number;
+			if (number.find('.') == StormByte::Safe::String::npos
+					&& number.find('e') == StormByte::Safe::String::npos
+					&& number.find('E') == StormByte::Safe::String::npos)
+				out += ".0";
+		}
 	} else if (StormByte::Safe::holds_alternative<bool>(m_store))
 		out += StormByte::Safe::get<bool>(m_store) ? "true" : "false";
 	else if (StormByte::Safe::holds_alternative<StormByte::Safe::String>(m_store)) {

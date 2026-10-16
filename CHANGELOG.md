@@ -20,6 +20,10 @@ If you landed here from a release link and have not read the tree:
 
 ## [Unreleased]
 
+### Fixed
+
+- `Value::Serialize` writes a double with six digits after the decimal on every standard library. `ReplaceToken` uses `std::to_string`, and libc++ prints the shortest round-trip (`3.141592653589793`, `42`), so the text was not `3.141593` and `42.000000`. The digits now come from `std::to_chars` with a fixed format and are passed to `ReplaceToken` as text.
+
 [Unreleased]: https://github.com/StormByte-Suite/StormByte-Config/compare/v2.0.2...HEAD
 
 ## [2.0.2] - 2026-10-16
