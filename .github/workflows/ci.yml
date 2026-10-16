@@ -75,6 +75,7 @@ jobs:
         with:
           toolchain: ${{ matrix.compiler }}
           ccache-key: v1-release-${{ matrix.compiler }}
+          buildmaster-datadir-cache-key: bm-datadir-${{ runner.os }}-${{ matrix.compiler }}
           build-type: ${{ env.BUILD_TYPE }}
           configure-options: >-
             -DENABLE_TEST=ON
@@ -110,6 +111,7 @@ jobs:
         with:
           toolchain: ${{ matrix.compiler }}
           ccache-key: v1-release-${{ matrix.compiler }}
+          buildmaster-datadir-cache-key: bm-datadir-${{ runner.os }}-${{ matrix.compiler }}
           build-type: ${{ env.BUILD_TYPE }}
           configure-options: >-
             -DENABLE_TEST=ON
@@ -144,6 +146,7 @@ jobs:
         with:
           toolchain: clang-cl
           ccache-key: v1-release-clang-cl
+          buildmaster-datadir-cache-key: bm-datadir-${{ runner.os }}-clang-cl
           build-type: ${{ env.BUILD_TYPE }}
           configure-options: >-
             -DENABLE_TEST=ON

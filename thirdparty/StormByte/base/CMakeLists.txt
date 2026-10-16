@@ -1,7 +1,9 @@
-set(STORMBYTE_BASE_OPTSTR "ALIAS=StormByte::Base")
-if(MSVC)
-	string(PREPEND STORMBYTE_BASE_OPTSTR "TOOLCHAIN=clang-cl;")
-endif()
+include("${CMAKE_SOURCE_DIR}/cmake/stormbyte.cmake")
+
+set(STORMBYTE_BASE_VERSION "2.1.0")
+stormbyte_component_url("${STORMBYTE_BASE_VERSION}")
+
+set(STORMBYTE_BASE_OPTSTR "BACKEND=binary;ALIAS=StormByte::Base")
 
 if(BUILD_SHARED_LIBS)
 	set(STORMBYTE_BASE_MODE shared)
@@ -9,17 +11,16 @@ else()
 	set(STORMBYTE_BASE_MODE static)
 endif()
 
-set(STORMBYTE_BASE_OPTIONS
-	"ENABLE_TEST=OFF"
-	"ENABLE_LTO=${ENABLE_LTO}"
-	"ENABLE_PGO=${ENABLE_PGO}"
-)
 buildmaster_component(
 	StormByte-Base
 	"StormByte Suite - Base"
-	"${CMAKE_CURRENT_LIST_DIR}/src"
-	"${STORMBYTE_BASE_OPTIONS}"
+	"${STORMBYTE_COMPONENT_URL}"
+	""
 	"${STORMBYTE_BASE_MODE}"
 	"StormByte"
 	"${STORMBYTE_BASE_OPTSTR}"
 )
+
+if(WIN32 AND BUILD_SHARED_LIBS)
+	target_compile_definitions(StormByte-Base INTERFACE STORMBYTE_SHARED)
+endif()
