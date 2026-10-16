@@ -42,7 +42,7 @@ If you landed here from a release link and have not read the tree:
 
 ### Fixed
 
-- Release builds with MSVC or clang-cl store `/arch:AVX2`, `/fp:fast` and `/DNDEBUG` in the CMake cache, so `ENABLE_PGO` forwards them to the instrumented tree.
+- `cmake/optimizations.cmake` is the same file as Base. On Release, and only when that language was not set from the outside, it appends `OPTIMIZATION_FLAGS_LINUX`, `OPTIMIZATION_FLAGS_MAC` or `OPTIMIZATION_FLAGS_WINDOWS`. Linux is `-O2 -march=x86-64-v3`, Apple is `-O2 -mcpu=apple-m1`, Windows is `/O2 /arch:AVX2`. There is no `/fp:fast` and no `/EHsc`. `cmake/pgo.cmake` is the same file as Base, so a forwarded list keeps its semicolons.
 - The Base archive follows the C++ library this compiler actually uses. A Gentoo clang config that selects libc++ does not appear in `CMAKE_CXX_FLAGS`, so the helper used to download the libstdc++ zip and the tests failed to link. It now preprocesses one line with that compiler and reads `_LIBCPP_VERSION` or `__GLIBCXX__`.
 
 [2.0.2]: https://github.com/StormByte-Suite/StormByte-Config/releases/tag/2.0.2
