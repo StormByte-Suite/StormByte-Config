@@ -9,12 +9,17 @@ else()
 	set(STORMBYTE_BASE_MODE static)
 endif()
 
+set(STORMBYTE_BASE_OPTIONS
+	"ENABLE_TEST=OFF"
+	"ENABLE_LTO=${ENABLE_LTO}"
+	"ENABLE_PGO=${ENABLE_PGO}"
+)
 buildmaster_component(
 	StormByte-Base
 	"StormByte Suite - Base"
 	"${CMAKE_CURRENT_LIST_DIR}/src"
-	"ENABLE_TEST=OFF"
-	${STORMBYTE_BASE_MODE}
+	"${STORMBYTE_BASE_OPTIONS}"
+	"${STORMBYTE_BASE_MODE}"
 	"StormByte"
 	"${STORMBYTE_BASE_OPTSTR}"
 )
