@@ -98,7 +98,7 @@ Base& Container::operator[](const StormByte::Size& index) {
 const Base& Container::operator[](const StormByte::Size& index) const {
 	const std::size_t raw = static_cast<std::size_t>(index);
 	if (raw >= m_items.size())
-		throw OutOfBounds("Index {} is out of bounds (max size is {})", raw, static_cast<std::size_t>(m_items.size()));
+		throw OutOfBounds("Index {} is out of bounds (max size is {})", index, m_items.size());
 	return *m_items[raw];
 }
 
@@ -143,7 +143,7 @@ bool Container::Exists(std::string_view path) const {
 void Container::Remove(const StormByte::Size& index) {
 	const std::size_t raw = static_cast<std::size_t>(index);
 	if (raw >= m_items.size())
-		throw OutOfBounds("Index {} is out of bounds (max size: {})", raw, static_cast<std::size_t>(m_items.size()));
+		throw OutOfBounds("Index {} is out of bounds (max size: {})", index, m_items.size());
 	m_items.erase(m_items.begin() + static_cast<std::ptrdiff_t>(raw));
 }
 
