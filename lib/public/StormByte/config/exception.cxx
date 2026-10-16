@@ -44,14 +44,22 @@
 
 using namespace StormByte::Config;
 
+namespace {
+	std::string FullPath(std::string_view extra) {
+		std::string path = "Config";
+		if (!extra.empty()) {
+			path.push_back('.');
+			path.append(extra);
+		}
+		return path;
+	}
+}
+
 Exception::Exception(std::string_view message)
-	: StormByte::Exception(StormByte::Exception::Path{"Config"}, "{}", message) {}
+	: StormByte::Exception(StormByte::Exception::Path{"Config"}, message) {}
 
 Exception::Exception(Path path, std::string_view message)
-	: StormByte::Exception(
-		StormByte::Exception::Path{std::string("Config.") + std::string(path.segments)},
-		"{}",
-		message) {}
+	: StormByte::Exception(StormByte::Exception::Path{FullPath(path.segments)}, message) {}
 
 Exception::~Exception() noexcept = default;
 

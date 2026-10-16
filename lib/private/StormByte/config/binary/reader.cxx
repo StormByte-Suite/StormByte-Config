@@ -72,13 +72,13 @@ Binary::ExpectedConfig Reader::Deserialize() const noexcept {
 			return Unexpected(version.error());
 
 		if (version.value() > CurrentVersion) {
-			return Unexpected<DeserializeError>(std::format(
+			return Unexpected(DeserializeError(
 				"Config binary version {} is newer than this library (max {})",
 				version.value(), CurrentVersion));
 		}
 
 		if (version.value() < 1) {
-			return Unexpected<DeserializeError>(std::format(
+			return Unexpected(DeserializeError(
 				"Unsupported config binary version {}", version.value()));
 		}
 
@@ -90,7 +90,7 @@ Binary::ExpectedConfig Reader::Deserialize() const noexcept {
 				body = ReaderV1::Read(payload);
 				break;
 			default:
-				return Unexpected<DeserializeError>(std::format(
+				return Unexpected(DeserializeError(
 					"Unsupported config binary version {}", version.value()));
 		}
 

@@ -158,7 +158,7 @@ StormByte::Expected<Token, ParseError> Tokenizer::ReadString() {
 				case 'r':  value += '\r'; break;
 				case 't':  value += '\t'; break;
 				default:
-					return StormByte::Unexpected<ParseError>("Invalid escape sequence '\\{}' on line {}", c, m_line);
+					return StormByte::Unexpected(ParseError("Invalid escape sequence '\\{}' on line {}", c, m_line));
 			}
 
 			escaped = false;
@@ -181,13 +181,13 @@ StormByte::Expected<Token, ParseError> Tokenizer::ReadString() {
 		value += c;
 	}
 
-	return StormByte::Unexpected<ParseError>("Unterminated string on line {}", m_line);
+	return StormByte::Unexpected(ParseError("Unterminated string on line {}", m_line));
 }
 
 StormByte::Expected<Token, ParseError> Tokenizer::ReadBinary() {
 	// We already consumed the 'b', now we expect "
 	if (m_stream.peek() != '"') {
-		return StormByte::Unexpected<ParseError>("Expected '\"' after 'b' for binary literal on line {}", m_line);
+		return StormByte::Unexpected(ParseError("Expected '\"' after 'b' for binary literal on line {}", m_line));
 	}
 
 	m_stream.get(); // consume opening "
@@ -205,7 +205,7 @@ StormByte::Expected<Token, ParseError> Tokenizer::ReadBinary() {
 		value += c;
 	}
 
-	return StormByte::Unexpected<ParseError>("Unterminated binary literal on line {}", m_line);
+	return StormByte::Unexpected(ParseError("Unterminated binary literal on line {}", m_line));
 }
 
 Token Tokenizer::ReadNumber() {
@@ -307,7 +307,7 @@ StormByte::Expected<Token, ParseError> Tokenizer::ReadMultiLineComment() {
 	}
 
 	if (!closed) {
-		return StormByte::Unexpected<ParseError>("Unclosed multi-line comment starting on line {}", start_line);
+		return StormByte::Unexpected(ParseError("Unclosed multi-line comment starting on line {}", start_line));
 	}
 
 	return Token{TokenType::Comment, std::move(value), CommentType::MultiLineC, start_line};

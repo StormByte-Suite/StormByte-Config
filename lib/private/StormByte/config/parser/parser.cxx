@@ -119,7 +119,7 @@ Expected<void, ParseError> Parser::Parser::Parse(Item::Container& container, Mod
 		Token token = m_tokenizer.Next();
 		if (token.type == TokenType::RBrace || token.type == TokenType::RBracket) {
 			if (m_container_level == 0)
-				return Unexpected<ParseError>("Unexpected container end on line {}", token.line);
+				return Unexpected(ParseError("Unexpected container end on line {}", token.line));
 			--m_container_level;
 			return {};
 		}
@@ -138,7 +138,7 @@ Expected<void, ParseError> Parser::Parser::Parse(Item::Container& container, Mod
 		std::string name;
 		if (mode == Mode::Named) {
 			if (token.type != TokenType::Identifier)
-				return Unexpected<ParseError>("Expected item name on line {}, got something else", token.line);
+				return Unexpected(ParseError("Expected item name on line {}, got something else", token.line));
 			name = std::move(token.value);
 			auto eq = Expect(TokenType::Equal);
 			if (!eq)
@@ -156,7 +156,7 @@ Expected<void, ParseError> Parser::Parser::Parse(Item::Container& container, Mod
 					Safe::Binary bytes = Base64Decode(token.value);
 					item_res = Item::Base::MakePointer<Item::Value>(std::move(bytes));
 				} catch (const Base64Error& ex) {
-					return Unexpected<ParseError>("Invalid Base64 data on line {}: {}", token.line, ex.what());
+					return Unexpected(ParseError("Invalid Base64 data on line {}: {}", token.line, ex.what()));
 				}
 				break;
 			}
@@ -165,7 +165,7 @@ Expected<void, ParseError> Parser::Parser::Parse(Item::Container& container, Mod
 					int v = std::stoi(token.value);
 					item_res = Item::Base::MakePointer<Item::Value>(v);
 				} catch (...) {
-					return Unexpected<ParseError>("Invalid integer '{}' on line {}", token.value, token.line);
+					return Unexpected(ParseError("Invalid integer '{}' on line {}", token.value, token.line));
 				}
 				break;
 			}
@@ -174,7 +174,7 @@ Expected<void, ParseError> Parser::Parser::Parse(Item::Container& container, Mod
 					double v = std::stod(token.value);
 					item_res = Item::Base::MakePointer<Item::Value>(v);
 				} catch (...) {
-					return Unexpected<ParseError>("Invalid double '{}' on line {}", token.value, token.line);
+					return Unexpected(ParseError("Invalid double '{}' on line {}", token.value, token.line));
 				}
 				break;
 			}
@@ -203,7 +203,7 @@ Expected<void, ParseError> Parser::Parser::Parse(Item::Container& container, Mod
 				item_res = MakeComment(token);
 				break;
 			default:
-				return Unexpected<ParseError>("Unexpected token on line {}", token.line);
+				return Unexpected(ParseError("Unexpected token on line {}", token.line));
 		}
 
 		if (!item_res)
@@ -218,7 +218,7 @@ Expected<void, ParseError> Parser::Parser::Parse(Item::Container& container, Mod
 Expected<Token, ParseError> Parser::Parser::Expect(TokenType expected) {
 	Token token = m_tokenizer.Next();
 	if (token.type != expected)
-		return Unexpected<ParseError>("Unexpected token on line {}", token.line);
+		return Unexpected(ParseError("Unexpected token on line {}", token.line));
 	return token;
 }
 

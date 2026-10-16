@@ -27,6 +27,7 @@ If you landed here from a release link and have not read the tree:
 ### Changed
 
 - Requires [StormByte Base](https://github.com/StormByte-Suite/StormByte/releases/tag/2.1.0) 2.1.0.
+- **Breaking:** `Config::Exception` no longer formats with `std::format`. A message with arguments replaces literal `{}` through `Safe::String::ReplaceToken`, the same rule as Base 2.1.0. `what()` stays `StormByte.Config: message`, and `Exception::Path` still appends a segment under `Config`.
 
 [Unreleased]: https://github.com/StormByte-Suite/StormByte-Config/compare/v2.0.1...HEAD
 

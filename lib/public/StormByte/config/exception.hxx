@@ -58,7 +58,9 @@
 		namespace Config {
 			/**
 			 * @class Exception
-			 * @brief Root exception for Config. `what()` starts with `StormByte.Config`.
+			 * @brief Root exception for Config. `what()` is `StormByte.Config: message`.
+			 *
+			 * This type applies the `Config` segment. A further segment is an @ref Path. The body does not include the path. Literal `{}` are replaced by @ref StormByte::Safe::String::ReplaceToken. This does not call `std::format`. The destructor is defined in this module.
 			 */
 			class STORMBYTE_CONFIG_PUBLIC Exception: public StormByte::Exception {
 				public:
@@ -77,14 +79,15 @@
 					};
 
 					/**
-					 * @brief Format under `StormByte.Config`.
-					 * @tparam Args Format argument types.
-					 * @param fmt Format string.
-					 * @param args Format arguments.
+					 * @brief Replace literal `{}` under `StormByte.Config`.
+					 * @tparam Args Views, or numbers. A number is converted with `std::to_string`.
+					 * @param pattern Body with literal `{}` tokens. Not a `std::format` string.
+					 * @param args Replacements. One per token, in order.
 					 */
 					template <typename... Args>
-					explicit Exception(std::format_string<Args...> fmt, Args&&... args)
-						: StormByte::Exception(StormByte::Exception::Path{"Config"}, fmt, std::forward<Args>(args)...) {}
+						requires (sizeof...(Args) >= 1)
+					Exception(std::string_view pattern, Args&&... args)
+						: StormByte::Exception(StormByte::Exception::Path{"Config"}, pattern, std::forward<Args>(args)...) {}
 
 					/**
 					 * @brief Format a plain message under `StormByte.Config`.
