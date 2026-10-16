@@ -3,8 +3,6 @@ name: CI
 permissions:
   actions: write
   contents: read
-  pages: write
-  id-token: write
 
 on:
   push:
@@ -153,17 +151,3 @@ jobs:
             -DWITH_STORMBYTE=BUNDLED
             -DBUILD_SHARED_LIBS=ON
           run-tests: false
-
-  ###########################################################################
-  # Docs (StormByteConfigDoc)
-  ###########################################################################
-  docs:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-    needs: [checkout-bootstrap, apt-bootstrap]
-    uses: stormbytepp/githubactions/.github/workflows/generate-and-deploy-docs.yml@master
-    with:
-      doc_target: StormByteConfigDoc
-      extra-cmake-options: >-
-        -DENABLE_DOC=ON
-        -DWITH_STORMBYTE=BUNDLED
-      docs_output_dir: ./_site
