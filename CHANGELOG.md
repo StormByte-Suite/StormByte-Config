@@ -20,22 +20,14 @@ If you landed here from a release link and have not read the tree:
 
 ## [Unreleased]
 
-### Added
-
-- Release archives include `THIRD-PARTY` (not `THIRDPARTY`: on Windows and macOS that name is the same path as the `thirdparty/` directory, so the file never landed in those zips). No third-party object code is compiled into this shared library. StormByte Base is linked at run time and keeps its own notice.
-
-### Fixed
-
-- `Value::Serialize` writes a double with six digits after the decimal on every standard library. `ReplaceToken` uses `std::to_string`, and libc++ prints the shortest round-trip (`3.141592653589793`, `42`), so the text was not `3.141593` and `42.000000`. The digits now come from `std::to_chars` with a fixed format and are passed to `ReplaceToken` as text.
-- `cmake/pgo.cmake` matches Base. MSVC PGO links with `/LTCG:PGINSTRUMENT` and `/LTCG:PGOPTIMIZE`. `/GENPROFILE` alone fails with LNK1220 because the current `link.exe` requires an `/LTCG` specification, and CMake's own `/LTCG` stays off so it does not replace the profile mode.
-
 [Unreleased]: https://github.com/StormByte-Suite/StormByte-Config/compare/v2.0.2...HEAD
 
-## [2.0.2] - 2026-10-16
+## [2.0.2] - 2026-10-17
 
 ### Added
 
 - `ENABLE_PGO` and `ENABLE_LTO`. Profile-guided optimization trains in `pgo-instr` and installs this build. Link-time optimization follows `ENABLE_LTO` (default ON) for every build type. Both apply to Config. Base is not rebuilt.
+- Release archives include `THIRD-PARTY` (not `THIRDPARTY`: on Windows and macOS that name is the same path as the `thirdparty/` directory, so the file never landed in those zips). No third-party object code is compiled into this shared library. StormByte Base is linked at run time and keeps its own notice.
 
 ### Changed
 
@@ -50,6 +42,8 @@ If you landed here from a release link and have not read the tree:
 - `cmake/optimizations.cmake` is the same file as Base. On Release, and only when that language was not set from the outside, it appends `OPTIMIZATION_FLAGS_LINUX`, `OPTIMIZATION_FLAGS_MAC` or `OPTIMIZATION_FLAGS_WINDOWS`. Linux is `-O2 -march=x86-64-v3`, Apple is `-O2 -mcpu=apple-m1`, Windows is `/O2 /arch:AVX2`. There is no `/fp:fast` and no `/EHsc`. `cmake/pgo.cmake` is the same file as Base, so a forwarded list keeps its semicolons.
 - The Base archive follows the C++ library this compiler actually uses. A Gentoo clang config that selects libc++ does not appear in `CMAKE_CXX_FLAGS`, so the helper used to download the libstdc++ zip and the tests failed to link. It now preprocesses one line with that compiler and reads `_LIBCPP_VERSION` or `__GLIBCXX__`.
 - Part of the port: the DLL does not return a `std::` object. `std::strong_ordering` is not a DLL ABI. clang-cl returns it through a hidden pointer and MSVC does not pass one, so a call into a clang-built Base wrote at address 0. Ordering is compiled by the caller from Base 2.1.0, where those operators are `STORMBYTE_FORCE_INLINE`. A signature that must return `std::` (`operator std::string`, an error code) is `STORMBYTE_FORCE_INLINE` in the header too. This archive must be built against that Base.
+- `Value::Serialize` writes a double with six digits after the decimal on every standard library. `ReplaceToken` uses `std::to_string`, and libc++ prints the shortest round-trip (`3.141592653589793`, `42`), so the text was not `3.141593` and `42.000000`. The digits now come from `std::to_chars` with a fixed format and are passed to `ReplaceToken` as text.
+- `cmake/pgo.cmake` matches Base. MSVC PGO links with `/LTCG:PGINSTRUMENT` and `/LTCG:PGOPTIMIZE`. `/GENPROFILE` alone fails with LNK1220 because the current `link.exe` requires an `/LTCG` specification, and CMake's own `/LTCG` stays off so it does not replace the profile mode.
 
 [2.0.2]: https://github.com/StormByte-Suite/StormByte-Config/releases/tag/2.0.2
 
