@@ -39,6 +39,7 @@ If you landed here from a release link and have not read the tree:
 
 ### Fixed
 
+- `-stdlib=libc++` and `-stdlib=libstdc++` do not count as custom C++ flags. If either is the only extra flag, Release still gets `-O2` and the CPU baseline.
 - `cmake/optimizations.cmake` is the same file as Base. On Release, and only when that language was not set from the outside, it appends `OPTIMIZATION_FLAGS_LINUX`, `OPTIMIZATION_FLAGS_MAC` or `OPTIMIZATION_FLAGS_WINDOWS`. Linux is `-O2 -march=x86-64-v3`, Apple is `-O2 -mcpu=apple-m1`, Windows is `/O2 /arch:AVX2`. There is no `/fp:fast` and no `/EHsc`. `cmake/pgo.cmake` is the same file as Base, so a forwarded list keeps its semicolons.
 - The Base archive follows the C++ library this compiler actually uses. A Gentoo clang config that selects libc++ does not appear in `CMAKE_CXX_FLAGS`, so the helper used to download the libstdc++ zip and the tests failed to link. It now preprocesses one line with that compiler and reads `_LIBCPP_VERSION` or `__GLIBCXX__`.
 - Part of the port: the DLL does not return a `std::` object. `std::strong_ordering` is not a DLL ABI. clang-cl returns it through a hidden pointer and MSVC does not pass one, so a call into a clang-built Base wrote at address 0. Ordering is compiled by the caller from Base 2.1.0, where those operators are `STORMBYTE_FORCE_INLINE`. A signature that must return `std::` (`operator std::string`, an error code) is `STORMBYTE_FORCE_INLINE` in the header too. This archive must be built against that Base.
