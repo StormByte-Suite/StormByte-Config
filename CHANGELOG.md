@@ -24,6 +24,10 @@ If you landed here from a release link and have not read the tree:
 
 ## [2.0.3] - 2026-10-23
 
+### Fixed
+
+- Installed headers and release archives now include public `.txx` template implementations. `StormByte/config/item/base.txx` is required by the public Config and item headers; omitting it prevented downstream applications from compiling against the binary release.
+
 ### Changed
 
 - Bumped version to 2.0.3 and updated StormByte-BuildMaster dependency from 2.1.0 to 2.2.0.
