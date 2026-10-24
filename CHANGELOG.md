@@ -20,7 +20,15 @@ If you landed here from a release link and have not read the tree:
 
 ## [Unreleased]
 
-[Unreleased]: https://github.com/StormByte-Suite/StormByte-Config/compare/v2.0.3...HEAD
+[Unreleased]: https://github.com/StormByte-Suite/StormByte-Config/compare/2.0.4...HEAD
+
+## [2.0.4] - 2026-10-24
+
+### Changed
+
+- Windows Release optimizations use `/arch:AVX` instead of `/arch:AVX2`. The previous baseline required a Haswell-or-newer CPU (AVX2). `/arch:AVX` runs on Sandy Bridge and Ivy Bridge (including the i7-3770K) and later.
+
+[2.0.4]: https://github.com/StormByte-Suite/StormByte-Config/compare/v2.0.3...2.0.4
 
 ## [2.0.3] - 2026-10-23
 
