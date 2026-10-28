@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 StormByte Config is the configuration-document module of the StormByte C++ suite.
 
-It depends on StormByte Base 2.1.0 and StormByte-BuildMaster >= 2.1.0. This repository is not Base, Buffer, Crypto, Database, Logger, Multimedia, Network or System.
+It depends on StormByte Base 2.2.2 and StormByte-BuildMaster >= 2.1.3. This repository is not Base, Buffer, Crypto, Database, Logger, Multimedia, Network or System.
 
 Public headers under `StormByte/config/` cover text and versioned binary documents: values, groups, lists, comments, hooks and `Save` / `Load`.
 
@@ -20,11 +20,15 @@ If you landed here from a release link and have not read the tree:
 
 ## [Unreleased]
 
+[Unreleased]: https://github.com/StormByte-Suite/StormByte-Config/compare/2.0.5...HEAD
+
+## [2.0.5] - 2026-10-28
+
 ### Changed
 
 - Bundled builds use Base 2.2.2. Require BuildMaster 2.1.3 and pin its bundled submodule to the published release.
 
-[Unreleased]: https://github.com/StormByte-Suite/StormByte-Config/compare/2.0.4...HEAD
+[2.0.5]: https://github.com/StormByte-Suite/StormByte-Config/compare/2.0.4...2.0.5
 
 ## [2.0.4] - 2026-10-24
 
