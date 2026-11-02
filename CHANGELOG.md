@@ -27,6 +27,7 @@ If you landed here from a release link and have not read the tree:
 ### Changed
 
 - Bundled builds use Base 2.2.3, including corrected exception contracts and allocation-failure cleanup for safe text operations.
+- Rebuild release packages against the refreshed Base 2.2.3 release, including allocation-safe telemetry and map/set constructor fixes.
 
 [2.0.6]: https://github.com/StormByte-Suite/StormByte-Config/compare/2.0.5...2.0.6
 
