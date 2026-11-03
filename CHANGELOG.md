@@ -20,6 +20,10 @@ If you landed here from a release link and have not read the tree:
 
 ## [Unreleased]
 
+### Changed
+
+- Stop forcing CPU and optimization flags in manual Release builds; CPU selection now comes from the toolchain while `ENABLE_LTO` remains independently configurable.
+
 ### Fixed
 
 - Reconfigure automatically when `VERSION` changes so rebuilt and installed artifacts use the updated project version.

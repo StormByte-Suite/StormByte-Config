@@ -65,7 +65,9 @@ cmake -S . -B build
 cmake --build build
 ```
 
-Shared vs static follows CMake `BUILD_SHARED_LIBS` (declared in `lib/`, default ON). A plain configure builds the shared library. `-DBUILD_SHARED_LIBS=OFF` builds a static archive; on Windows the headers then do not use `dllimport`. The downloaded Base archive is the same mode.
+Manual builds use the compiler and CMake defaults for optimization and CPU selection; set `CMAKE_C_FLAGS` / `CMAKE_CXX_FLAGS` or `CFLAGS` / `CXXFLAGS` to choose a CPU baseline. Existing build directories may retain Release flags cached by an older version; configure a fresh build directory to discard them. `ENABLE_LTO` defaults to `ON` and can be disabled with `-DENABLE_LTO=OFF`. CI and releases select `cpu-baseline: auto` through the build action.
+
+Shared vs static follows CMake `BUILD_SHARED_LIBS` (default ON). A plain configure builds the shared library. `-DBUILD_SHARED_LIBS=OFF` builds a static archive; on Windows the headers then do not use `dllimport`. The downloaded Base archive is the same mode.
 
 A shared build keeps this library as its own `.so` / `.dll`. Under the LGPL that is usually the simpler way to ship: the user can replace that file. A static archive is folded into your binary. The LGPL still applies to this code; you must give the recipient a way to relink your product with a different build of this library. If that does not fit how you distribute the final product, a commercial license is available from the copyright holder (see [License](#license)).
 
