@@ -39,6 +39,7 @@ If you landed here from a release link and have not read the tree:
 ### Fixed
 
 - Reconfigure automatically when `VERSION` changes so rebuilt and installed artifacts use the updated project version.
+- Clarify that bundled Linux Base releases do not include the static archive required by a static Config build.
 
 [3.0.0]: https://github.com/StormByte-Suite/StormByte-Config/compare/2.0.6...3.0.0
 
