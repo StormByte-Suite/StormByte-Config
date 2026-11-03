@@ -20,6 +20,10 @@ If you landed here from a release link and have not read the tree:
 
 ## [Unreleased]
 
+### Fixed
+
+- Reconfigure automatically when `VERSION` changes so rebuilt and installed artifacts use the updated project version.
+
 [Unreleased]: https://github.com/StormByte-Suite/StormByte-Config/compare/2.0.6...HEAD
 
 ## [2.0.6] - 2026-11-02
