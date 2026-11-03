@@ -34,7 +34,7 @@ These are other shared libraries. They are not inside this file. Each has
 its own release archive, its own LICENSE and its own THIRD-PARTY. The
 versions below are the ones this tag is built against.
 
-  - StormByte Base 2.2.3 — https://github.com/StormByte-Suite/StormByte/releases/tag/2.2.3
+  - StormByte Base 3.0.0 — https://github.com/StormByte-Suite/StormByte/releases/tag/3.0.0
 
 A static rebuild of this library can fold those libraries into the result.
 That binary is a different distribution from this archive, and the notices

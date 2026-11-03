@@ -10,3 +10,6 @@ install(DIRECTORY "${CMAKE_SOURCE_DIR}/lib/public/StormByte/"
 	PATTERN "*.hxx"
 	PATTERN "*.txx"
 )
+install(FILES "${CMAKE_SOURCE_DIR}/cmake/FindStormByteConfig.cmake"
+	DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/cmake/Modules"
+)

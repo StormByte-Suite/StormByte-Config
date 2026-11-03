@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 StormByte Config is the configuration-document module of the StormByte C++ suite.
 
-It depends on StormByte Base 2.2.3 and StormByte-BuildMaster >= 2.1.3. This repository is not Base, Buffer, Crypto, Database, Logger, Multimedia, Network or System.
+It depends on StormByte Base 3.0.0 and StormByte-BuildMaster >= 2.1.4. This repository is not Base, Buffer, Crypto, Database, Logger, Multimedia, Network or System.
 
 Public headers under `StormByte/config/` cover text and versioned binary documents: values, groups, lists, comments, hooks and `Save` / `Load`.
 
@@ -20,8 +20,14 @@ If you landed here from a release link and have not read the tree:
 
 ## [Unreleased]
 
+### Added
+
+- Install `FindStormByteConfig.cmake` so Base 3.0.0 can discover Config as a component. Verify a real consumer against both the installed prefix and an extracted release ZIP.
+
 ### Changed
 
+- **Breaking:** Require Base 3.0.0 and select its Linux archive by architecture, libc and C++ standard library. Older package layouts and components without their own finder are unsupported.
+- Require StormByte-BuildMaster 2.1.4 and pin the bundled submodule to that release.
 - Stop forcing CPU and optimization flags in manual Release builds; CPU selection now comes from the toolchain while `ENABLE_LTO` remains independently configurable.
 
 ### Fixed
