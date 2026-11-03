@@ -20,6 +20,10 @@ If you landed here from a release link and have not read the tree:
 
 ## [Unreleased]
 
+[Unreleased]: https://github.com/StormByte-Suite/StormByte-Config/compare/3.0.0...HEAD
+
+## [3.0.0] - 2026-11-03
+
 ### Added
 
 - Install `FindStormByteConfig.cmake` so Base 3.0.0 can discover Config as a component. Verify a real consumer against both the installed prefix and an extracted release ZIP.
@@ -36,7 +40,7 @@ If you landed here from a release link and have not read the tree:
 
 - Reconfigure automatically when `VERSION` changes so rebuilt and installed artifacts use the updated project version.
 
-[Unreleased]: https://github.com/StormByte-Suite/StormByte-Config/compare/2.0.6...HEAD
+[3.0.0]: https://github.com/StormByte-Suite/StormByte-Config/compare/2.0.6...3.0.0
 
 ## [2.0.6] - 2026-11-02
 
