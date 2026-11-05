@@ -56,6 +56,10 @@ The suite is split on purpose. Base, Buffer, Crypto, Database, Logger, Multimedi
 
 ## Installation
 
+`-DENABLE_TEST=ON` keeps normal tests available locally and during PGO training.
+Package discovery fixtures are CI-only and require `-DENABLE_CI_FIXTURES=ON`,
+which is disabled by default and enabled explicitly by CI.
+
 Needs a C++26 compiler, CMake 3.28 or newer, [StormByte-BuildMaster](https://github.com/StormByte-Suite/StormByte-BuildMaster) >= 2.1.4, and [StormByte Base](https://github.com/StormByte-Suite/StormByte/releases/tag/3.0.0) 3.0.0. Configure downloads the matching Base release archive. There is no Base submodule. BuildMaster is the installed package when it is >= 2.1.4, otherwise the `buildmaster` submodule.
 
 ```sh

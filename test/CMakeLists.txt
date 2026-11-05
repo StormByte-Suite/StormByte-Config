@@ -1,4 +1,5 @@
 option(ENABLE_TEST "Enable Unit Tests" OFF)
+option(ENABLE_CI_FIXTURES "Enable CI-only package discovery fixtures" OFF)
 if(ENABLE_TEST)
 	enable_testing()
 
@@ -26,7 +27,7 @@ if(ENABLE_TEST)
 	target_link_libraries(VersionBinReadTests StormByte::Config)
 	add_test(NAME VersionBinReadTests COMMAND VersionBinReadTests)
 
-	if(WITH_STORMBYTE STREQUAL "BUNDLED" AND NOT CMAKE_CROSSCOMPILING)
+	if(ENABLE_CI_FIXTURES AND WITH_STORMBYTE STREQUAL "BUNDLED" AND NOT CMAKE_CROSSCOMPILING)
 		set(_package_cxx_flags "${CMAKE_CXX_FLAGS}")
 		set(_package_link_flags "${CMAKE_EXE_LINKER_FLAGS}")
 		if(COMMAND _pgo_strip_profile_flags)
